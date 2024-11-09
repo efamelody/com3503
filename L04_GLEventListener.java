@@ -72,9 +72,10 @@ public class L04_GLEventListener implements GLEventListener {
   // textures
   private TextureLibrary textures;
 
-  private Model cube, tt1, tt2, tt3, tt4, tt5, tt6;
+  private Model cube, tt1, tt2, tt3, tt4, tt5, tt6, globe;
   private Light light;
   private Mat4[] roomTransforms;
+  private SGNode stackRoot;
   
   public void initialise(GL3 gl) {
     textures = new TextureLibrary();
@@ -85,6 +86,7 @@ public class L04_GLEventListener implements GLEventListener {
     textures.add(gl, "wall_texture", "assets/textures/wattBook.jpg", GL3.GL_CLAMP_TO_EDGE, GL3.GL_CLAMP_TO_EDGE);
     textures.add(gl, "cloud", "assets/textures/cloud.jpg", GL3.GL_CLAMP_TO_EDGE, GL3.GL_CLAMP_TO_EDGE);
     textures.add(gl, "star", "assets/textures/star.png", GL3.GL_CLAMP_TO_EDGE, GL3.GL_CLAMP_TO_EDGE);
+    textures.add(gl, "earth", "assets/textures/earth.png", GL3.GL_CLAMP_TO_EDGE, GL3.GL_CLAMP_TO_EDGE);
     textures.add(gl, "rightWall", "assets/textures/rightWall.png", GL3.GL_REPEAT, GL3.GL_REPEAT);
     // textures = new TextureLibrary();
     // textures.add(gl, "diffuse", "assets/textures/container2.jpg");
@@ -120,7 +122,7 @@ public class L04_GLEventListener implements GLEventListener {
     material = new Material(new Vec3(0.1f, 0.5f, 0.91f), new Vec3(0.1f, 0.5f, 0.91f), new Vec3(0.3f, 0.3f, 0.3f), 4.0f);
     //material = new Material(basecolor, basecolor, new Vec3(0.3f, 0.3f, 0.3f), 4.0f);
     // no textures for this model
-    tt5 = new Model(name, mesh, new Mat4(1), shader, material, light, camera , textures.get("cloud"));
+    tt5 = new Model(name, mesh, new Mat4(1), shader, material, light, camera , textures.get("diffuse_jade"), textures.get("specular_jade"));
    
     name = "sidewall";
     mesh = new Mesh(gl, TwoTriangles.vertices.clone(), TwoTriangles.indices.clone());
@@ -152,6 +154,16 @@ public class L04_GLEventListener implements GLEventListener {
     material = new Material(new Vec3(1.0f, 0.5f, 0.31f), new Vec3(1.0f, 0.5f, 0.31f), new Vec3(0.5f, 0.5f, 0.5f), 32.0f);
     cube = new Model(name, mesh, new Mat4(1), shader, material, light, camera, textures.get("diffuse"), textures.get("specular"));
 
+    name = "globe";
+    mesh = new Mesh(gl, Sphere.vertices.clone(), Sphere.indices.clone());
+    shader = new Shader(gl, "assets/shaders/vs_standard.txt", "assets/shaders/fs_standard_2t.txt");
+    material = new Material(new Vec3(1.0f, 0.5f, 0.31f), new Vec3(1.0f, 0.5f, 0.31f), new Vec3(0.5f, 0.5f, 0.5f), 32.0f);
+    Mat4 modelMatrix = Mat4Transform.translate(0,4,0);
+    modelMatrix = Mat4.multiply(modelMatrix, Mat4Transform.scale(3,3,3));
+    modelMatrix = Mat4.multiply(modelMatrix, Mat4Transform.translate(0,0.5f,0));
+    // globe = new Model(name, mesh, modelMatrix, shader, material, light, camera, textures.get("diffuse_jade"), textures.get("specular_jade"));
+    globe = new Model(name, mesh, modelMatrix, shader, material, light, camera, textures.get("earth"));
+
     roomTransforms = setupRoomTransforms();
   }
  
@@ -168,8 +180,8 @@ public class L04_GLEventListener implements GLEventListener {
     // light.setPosition(getLightPosition());  // changing light position each frame
     // light.render(gl);
     
-    // cube.setModelMatrix(getMforCube());     // change transform
-    // cube.render(gl);
+    cube.setModelMatrix(getMforCube());     // change transform
+    cube.render(gl);
     tt1.setModelMatrix(getMforTT1());       // change transform
     tt1.render(gl);
     // tt1.setModelMatrix(getMforTT2());       // change transform
@@ -190,6 +202,7 @@ public class L04_GLEventListener implements GLEventListener {
     tt5.render(gl);
     tt6.setModelMatrix(getMforTT7());       // change transform
     tt6.render(gl);
+    globe.render(gl);
 
   
   }
