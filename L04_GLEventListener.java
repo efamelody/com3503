@@ -19,7 +19,8 @@ public class L04_GLEventListener implements GLEventListener {
   /* The constructor is not used to initialise anything */
   public L04_GLEventListener(Camera camera) {
     this.camera = camera;
-    this.camera.setPosition(new Vec3(4f,6f,15f));
+    // this.camera.setPosition(new Vec3(4f,6f,15f));
+    this.camera.setPosition(new Vec3(4f,12f,18f));
   }
   
   // ***************************************************
@@ -82,6 +83,7 @@ public class L04_GLEventListener implements GLEventListener {
   private Mat4[] roomTransforms;
   private SGNode robotRoot;
   private Model sphere;
+  private SGNode twoBranchRoot;
 
   private TransformNode translateX, rotateAll, rotateUpper1, rotateUpper2;
   private float xPosition = 0;
@@ -178,57 +180,61 @@ public class L04_GLEventListener implements GLEventListener {
   
 
   // CODE EFA BISMILLAH
-  // Defining the nodes and branches
-  // SGNode base = makeBase(sphere, 2.5f,4.0f,2.5f);
-  // SGNode leg = makeLeg(sphere, 2.5f, 4.0f, 2.5f);
-  // sphere = makeSphere(gl, textures.get("cloud"), textures.get("specular"));
-  robotRoot = new NameNode("robotRoot");
+    sphere = makeSphere(gl, textures.get("diffuse"), textures.get("specular"));
+      
+    twoBranchRoot = new NameNode("two-branch structure");
 
-  // Translation
-  TransformNode translateToGround = new TransformNode("translate(0, 1, 0)", Mat4Transform.translate(0, 1, 0));
-  TransformNode leftLegPosition = new TransformNode("translate(-1.5, 0, 0)", Mat4Transform.translate(-1.5f, 0, 0));
-  SGNode base = makeBase(sphere, 2.5f,4.0f,2.5f);
-  sphere = makeSphere(gl, textures.get("cloud"), textures.get("specular"));
-  SGNode leg = makeLeg(sphere, 2.5f, 4.0f, 2.5f);
-  // System.out.println("Base: " + base);
-  // System.out.println("Leg: " + leg);
+    float lowerBranchHeight = 4.0f;
 
+    SGNode lowerBranch = makeLowerBranch(sphere, 2.5f,lowerBranchHeight,2.5f);
+    SGNode upperBranch1 = makeUpperBranch(sphere, 1.4f,3.1f,1.4f);
+    SGNode upperBranch2 = makeUpperBranch(sphere, 0.6f,1.4f,0.6f);
 
-  robotRoot.addChild(translateToGround);
-    translateToGround.addChild(base);
-      base.addChild(leftLegPosition);
-        leftLegPosition.addChild(leg);
-  robotRoot.update();
-  // robotRoot.update();
-  // base.addChild(rightLegPosition);
-  // rightLegPosition.addChild(rightLeg);
+    TransformNode translateToTop1 = new TransformNode("translate(0,"+lowerBranchHeight+",0)",Mat4Transform.translate(0,lowerBranchHeight,0));
+    TransformNode translateToTop2 = new TransformNode("translate(0,"+lowerBranchHeight+",0)",Mat4Transform.translate(0,lowerBranchHeight,0));
+    // The next few are global variables so they can be updated in other methods
+    translateX = new TransformNode("translate("+xPosition+",0,0)", Mat4Transform.translate(xPosition,0,0));  
+    rotateAll = new TransformNode("rotateAroundZ("+rotateAllAngle+")", Mat4Transform.rotateAroundZ(rotateAllAngle));
+    rotateUpper1 = new TransformNode("rotateAroundZ("+rotateUpper1Angle+")",Mat4Transform.rotateAroundZ(rotateUpper1Angle));
+    rotateUpper2 = new TransformNode("rotateAroundZ("+rotateUpper2Angle+")",Mat4Transform.rotateAroundZ(rotateUpper2Angle));
+    // TransformNode sceneTranslation = new TransformNode("translate(" + 5.0f + "," + 0.0f + "," + -10f + ")",Mat4Transform.translate(15.0f, 0.0f, -10f));
+
+    twoBranchRoot.addChild(translateX);
+      translateX.addChild(rotateAll);
+        rotateAll.addChild(lowerBranch);
+          lowerBranch.addChild(translateToTop1);
+            translateToTop1.addChild(rotateUpper1);
+              rotateUpper1.addChild(upperBranch1);
+          lowerBranch.addChild(translateToTop2);     // translateToTop1 could be used here as this is not an animated value
+            translateToTop2.addChild(rotateUpper2);  // and here
+              rotateUpper2.addChild(upperBranch2);
+              // sceneTranslation.addChild(translateX);
+                // upperBranch2.addChild(sceneTranslation);
+    twoBranchRoot.update();  // IMPORTANT – must be done every time any part of the scene graph changes
   }
 
-
-  //Where and how the object is placed and transformed
-  //Leg 
-  private SGNode makeLeg(Model sphere, float sx, float sy, float sz) {
-    NameNode legBranchName = new NameNode("leg branch");  // Changed name to "leg branch"
-    Mat4 m = Mat4Transform.scale(sx, sy, sx);
-    m = Mat4.multiply(m, Mat4Transform.translate(0, 0.5f, 0));
-    TransformNode lowerBranch = new TransformNode("scale(" + sx + "," + sy + "," + sz + "); translate(0, 0.5, 0)", m);
+  // the following two methods are quite similar and could be replaced with one method with suitable parameterisation
+  private SGNode makeLowerBranch(Model sphere, float sx, float sy, float sz) {
+    NameNode lowerBranchName = new NameNode("lower branch");
+    Mat4 m = Mat4Transform.scale(sx,sy,sx);
+    m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
+    TransformNode lowerBranch = new TransformNode("scale("+sx+","+sy+","+sz+"); translate(0,0.5,0)", m);
     ModelNode sphereNode = new ModelNode("Sphere(0)", sphere);
-    legBranchName.addChild(lowerBranch);
+    lowerBranchName.addChild(lowerBranch);
       lowerBranch.addChild(sphereNode);
-    return legBranchName;
+    return lowerBranchName;
   }
 
-  // TRYING TO MAKE THE BASE
-  private SGNode makeBase(Model sphere, float sx, float sy, float sz) {
-    NameNode baseBranchName = new NameNode("base branch");  // Changed name to "base branch"
-    Mat4 m = Mat4Transform.scale(sx, sy, sx);
-    m = Mat4.multiply(Mat4Transform.rotateAroundX(90), m);  // Rotate by 90 degrees around X to lay it flat
-    m = Mat4.multiply(m, Mat4Transform.translate(0, 0.5f, 0));
-    TransformNode lowerBranch = new TransformNode("scale(" + sx + "," + sy + "," + sz + "); translate(0, 0.5, 0)", m);
-    ModelNode sphereNode = new ModelNode("Sphere(0)", sphere);
-    baseBranchName.addChild(lowerBranch);
-      lowerBranch.addChild(sphereNode);
-    return baseBranchName;
+  private SGNode makeUpperBranch(Model sphere, float sx, float sy, float sz) {
+    NameNode upperBranchName = new NameNode("upper branch");
+    Mat4 m = Mat4Transform.scale(sx,sy,sz);
+    // m = Mat4.multiply(Mat4Transform.rotateAroundX(90), m);
+    m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
+    TransformNode upperBranch = new TransformNode("scale("+sx+","+sy+","+sz+");translate(0,0.5,0)", m);
+    ModelNode sphereNode = new ModelNode("Sphere(1)", sphere);
+    upperBranchName.addChild(upperBranch);
+      upperBranch.addChild(sphereNode);
+    return upperBranchName;
   }
 
   //Creates 3D model returns a model Object, defines what object Looks like
@@ -241,18 +247,18 @@ public class L04_GLEventListener implements GLEventListener {
     Model sphere = new Model(name, mesh, modelMatrix, shader, material, light, camera, t1, t2);
     return sphere;
   } 
-   
-  // private void updateBranches() {
-  //   double elapsedTime = getSeconds()-startTime;
-  //   rotateAllAngle = rotateAllAngleStart*(float)Math.sin(elapsedTime);
-  //   rotateUpper1Angle = rotateUpper1AngleStart*(float)Math.sin(elapsedTime*0.7f);
-  //   rotateUpper2Angle = rotateUpper2AngleStart*(float)Math.sin(elapsedTime*0.7f);
-  //   rotateAll.setTransform(Mat4Transform.rotateAroundZ(rotateAllAngle));
-  //   rotateUpper1.setTransform(Mat4Transform.rotateAroundZ(rotateUpper1Angle));
-  //   rotateUpper2.setTransform(Mat4Transform.rotateAroundZ(rotateUpper2Angle));
-  //   robotRoot.update(); // IMPORTANT – the scene graph has changed
-  // }
 
+  private void updateBranches() {
+    double elapsedTime = getSeconds()-startTime;
+    rotateAllAngle = rotateAllAngleStart*(float)Math.sin(elapsedTime);
+    rotateUpper1Angle = rotateUpper1AngleStart*(float)Math.sin(elapsedTime*0.7f);
+    rotateUpper2Angle = rotateUpper2AngleStart*(float)Math.sin(elapsedTime*0.7f);
+    rotateAll.setTransform(Mat4Transform.rotateAroundZ(rotateAllAngle));
+    rotateUpper1.setTransform(Mat4Transform.rotateAroundZ(rotateUpper1Angle));
+    rotateUpper2.setTransform(Mat4Transform.rotateAroundZ(rotateUpper2Angle));
+    twoBranchRoot.update(); // IMPORTANT – the scene graph has changed
+  }
+   
  
   
   public void render(GL3 gl) {
@@ -262,9 +268,11 @@ public class L04_GLEventListener implements GLEventListener {
     // light.setPosition(getLightPosition());  // changing light position each frame
     // light.render(gl);
     // updateBranches();
-    robotRoot.draw(gl);
-    cube.setModelMatrix(getMforCube());     // change transform
-    cube.render(gl);
+    updateBranches();
+    twoBranchRoot.draw(gl);
+    // robotRoot.draw(gl);
+    // cube.setModelMatrix(getMforCube());     // change transform
+    // cube.render(gl);
     tt1.setModelMatrix(getMforTT1());       // change transform
     tt1.render(gl);
     // tt1.setModelMatrix(getMforTT2());       // change transform
@@ -346,10 +354,6 @@ public class L04_GLEventListener implements GLEventListener {
 
     return modelMatrix;
   }
-
-
-
-
   
   private Mat4[] setupRoomTransforms() {
     Mat4[] t = new Mat4[5];
