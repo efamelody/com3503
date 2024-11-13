@@ -6,6 +6,9 @@ import com.jogamp.opengl.*;
 import com.jogamp.opengl.util.*;
 import com.jogamp.opengl.util.awt.*;
 import com.jogamp.opengl.util.glsl.*;
+import com.jogamp.opengl.util.texture.*;
+import com.jogamp.opengl.util.texture.awt.*;
+import com.jogamp.opengl.util.texture.spi.JPEGImage;
 
   
 public class L04_GLEventListener implements GLEventListener {
@@ -61,6 +64,7 @@ public class L04_GLEventListener implements GLEventListener {
     tt1.dispose(gl);
     light.dispose(gl);
     textures.destroy(gl);
+    sphere.dispose(gl);
   }
 
   // ***************************************************
@@ -73,12 +77,22 @@ public class L04_GLEventListener implements GLEventListener {
   private TextureLibrary textures;
 
   private Model cube, tt1, tt2, tt3, tt4, tt5, tt6, globe;
+  private Mat4 perspective;
   private Light light;
   private Mat4[] roomTransforms;
-  private SGNode stackRoot;
+  private SGNode robotRoot;
+  private Model sphere;
+
+  private TransformNode translateX, rotateAll, rotateUpper1, rotateUpper2;
+  private float xPosition = 0;
+  private float rotateAllAngleStart = 25, rotateAllAngle = rotateAllAngleStart;
+  private float rotateUpper1AngleStart = -60, rotateUpper1Angle = rotateUpper1AngleStart;
+  private float rotateUpper2AngleStart = 30, rotateUpper2Angle = rotateUpper2AngleStart;
+
   
   public void initialise(GL3 gl) {
     textures = new TextureLibrary();
+    startTime = System.currentTimeMillis();
     textures.add(gl, "diffuse", "assets/textures/container2.jpg", GL3.GL_CLAMP_TO_EDGE, GL3.GL_CLAMP_TO_EDGE);
     textures.add(gl, "specular", "assets/textures/container2_specular.jpg", GL3.GL_CLAMP_TO_EDGE, GL3.GL_CLAMP_TO_EDGE);
     textures.add(gl, "floor_texture", "assets/textures/chequerboard.jpg", GL3.GL_CLAMP_TO_EDGE, GL3.GL_CLAMP_TO_EDGE);
@@ -87,18 +101,7 @@ public class L04_GLEventListener implements GLEventListener {
     textures.add(gl, "cloud", "assets/textures/cloud.jpg", GL3.GL_CLAMP_TO_EDGE, GL3.GL_CLAMP_TO_EDGE);
     textures.add(gl, "star", "assets/textures/star.png", GL3.GL_CLAMP_TO_EDGE, GL3.GL_CLAMP_TO_EDGE);
     textures.add(gl, "earth", "assets/textures/earth.png", GL3.GL_CLAMP_TO_EDGE, GL3.GL_CLAMP_TO_EDGE);
-    textures.add(gl, "rightWall", "assets/textures/rightWall.png", GL3.GL_REPEAT, GL3.GL_REPEAT);
-    // textures = new TextureLibrary();
-    // textures.add(gl, "diffuse", "assets/textures/container2.jpg");
-    // textures.add(gl, "specular", "assets/textures/container2_specular.jpg");
-    // textures.add(gl, "floor_texture", "assets/textures/chequerboard.jpg");
-    // textures.add(gl, "ceiling_texture", "assets/textures/cloud.jpg");
-    // textures.add(gl, "wall_texture", "assets/textures/wattBook.jpg");
-    // textures.add(gl, "cloud", "assets/textures/cloud.jpg");
-    // textures.add(gl, "rightWall", "assets/textures/rightWall.png");
-
-
-    
+    textures.add(gl, "rightWall", "assets/textures/rightWall.png", GL3.GL_REPEAT, GL3.GL_REPEAT);    
     light = new Light(gl);
     light.setCamera(camera);
     
@@ -154,24 +157,103 @@ public class L04_GLEventListener implements GLEventListener {
     material = new Material(new Vec3(1.0f, 0.5f, 0.31f), new Vec3(1.0f, 0.5f, 0.31f), new Vec3(0.5f, 0.5f, 0.5f), 32.0f);
     cube = new Model(name, mesh, new Mat4(1), shader, material, light, camera, textures.get("diffuse"), textures.get("specular"));
 
+   
     name = "globe";
     mesh = new Mesh(gl, Sphere.vertices.clone(), Sphere.indices.clone());
     shader = new Shader(gl, "assets/shaders/vs_standard.txt", "assets/shaders/fs_standard_2t.txt");
     material = new Material(new Vec3(1.0f, 0.5f, 0.31f), new Vec3(1.0f, 0.5f, 0.31f), new Vec3(0.5f, 0.5f, 0.5f), 32.0f);
-    Mat4 modelMatrix = Mat4Transform.translate(0,4,0);
+    Mat4 modelMatrix = Mat4Transform.translate(0,0,0);
     modelMatrix = Mat4.multiply(modelMatrix, Mat4Transform.scale(3,3,3));
     modelMatrix = Mat4.multiply(modelMatrix, Mat4Transform.translate(0,0.5f,0));
+    double elapsedTime = getSeconds()-startTime;
+    float angle = (float)(-115*Math.sin(Math.toRadians(elapsedTime*50)));
+    System.err.println(angle);
+    System.out.println(startTime);
+    System.out.println(elapsedTime);
+    modelMatrix = Mat4.multiply(modelMatrix, Mat4Transform.rotateAroundY(angle));
     // globe = new Model(name, mesh, modelMatrix, shader, material, light, camera, textures.get("diffuse_jade"), textures.get("specular_jade"));
     globe = new Model(name, mesh, modelMatrix, shader, material, light, camera, textures.get("earth"));
 
-    roomTransforms = setupRoomTransforms();
+    //ROBOT 1
+  
+
+  // CODE EFA BISMILLAH
+  // Defining the nodes and branches
+  // SGNode base = makeBase(sphere, 2.5f,4.0f,2.5f);
+  // SGNode leg = makeLeg(sphere, 2.5f, 4.0f, 2.5f);
+  // sphere = makeSphere(gl, textures.get("cloud"), textures.get("specular"));
+  robotRoot = new NameNode("robotRoot");
+
+  // Translation
+  TransformNode translateToGround = new TransformNode("translate(0, 1, 0)", Mat4Transform.translate(0, 1, 0));
+  TransformNode leftLegPosition = new TransformNode("translate(-1.5, 0, 0)", Mat4Transform.translate(-1.5f, 0, 0));
+  SGNode base = makeBase(sphere, 2.5f,4.0f,2.5f);
+  sphere = makeSphere(gl, textures.get("cloud"), textures.get("specular"));
+  SGNode leg = makeLeg(sphere, 2.5f, 4.0f, 2.5f);
+  // System.out.println("Base: " + base);
+  // System.out.println("Leg: " + leg);
+
+
+  robotRoot.addChild(translateToGround);
+    translateToGround.addChild(base);
+      base.addChild(leftLegPosition);
+        leftLegPosition.addChild(leg);
+  robotRoot.update();
+  // robotRoot.update();
+  // base.addChild(rightLegPosition);
+  // rightLegPosition.addChild(rightLeg);
   }
+
+
+  //Where and how the object is placed and transformed
+  //Leg 
+  private SGNode makeLeg(Model sphere, float sx, float sy, float sz) {
+    NameNode legBranchName = new NameNode("leg branch");  // Changed name to "leg branch"
+    Mat4 m = Mat4Transform.scale(sx, sy, sx);
+    m = Mat4.multiply(m, Mat4Transform.translate(0, 0.5f, 0));
+    TransformNode lowerBranch = new TransformNode("scale(" + sx + "," + sy + "," + sz + "); translate(0, 0.5, 0)", m);
+    ModelNode sphereNode = new ModelNode("Sphere(0)", sphere);
+    legBranchName.addChild(lowerBranch);
+      lowerBranch.addChild(sphereNode);
+    return legBranchName;
+  }
+
+  // TRYING TO MAKE THE BASE
+  private SGNode makeBase(Model sphere, float sx, float sy, float sz) {
+    NameNode baseBranchName = new NameNode("base branch");  // Changed name to "base branch"
+    Mat4 m = Mat4Transform.scale(sx, sy, sx);
+    m = Mat4.multiply(Mat4Transform.rotateAroundX(90), m);  // Rotate by 90 degrees around X to lay it flat
+    m = Mat4.multiply(m, Mat4Transform.translate(0, 0.5f, 0));
+    TransformNode lowerBranch = new TransformNode("scale(" + sx + "," + sy + "," + sz + "); translate(0, 0.5, 0)", m);
+    ModelNode sphereNode = new ModelNode("Sphere(0)", sphere);
+    baseBranchName.addChild(lowerBranch);
+      lowerBranch.addChild(sphereNode);
+    return baseBranchName;
+  }
+
+  //Creates 3D model returns a model Object, defines what object Looks like
+  private Model makeSphere(GL3 gl, Texture t1, Texture t2) {
+    String name= "sphere";
+    Mesh mesh = new Mesh(gl, Sphere.vertices.clone(), Sphere.indices.clone());
+    Shader shader = new Shader(gl, "assets/shaders/vs_standard.txt", "assets/shaders/fs_standard_2t.txt");
+    Material material = new Material(new Vec3(1.0f, 0.5f, 0.31f), new Vec3(1.0f, 0.5f, 0.31f), new Vec3(0.5f, 0.5f, 0.5f), 32.0f);
+    Mat4 modelMatrix = Mat4.multiply(Mat4Transform.scale(4,4,4), Mat4Transform.translate(0,0.5f,0));
+    Model sphere = new Model(name, mesh, modelMatrix, shader, material, light, camera, t1, t2);
+    return sphere;
+  } 
+   
+  // private void updateBranches() {
+  //   double elapsedTime = getSeconds()-startTime;
+  //   rotateAllAngle = rotateAllAngleStart*(float)Math.sin(elapsedTime);
+  //   rotateUpper1Angle = rotateUpper1AngleStart*(float)Math.sin(elapsedTime*0.7f);
+  //   rotateUpper2Angle = rotateUpper2AngleStart*(float)Math.sin(elapsedTime*0.7f);
+  //   rotateAll.setTransform(Mat4Transform.rotateAroundZ(rotateAllAngle));
+  //   rotateUpper1.setTransform(Mat4Transform.rotateAroundZ(rotateUpper1Angle));
+  //   rotateUpper2.setTransform(Mat4Transform.rotateAroundZ(rotateUpper2Angle));
+  //   robotRoot.update(); // IMPORTANT – the scene graph has changed
+  // }
+
  
-  // Transforms may be altered each frame for objects so they are set in the render method. 
-  // If the transforms do not change each frame, then the model matrix could be set in initialise() and then only retrieved here,
-  // although if the same object is being used in multiple positions, then
-  // the transforms would need updating for each use of the object.
-  // For more efficiency, if the object is static, its vertices could be defined once in the correct world positions.
   
   public void render(GL3 gl) {
     gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
@@ -179,7 +261,8 @@ public class L04_GLEventListener implements GLEventListener {
     //updateLightColour();
     // light.setPosition(getLightPosition());  // changing light position each frame
     // light.render(gl);
-    
+    // updateBranches();
+    robotRoot.draw(gl);
     cube.setModelMatrix(getMforCube());     // change transform
     cube.render(gl);
     tt1.setModelMatrix(getMforTT1());       // change transform
@@ -203,6 +286,14 @@ public class L04_GLEventListener implements GLEventListener {
     tt6.setModelMatrix(getMforTT7());       // change transform
     tt6.render(gl);
     globe.render(gl);
+    double elapsedTime = getSeconds()-startTime;
+    float angle = (float)(-115*Math.sin(Math.toRadians(elapsedTime*50)));
+    Mat4 baseModelMatrix = getMforGlobe(); 
+    Mat4 modelMatrix = Mat4.multiply(baseModelMatrix, Mat4Transform.rotateAroundY(angle));
+    // Mat4 modelMatrix = Mat4.multiply(Mat4Transform.rotateAroundY(angle));
+    globe.setModelMatrix(modelMatrix);
+    globe.render(gl);
+    
 
   
   }
@@ -237,6 +328,28 @@ public class L04_GLEventListener implements GLEventListener {
     modelMatrix = Mat4.multiply(Mat4Transform.scale(4f,4f,4f), modelMatrix);
     return modelMatrix;
   }
+
+  private Mat4 getMforGlobe() {
+    Mat4 modelMatrix = new Mat4(1);  // Start with the identity matrix
+
+    // Position the globe 4 units up along the Y-axis
+    modelMatrix = Mat4.multiply(Mat4Transform.translate(0, 4f, 0), modelMatrix);
+    
+    // Scale the globe to the desired size
+    modelMatrix = Mat4.multiply(Mat4Transform.scale(3, 3, 3), modelMatrix);
+    
+
+    // Apply rotation based on elapsed time
+    double elapsedTime = getSeconds() - startTime;
+    float angle = (float)(-115 * Math.sin(Math.toRadians(elapsedTime * 50)));
+    modelMatrix = Mat4.multiply(Mat4Transform.rotateAroundY(angle), modelMatrix);
+
+    return modelMatrix;
+  }
+
+
+
+
   
   private Mat4[] setupRoomTransforms() {
     Mat4[] t = new Mat4[5];
@@ -357,4 +470,5 @@ public class L04_GLEventListener implements GLEventListener {
   private double getSeconds() {
     return System.currentTimeMillis()/1000.0;
   }
+
 }
