@@ -85,9 +85,11 @@ public class L04_GLEventListener implements GLEventListener {
   private Model sphere;
   private SGNode twoBranchRoot;
 
-  private TransformNode translateX, rotateAll, rotateUpper1, rotateUpper2;
+  private TransformNode translateX, rotateAll, rotateUpper1, rotateUpper2, rotateHead;
   private float xPosition = 0;
+  
   private float rotateAllAngleStart = 25, rotateAllAngle = rotateAllAngleStart;
+  private float rotateHeadStart = 30, rotateHeadAngle = rotateHeadStart;
   private float rotateUpper1AngleStart = -60, rotateUpper1Angle = rotateUpper1AngleStart;
   private float rotateUpper2AngleStart = 30, rotateUpper2Angle = rotateUpper2AngleStart;
 
@@ -184,11 +186,12 @@ public class L04_GLEventListener implements GLEventListener {
       
     twoBranchRoot = new NameNode("two-branch structure");
 
-    float lowerBranchHeight = 4.0f;
-
-    SGNode lowerBranch = makeLowerBranch(sphere, 2.5f,lowerBranchHeight,2.5f);
-    SGNode upperBranch1 = makeUpperBranch(sphere, 1.4f,3.1f,1.4f);
-    SGNode upperBranch2 = makeUpperBranch(sphere, 0.6f,1.4f,0.6f);
+    float lowerBranchHeight = 6.0f;
+    SGNode base = makeBase(sphere, 1f, 1f, 1f);
+    SGNode head = makeUpperBranch(sphere, 1f, 1f, 1f);
+    SGNode lowerBranch = makeLowerBranch(sphere, 0.5f,lowerBranchHeight,0.5f);
+    SGNode upperBranch1 = makeUpperBranch(sphere, 0.5f,3.1f,1.0f);
+    SGNode upperBranch2 = makeUpperBranch(sphere, 0.5f,3.1f,1.0f);
 
     TransformNode translateToTop1 = new TransformNode("translate(0,"+lowerBranchHeight+",0)",Mat4Transform.translate(0,lowerBranchHeight,0));
     TransformNode translateToTop2 = new TransformNode("translate(0,"+lowerBranchHeight+",0)",Mat4Transform.translate(0,lowerBranchHeight,0));
@@ -197,17 +200,21 @@ public class L04_GLEventListener implements GLEventListener {
     rotateAll = new TransformNode("rotateAroundZ("+rotateAllAngle+")", Mat4Transform.rotateAroundZ(rotateAllAngle));
     rotateUpper1 = new TransformNode("rotateAroundZ("+rotateUpper1Angle+")",Mat4Transform.rotateAroundZ(rotateUpper1Angle));
     rotateUpper2 = new TransformNode("rotateAroundZ("+rotateUpper2Angle+")",Mat4Transform.rotateAroundZ(rotateUpper2Angle));
+    rotateHead = new TransformNode("rotateAroundZ("+rotateHead+")",Mat4Transform.rotateAroundZ(rotateHeadAngle));
     // TransformNode sceneTranslation = new TransformNode("translate(" + 5.0f + "," + 0.0f + "," + -10f + ")",Mat4Transform.translate(15.0f, 0.0f, -10f));
 
     twoBranchRoot.addChild(translateX);
       translateX.addChild(rotateAll);
-        rotateAll.addChild(lowerBranch);
+        rotateAll.addChild(base);
+        base.addChild(lowerBranch);
           lowerBranch.addChild(translateToTop1);
             translateToTop1.addChild(rotateUpper1);
               rotateUpper1.addChild(upperBranch1);
           lowerBranch.addChild(translateToTop2);     // translateToTop1 could be used here as this is not an animated value
             translateToTop2.addChild(rotateUpper2);  // and here
               rotateUpper2.addChild(upperBranch2);
+              upperBranch2.addChild(head);
+              head.addChild(rotateHead);
               // sceneTranslation.addChild(translateX);
                 // upperBranch2.addChild(sceneTranslation);
     twoBranchRoot.update();  // IMPORTANT – must be done every time any part of the scene graph changes
@@ -237,6 +244,18 @@ public class L04_GLEventListener implements GLEventListener {
     return upperBranchName;
   }
 
+  private SGNode makeBase(Model sphere, float sx, float sy, float sz) {
+    NameNode upperBranchName = new NameNode("upper branch");
+    Mat4 m = Mat4Transform.scale(sx,sy,sz);
+    m = Mat4.multiply(Mat4Transform.rotateAroundX(90), m);
+    m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
+    TransformNode upperBranch = new TransformNode("scale("+sx+","+sy+","+sz+");translate(0,0.5,0)", m);
+    ModelNode sphereNode = new ModelNode("Sphere(1)", sphere);
+    upperBranchName.addChild(upperBranch);
+      upperBranch.addChild(sphereNode);
+    return upperBranchName;
+  }
+
   //Creates 3D model returns a model Object, defines what object Looks like
   private Model makeSphere(GL3 gl, Texture t1, Texture t2) {
     String name= "sphere";
@@ -253,6 +272,8 @@ public class L04_GLEventListener implements GLEventListener {
     rotateAllAngle = rotateAllAngleStart*(float)Math.sin(elapsedTime);
     rotateUpper1Angle = rotateUpper1AngleStart*(float)Math.sin(elapsedTime*0.7f);
     rotateUpper2Angle = rotateUpper2AngleStart*(float)Math.sin(elapsedTime*0.7f);
+    rotateHeadAngle = rotateHeadStart*(float)Math.sin(elapsedTime*0.7f);
+    rotateHead.setTransform(Mat4Transform.rotateAroundZ(rotateHeadAngle));
     rotateAll.setTransform(Mat4Transform.rotateAroundZ(rotateAllAngle));
     rotateUpper1.setTransform(Mat4Transform.rotateAroundZ(rotateUpper1Angle));
     rotateUpper2.setTransform(Mat4Transform.rotateAroundZ(rotateUpper2Angle));
