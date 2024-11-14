@@ -82,7 +82,7 @@ public class L04_GLEventListener implements GLEventListener {
   private Light light;
   private Mat4[] roomTransforms;
   private SGNode robotRoot;
-  private Model sphere, sphereBase, sphereBody, sphereArm;
+  private Model sphere, sphereBase, sphereBody, sphereArm, sphereHead;
   private SGNode twoBranchRoot;
 
   private TransformNode translateX, rotateAll, rotateUpper1, rotateUpper2, rotateHead;
@@ -109,6 +109,7 @@ public class L04_GLEventListener implements GLEventListener {
     textures.add(gl, "base", "assets/textures/base.png", GL3.GL_REPEAT, GL3.GL_REPEAT);
     textures.add(gl, "body", "assets/textures/body.png", GL3.GL_REPEAT, GL3.GL_REPEAT);  
     textures.add(gl, "arm", "assets/textures/arm.png", GL3.GL_REPEAT, GL3.GL_REPEAT); 
+    textures.add(gl, "face", "assets/textures/face.png", GL3.GL_REPEAT, GL3.GL_REPEAT); 
     light = new Light(gl);
     light.setCamera(camera);
     
@@ -189,22 +190,25 @@ public class L04_GLEventListener implements GLEventListener {
     sphereBase = makeSphere(gl, textures.get("base"), textures.get("specular"));
     sphereBody = makeSphere(gl, textures.get("body"), textures.get("specular"));
     sphereArm = makeSphere(gl, textures.get("arm"), textures.get("specular"));
+    sphereHead = makeSphere(gl, textures.get("face"), textures.get("specular"));
       
     twoBranchRoot = new NameNode("two-branch structure");
 
-    float lowerBranchHeight = 6.0f;
+    float lowerBranchHeight = 4.0f;
     float baseHeight = 2.5f;
     // SGNode base = makeBase(sphere, 4f, 4f, 4f);
     SGNode base = makeUpperBranch(sphereBase, 2.5f, 2.5f, 2.5f);
-    SGNode lowerBranch = makeLowerBranch(sphereBody, 1.0f,lowerBranchHeight,0.5f);
+    SGNode lowerBranch = makeLowerBranch(sphereBody, 1.5f,lowerBranchHeight,1.5f);
     SGNode upperBranch1 = makeUpperBranch(sphereArm, 0.5f,3.1f,1.0f);
     SGNode upperBranch2 = makeUpperBranch(sphereArm, 0.5f,3.1f,1.0f);
+    SGNode head = makeUpperBranch(sphereHead, 2.0f,2.0f,2.0f);
 
     TransformNode translateToTop1 = new TransformNode("translate(0,"+lowerBranchHeight+",0)",Mat4Transform.translate(0,lowerBranchHeight,0));
     TransformNode translateToTop2 = new TransformNode("translate(0,"+lowerBranchHeight+",0)",Mat4Transform.translate(0,lowerBranchHeight,0));
     TransformNode translateLowerBranchToTop = new TransformNode("translate(0," + baseHeight + ",0)", Mat4Transform.translate(0, baseHeight, 0));
+    TransformNode translateBaseToTop = new TransformNode("translate(0," + lowerBranchHeight + ",0)", Mat4Transform.translate(0, lowerBranchHeight, 0));
     // The next few are global variables so they can be updated in other methods
-    translateX = new TransformNode("translate("+xPosition+",0,0)", Mat4Transform.translate(xPosition,0,0));  
+    translateX = new TransformNode("translate("+xPosition+",0,0)", Mat4Transform.translate(-3.0f,2.5f,0));  
     rotateAll = new TransformNode("rotateAroundZ("+rotateAllAngle+")", Mat4Transform.rotateAroundZ(rotateAllAngle));
     rotateUpper1 = new TransformNode("rotateAroundZ("+rotateUpper1Angle+")",Mat4Transform.rotateAroundZ(rotateUpper1Angle));
     rotateUpper2 = new TransformNode("rotateAroundZ("+rotateUpper2Angle+")",Mat4Transform.rotateAroundZ(rotateUpper2Angle));
@@ -225,7 +229,9 @@ public class L04_GLEventListener implements GLEventListener {
               rotateUpper2.addChild(upperBranch2);
               // upperBranch2.addChild(head);
               // head.addChild(rotateHead);
-          // lowerBranch.addChild(base);
+          lowerBranch.addChild(translateBaseToTop);
+            translateBaseToTop.addChild(head);
+              head.addChild(rotateHead);
           //   base.addChild(rotateHead);
               // sceneTranslation.addChild(translateX);
                 // upperBranch2.addChild(sceneTranslation);
