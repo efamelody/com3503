@@ -82,11 +82,11 @@ public class L04_GLEventListener implements GLEventListener {
   private Light light;
   private Mat4[] roomTransforms;
   private SGNode robotRoot;
-  private Model sphere;
+  private Model sphere, sphereBase, sphereBody, sphereArm;
   private SGNode twoBranchRoot;
 
   private TransformNode translateX, rotateAll, rotateUpper1, rotateUpper2, rotateHead;
-  private float xPosition = 0;
+  private float xPosition = 0.5f;
   
   private float rotateAllAngleStart = 25, rotateAllAngle = rotateAllAngleStart;
   private float rotateHeadStart = 30, rotateHeadAngle = rotateHeadStart;
@@ -105,7 +105,10 @@ public class L04_GLEventListener implements GLEventListener {
     textures.add(gl, "cloud", "assets/textures/cloud.jpg", GL3.GL_CLAMP_TO_EDGE, GL3.GL_CLAMP_TO_EDGE);
     textures.add(gl, "star", "assets/textures/star.png", GL3.GL_CLAMP_TO_EDGE, GL3.GL_CLAMP_TO_EDGE);
     textures.add(gl, "earth", "assets/textures/earth.png", GL3.GL_CLAMP_TO_EDGE, GL3.GL_CLAMP_TO_EDGE);
-    textures.add(gl, "rightWall", "assets/textures/rightWall.png", GL3.GL_REPEAT, GL3.GL_REPEAT);    
+    textures.add(gl, "rightWall", "assets/textures/rightWall.png", GL3.GL_REPEAT, GL3.GL_REPEAT);   
+    textures.add(gl, "base", "assets/textures/base.png", GL3.GL_REPEAT, GL3.GL_REPEAT);
+    textures.add(gl, "body", "assets/textures/body.png", GL3.GL_REPEAT, GL3.GL_REPEAT);  
+    textures.add(gl, "arm", "assets/textures/arm.png", GL3.GL_REPEAT, GL3.GL_REPEAT); 
     light = new Light(gl);
     light.setCamera(camera);
     
@@ -183,18 +186,23 @@ public class L04_GLEventListener implements GLEventListener {
 
   // CODE EFA BISMILLAH
     sphere = makeSphere(gl, textures.get("diffuse"), textures.get("specular"));
+    sphereBase = makeSphere(gl, textures.get("base"), textures.get("specular"));
+    sphereBody = makeSphere(gl, textures.get("body"), textures.get("specular"));
+    sphereArm = makeSphere(gl, textures.get("arm"), textures.get("specular"));
       
     twoBranchRoot = new NameNode("two-branch structure");
 
     float lowerBranchHeight = 6.0f;
-    SGNode base = makeBase(sphere, 1f, 1f, 1f);
-    SGNode head = makeUpperBranch(sphere, 1f, 1f, 1f);
-    SGNode lowerBranch = makeLowerBranch(sphere, 0.5f,lowerBranchHeight,0.5f);
-    SGNode upperBranch1 = makeUpperBranch(sphere, 0.5f,3.1f,1.0f);
-    SGNode upperBranch2 = makeUpperBranch(sphere, 0.5f,3.1f,1.0f);
+    float baseHeight = 2.5f;
+    // SGNode base = makeBase(sphere, 4f, 4f, 4f);
+    SGNode base = makeUpperBranch(sphereBase, 2.5f, 2.5f, 2.5f);
+    SGNode lowerBranch = makeLowerBranch(sphereBody, 1.0f,lowerBranchHeight,0.5f);
+    SGNode upperBranch1 = makeUpperBranch(sphereArm, 0.5f,3.1f,1.0f);
+    SGNode upperBranch2 = makeUpperBranch(sphereArm, 0.5f,3.1f,1.0f);
 
     TransformNode translateToTop1 = new TransformNode("translate(0,"+lowerBranchHeight+",0)",Mat4Transform.translate(0,lowerBranchHeight,0));
     TransformNode translateToTop2 = new TransformNode("translate(0,"+lowerBranchHeight+",0)",Mat4Transform.translate(0,lowerBranchHeight,0));
+    TransformNode translateLowerBranchToTop = new TransformNode("translate(0," + baseHeight + ",0)", Mat4Transform.translate(0, baseHeight, 0));
     // The next few are global variables so they can be updated in other methods
     translateX = new TransformNode("translate("+xPosition+",0,0)", Mat4Transform.translate(xPosition,0,0));  
     rotateAll = new TransformNode("rotateAroundZ("+rotateAllAngle+")", Mat4Transform.rotateAroundZ(rotateAllAngle));
@@ -205,16 +213,20 @@ public class L04_GLEventListener implements GLEventListener {
 
     twoBranchRoot.addChild(translateX);
       translateX.addChild(rotateAll);
-        rotateAll.addChild(base);
-        base.addChild(lowerBranch);
+      rotateAll.addChild(base);
+      base.addChild(translateLowerBranchToTop);
+        // rotateAll.addChild(lowerBranch);
+        translateLowerBranchToTop.addChild(lowerBranch);
           lowerBranch.addChild(translateToTop1);
             translateToTop1.addChild(rotateUpper1);
               rotateUpper1.addChild(upperBranch1);
           lowerBranch.addChild(translateToTop2);     // translateToTop1 could be used here as this is not an animated value
             translateToTop2.addChild(rotateUpper2);  // and here
               rotateUpper2.addChild(upperBranch2);
-              upperBranch2.addChild(head);
-              head.addChild(rotateHead);
+              // upperBranch2.addChild(head);
+              // head.addChild(rotateHead);
+          // lowerBranch.addChild(base);
+          //   base.addChild(rotateHead);
               // sceneTranslation.addChild(translateX);
                 // upperBranch2.addChild(sceneTranslation);
     twoBranchRoot.update();  // IMPORTANT – must be done every time any part of the scene graph changes
