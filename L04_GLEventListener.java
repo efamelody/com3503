@@ -93,6 +93,7 @@ public class L04_GLEventListener implements GLEventListener {
   private float rotateHeadStart = 30, rotateHeadAngle = rotateHeadStart;
   private float rotateUpper1AngleStart = -60, rotateUpper1Angle = rotateUpper1AngleStart;
   private float rotateUpper2AngleStart = 30, rotateUpper2Angle = rotateUpper2AngleStart;
+  private float rotationAngle = 0.0f;
 
   
   public void initialise(GL3 gl) {
@@ -173,16 +174,16 @@ public class L04_GLEventListener implements GLEventListener {
     shader = new Shader(gl, "assets/shaders/vs_standard.txt", "assets/shaders/fs_standard_2t.txt");
     material = new Material(new Vec3(1.0f, 0.5f, 0.31f), new Vec3(1.0f, 0.5f, 0.31f), new Vec3(0.5f, 0.5f, 0.5f), 32.0f);
     // Mat4 modelMatrix = Mat4Transform.translate(0,cubeHeight/2 + globeRadius,0);
-    Mat4 modelMatrix =  Mat4Transform.scale(3,3,3);
+    // Mat4 modelMatrix =  Mat4Transform.scale(3,3,3);
     // modelMatrix = Mat4.multiply(modelMatrix, Mat4Transform.translate(0,0.0f,0));
     double elapsedTime = getSeconds()-startTime;
     float angle = (float)(-115*Math.sin(Math.toRadians(elapsedTime*50)));
     System.err.println(angle);
     System.out.println(startTime);
     System.out.println(elapsedTime);
-    modelMatrix = Mat4.multiply(modelMatrix, Mat4Transform.rotateAroundY(angle));
+    // Mat4 modelMatrix =  Mat4Transform.rotateAroundY(angle);
     // globe = new Model(name, mesh, modelMatrix, shader, material, light, camera, textures.get("diffuse_jade"), textures.get("specular_jade"));
-    globe = new Model(name, mesh, modelMatrix, shader, material, light, camera, textures.get("earth"));
+    globe = new Model(name, mesh, new Mat4(1), shader, material, light, camera, textures.get("earth"));
 
     //Robot 2
     robot = new Robot(gl, camera, light, 
@@ -341,15 +342,27 @@ public class L04_GLEventListener implements GLEventListener {
     tt5.render(gl);
     tt6.setModelMatrix(getMforTT7());       // change transform
     tt6.render(gl);
-    globe.render(gl);
-    double elapsedTime = getSeconds()-startTime;
-    float angle = (float)(-115*Math.sin(Math.toRadians(elapsedTime*50)));
-    Mat4 baseModelMatrix = getMforGlobe(); 
-    Mat4 modelMatrix = Mat4.multiply(baseModelMatrix, Mat4Transform.rotateAroundY(angle));
-    // Mat4 modelMatrix = Mat4.multiply(Mat4Transform.rotateAroundY(angle));
+    // double elapsedTime = getSeconds()-startTime;
+    // float angle = (float)(-115*Math.sin(Math.toRadians(elapsedTime*50)));
+    // Mat4 baseModelMatrix = getMforGlobe(); 
+    // Mat4 modelMatrix = Mat4.multiply(baseModelMatrix, Mat4Transform.rotateAroundY(angle));
+    // // Mat4 modelMatrix = Mat4.multiply(Mat4Transform.rotateAroundY(angle));
+    // globe.setModelMatrix(modelMatrix);
+    // globe.render(gl);
+    // robot.render(gl);
+    // Update the rotation angle based on time
+    double elapsedTime = getSeconds() - startTime;
+    float rotationSpeed = 5.0f; // Degrees per second
+    rotationAngle += rotationSpeed ;// Continuous rotation
+    rotationAngle = rotationAngle % 360; 
+
+    // Construct the transformation matrix
+    Mat4 baseModelMatrix = getMforGlobe(); // Includes scaling and translation
+    Mat4 modelMatrix = Mat4.multiply(baseModelMatrix, Mat4Transform.rotateAroundY(rotationAngle));
+
+    // Update and render the globe
     globe.setModelMatrix(modelMatrix);
     globe.render(gl);
-    // robot.render(gl);
     
 
   
@@ -392,7 +405,6 @@ public class L04_GLEventListener implements GLEventListener {
     
     Mat4 modelMatrix = new Mat4(1);  // Start with the identity matrix
     modelMatrix = Mat4.multiply(Mat4Transform.scale(3, 3, 3), modelMatrix);
-    
 
     // Position the globe 4 units up along the Y-axis
     modelMatrix = Mat4.multiply(Mat4Transform.translate(0, cubeHeight/2 + globeRadius, 0), modelMatrix);
