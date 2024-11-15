@@ -80,6 +80,7 @@ public class L04_GLEventListener implements GLEventListener {
   private Model cube, tt1, tt2, tt3, tt4, tt5, tt6, globe;
   private Mat4 perspective;
   private Light light;
+  private Robot robot;
   private Mat4[] roomTransforms;
   private SGNode robotRoot;
   private Model sphere, sphereBase, sphereBody, sphereArm, sphereHead;
@@ -165,14 +166,15 @@ public class L04_GLEventListener implements GLEventListener {
     material = new Material(new Vec3(1.0f, 0.5f, 0.31f), new Vec3(1.0f, 0.5f, 0.31f), new Vec3(0.5f, 0.5f, 0.5f), 32.0f);
     cube = new Model(name, mesh, new Mat4(1), shader, material, light, camera, textures.get("diffuse"), textures.get("specular"));
 
-   
+   float cubeHeight =1.0F;
+   float globeRadius = 3.0f;
     name = "globe";
     mesh = new Mesh(gl, Sphere.vertices.clone(), Sphere.indices.clone());
     shader = new Shader(gl, "assets/shaders/vs_standard.txt", "assets/shaders/fs_standard_2t.txt");
     material = new Material(new Vec3(1.0f, 0.5f, 0.31f), new Vec3(1.0f, 0.5f, 0.31f), new Vec3(0.5f, 0.5f, 0.5f), 32.0f);
-    Mat4 modelMatrix = Mat4Transform.translate(0,0,0);
-    modelMatrix = Mat4.multiply(modelMatrix, Mat4Transform.scale(3,3,3));
-    modelMatrix = Mat4.multiply(modelMatrix, Mat4Transform.translate(0,0.5f,0));
+    // Mat4 modelMatrix = Mat4Transform.translate(0,cubeHeight/2 + globeRadius,0);
+    Mat4 modelMatrix =  Mat4Transform.scale(3,3,3);
+    // modelMatrix = Mat4.multiply(modelMatrix, Mat4Transform.translate(0,0.0f,0));
     double elapsedTime = getSeconds()-startTime;
     float angle = (float)(-115*Math.sin(Math.toRadians(elapsedTime*50)));
     System.err.println(angle);
@@ -182,7 +184,14 @@ public class L04_GLEventListener implements GLEventListener {
     // globe = new Model(name, mesh, modelMatrix, shader, material, light, camera, textures.get("diffuse_jade"), textures.get("specular_jade"));
     globe = new Model(name, mesh, modelMatrix, shader, material, light, camera, textures.get("earth"));
 
+    //Robot 2
+    robot = new Robot(gl, camera, light, 
+                      textures.get("jade_diffuse"), textures.get("jade_specular"),
+                      textures.get("container_diffuse"), textures.get("container_specular"),
+                      textures.get("watt_diffuse"), textures.get("watt_specular")); 
+    
     //ROBOT 1
+
   
 
   // CODE EFA BISMILLAH
@@ -310,8 +319,8 @@ public class L04_GLEventListener implements GLEventListener {
     updateBranches();
     twoBranchRoot.draw(gl);
     // robotRoot.draw(gl);
-    // cube.setModelMatrix(getMforCube());     // change transform
-    // cube.render(gl);
+    cube.setModelMatrix(getMforCube());     // change transform
+    cube.render(gl);
     tt1.setModelMatrix(getMforTT1());       // change transform
     tt1.render(gl);
     // tt1.setModelMatrix(getMforTT2());       // change transform
@@ -340,6 +349,7 @@ public class L04_GLEventListener implements GLEventListener {
     // Mat4 modelMatrix = Mat4.multiply(Mat4Transform.rotateAroundY(angle));
     globe.setModelMatrix(modelMatrix);
     globe.render(gl);
+    // robot.render(gl);
     
 
   
@@ -377,14 +387,15 @@ public class L04_GLEventListener implements GLEventListener {
   }
 
   private Mat4 getMforGlobe() {
-    Mat4 modelMatrix = new Mat4(1);  // Start with the identity matrix
-
-    // Position the globe 4 units up along the Y-axis
-    modelMatrix = Mat4.multiply(Mat4Transform.translate(0, 4f, 0), modelMatrix);
+    float cubeHeight = 4.0f; // Adjust this based on the cube's scale
+    float globeRadius = 3.0f;
     
-    // Scale the globe to the desired size
+    Mat4 modelMatrix = new Mat4(1);  // Start with the identity matrix
     modelMatrix = Mat4.multiply(Mat4Transform.scale(3, 3, 3), modelMatrix);
     
+
+    // Position the globe 4 units up along the Y-axis
+    modelMatrix = Mat4.multiply(Mat4Transform.translate(0, cubeHeight/2 + globeRadius, 0), modelMatrix);
 
     // Apply rotation based on elapsed time
     double elapsedTime = getSeconds() - startTime;
