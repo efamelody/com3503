@@ -169,6 +169,7 @@ public class Robot {
     return leftLeg;
   }
 
+  // Can add the translation. rotate the leg
   private NameNode makeRightLeg(GL3 gl, float bodyWidth, float legLength, float legScale, Model cube) {
     NameNode rightLeg = new NameNode("right leg");
     Mat4 m = new Mat4(1);
