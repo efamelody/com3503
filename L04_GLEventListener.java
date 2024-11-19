@@ -56,6 +56,7 @@ public class L04_GLEventListener implements GLEventListener {
   public void display(GLAutoDrawable drawable) {
     GL3 gl = drawable.getGL().getGL3();
     render(gl);
+    
   }
 
   /* Clean up memory, if necessary */
@@ -138,7 +139,22 @@ public class L04_GLEventListener implements GLEventListener {
     tt5 = new Model(name, mesh, new Mat4(1), shader, material, light, camera , textures.get("diffuse_jade"), textures.get("specular_jade"));
    
     name = "sidewall";
-    mesh = new Mesh(gl, WallWithWindow.wallWithWindowVertices.clone(), WallWithWindow.wallWithWindowIndices.clone());
+    // // Scale factor
+    // float scaleX = 16f;
+    // float scaleY = 1f;
+    // float scaleZ = 16f;
+
+    // // Clone and scale vertices
+    // float[] scaledVertices = WallWithWindow.vertices.clone();
+    // for (int i = 0; i < scaledVertices.length; i += 8) { // Iterate through vertices (x, y, z start at every 8th index)
+    //     scaledVertices[i] *= scaleX;     // Scale x
+    //     scaledVertices[i + 1] *= scaleY; // Scale y
+    //     scaledVertices[i + 2] *= scaleZ; // Scale z
+    // }
+
+    // // Use the scaled vertices to create the model
+    // mesh = new Mesh(gl, scaledVertices, WallWithWindow.indices.clone());
+    mesh = new Mesh(gl, WallWithWindow.vertices.clone(), WallWithWindow.indices.clone());
     shader = new Shader(gl, "assets/shaders/vs_standard.txt", "assets/shaders/fs_standard_1t.txt");
     material = new Material(new Vec3(0.1f, 0.5f, 0.91f), new Vec3(0.1f, 0.5f, 0.91f), new Vec3(0.3f, 0.3f, 0.3f), 4.0f);
     //material = new Material(basecolor, basecolor, new Vec3(0.3f, 0.3f, 0.3f), 4.0f);
@@ -353,6 +369,8 @@ public class L04_GLEventListener implements GLEventListener {
     globe.setModelMatrix(modelMatrix);
     globe.render(gl);
     robot.render(gl);
+    
+    robot.updateAnimation(elapsedTime);
     
 
   

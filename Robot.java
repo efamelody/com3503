@@ -26,7 +26,7 @@ public class Robot {
 
   private SGNode robotRoot;
   private float xPosition = 0;
-  private TransformNode robotMoveTranslate, leftArmRotate, rightArmRotate;
+  private TransformNode robotMoveTranslate, leftArmRotate, rightArmRotate, leftLegRotate;
    
   public Robot(GL3 gl, Camera cameraIn, Light lightIn, Texture t1, Texture t2, Texture t3, Texture t4, Texture t5, Texture t6) {
 
@@ -157,17 +157,39 @@ public class Robot {
 
   private NameNode makeLeftLeg(GL3 gl, float bodyWidth, float legLength, float legScale, Model cube) {
     NameNode leftLeg = new NameNode("left leg");
+
+    // Start rotation at 0 for natural starting position
+    leftLegRotate = new TransformNode("leftleg rotate", Mat4Transform.rotateAroundX(0));
+
+    // Translate leg to its correct position at the hip
     Mat4 m = new Mat4(1);
-    m = Mat4.multiply(m, Mat4Transform.translate((bodyWidth*0.5f)-(legScale*0.5f),0,0));
-    m = Mat4.multiply(m, Mat4Transform.rotateAroundX(180));
-    m = Mat4.multiply(m, Mat4Transform.scale(legScale,legLength,legScale));
-    m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
-    TransformNode leftLegTransform = new TransformNode("leftleg transform", m);
+    m = Mat4.multiply(m, Mat4Transform.translate((bodyWidth * 0.5f) - (legScale * 0.5f), 0, 0));
+    TransformNode leftLegTranslate = new TransformNode("leftleg translate", m);
+
+    // Scale leg to its correct dimensions
+    m = Mat4Transform.scale(legScale, legLength, legScale);
+    TransformNode leftLegScale = new TransformNode("leftleg scale", m);
+
+    // Translate to align with the hip joint as pivot
+    m = Mat4Transform.translate(0, 0.5f, 0);
+    TransformNode legPivotAdjust = new TransformNode("leg pivot adjust", m);
+
+    // Attach the cube model to represent the leg
     ModelNode leftLegShape = new ModelNode("Cube(leftleg)", cube);
-    leftLeg.addChild(leftLegTransform);
-    leftLegTransform.addChild(leftLegShape);
+
+    // Build the hierarchy: translate -> rotate -> scale -> adjust -> shape
+    leftLeg.addChild(leftLegTranslate);
+    leftLegTranslate.addChild(leftLegScale);
+    leftLegScale.addChild(leftLegScale);
+    leftLegScale.addChild(legPivotAdjust);
+    legPivotAdjust.addChild(leftLegShape);
+
     return leftLeg;
   }
+
+
+
+
 
   // Can add the translation. rotate the leg
   private NameNode makeRightLeg(GL3 gl, float bodyWidth, float legLength, float legScale, Model cube) {
@@ -206,10 +228,22 @@ public class Robot {
   }
 
   // only does left arm
+  //Need to do for the leg moving...
+  //Lets do the the legs to move
   public void updateAnimation(double elapsedTime) {
     float rotateAngle = 180f+90f*(float)Math.sin(elapsedTime);
+    float legRotateAngle = 10f * (float) Math.sin(elapsedTime);  
     leftArmRotate.setTransform(Mat4Transform.rotateAroundX(rotateAngle));
     leftArmRotate.update();
+    float swingAmplitude = 0.5f;  // Amplitude of the swing (max rotation angle in degrees)
+    float swingFrequency = 1.0f; // Frequency of the swing (higher is faster)
+
+    // Use sine wave to create a smooth, continuous swinging motion
+    float rotateAngle1 = swingAmplitude * (float)Math.sin(elapsedTime * swingFrequency);
+
+    // Apply the rotation to the left leg, no change in scaling
+    leftLegRotate.setTransform(Mat4Transform.rotateAroundX(rotateAngle1));
+    leftLegRotate.update();
   }
 
   public void loweredArms() {
