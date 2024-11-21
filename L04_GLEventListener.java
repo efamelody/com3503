@@ -19,7 +19,7 @@ public class L04_GLEventListener implements GLEventListener {
   /* The constructor is not used to initialise anything */
   public L04_GLEventListener(Camera camera) {
     this.camera = camera;
-    this.camera.setPosition(new Vec3(4f,6f,15f));
+    this.camera.setPosition(new Vec3(10f,10f,15f));
     // this.camera.setPosition(new Vec3(4f,10f,10f));
   }
   
@@ -317,6 +317,8 @@ public class L04_GLEventListener implements GLEventListener {
     // light.setPosition(getLightPosition());  // changing light position each frame
     // light.render(gl);
     // updateBranches();
+
+    //IF XPOSITION IS A CERTAIN DISTANCE, STOP DANCING
     updateBranches();
     twoBranchRoot.draw(gl);
     cube.setModelMatrix(getMforCube());     // change transform
@@ -352,6 +354,7 @@ public class L04_GLEventListener implements GLEventListener {
     // Update and render the globe
     globe.setModelMatrix(modelMatrix);
     globe.render(gl);
+    robot.updateAnimation(elapsedTime);
     robot.render(gl);
     tt6.setModelMatrix(getMforTT7(elapsedTime));       // change transform
     tt6.render(gl);

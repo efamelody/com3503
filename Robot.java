@@ -23,10 +23,14 @@ public class Robot {
   private Light light;
 
   private Model sphere, cube, cube2;
+  private boolean isMoving = true;
 
   private SGNode robotRoot;
   private float xPosition = 0;
-  private TransformNode robotMoveTranslate, leftArmRotate, rightArmRotate;
+  private float speed = 0.5f;   // Speed of the robot's movement (can be adjusted)
+    private float targetDistance = 3.0f; // Distance the robot should move
+    private float distanceTraveled = 0f; // Track how much distance has been traveled
+  private TransformNode robotMoveTranslate, leftArmRotate, rightArmRotate, robotPlaced;
    
   public Robot(GL3 gl, Camera cameraIn, Light lightIn, Texture t1, Texture t2, Texture t3, Texture t4, Texture t5, Texture t6) {
 
@@ -51,6 +55,7 @@ public class Robot {
     
     robotRoot = new NameNode("root");
     robotMoveTranslate = new TransformNode("robot transform",Mat4Transform.translate(xPosition,0,0));
+    robotPlaced = new TransformNode("robot transform",Mat4Transform.translate(4f,0,-4f));
     
     TransformNode robotTranslate = new TransformNode("robot transform",Mat4Transform.translate(0,legLength,0));
     
@@ -63,7 +68,8 @@ public class Robot {
     NameNode rightLeg = makeRightLeg(gl, bodyWidth, legLength, legScale, cube);
     
     //Once all the pieces are created, then the whole robot can be created.
-    robotRoot.addChild(robotMoveTranslate);
+    robotRoot.addChild(robotPlaced);
+    robotPlaced.addChild(robotMoveTranslate);
       robotMoveTranslate.addChild(robotTranslate);
         robotTranslate.addChild(body);
           body.addChild(head);
@@ -201,8 +207,9 @@ public class Robot {
   }
  
   private void updateMove() {
-    robotMoveTranslate.setTransform(Mat4Transform.translate(xPosition,0,0));
+    robotMoveTranslate.setTransform(Mat4Transform.translate(0,0,xPosition));
     robotMoveTranslate.update();
+    System.out.println("Current position: " + xPosition);
   }
 
   // only does left arm
@@ -210,6 +217,26 @@ public class Robot {
     float rotateAngle = 180f+90f*(float)Math.sin(elapsedTime);
     leftArmRotate.setTransform(Mat4Transform.rotateAroundX(rotateAngle));
     leftArmRotate.update();
+    if (isMoving) {
+      // Calculate movement
+      float movement = (float)(elapsedTime * speed);
+
+      // Track distance traveled
+      distanceTraveled += Math.abs(movement);
+
+      // Check if the target distance has been reached
+      if (distanceTraveled >= targetDistance) {
+          // Stop movement after reaching target distance
+          System.out.println("Target distance reached. Robot stops or turns.");
+          distanceTraveled = 0f; // Reset the distance for the next move
+          isMoving = false; // Stop movement by setting flag to false
+      } else {
+          // Continue moving if not stopped
+          xPosition += movement;
+      }
+    }
+
+    updateMove();
   }
 
   public void loweredArms() {
