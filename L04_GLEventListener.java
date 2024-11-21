@@ -138,7 +138,7 @@ public class L04_GLEventListener implements GLEventListener {
     tt5 = new Model(name, mesh, new Mat4(1), shader, material, light, camera , textures.get("diffuse_jade"), textures.get("specular_jade"));
    
     name = "sidewall";
-    mesh = new Mesh(gl, WallWithWindow.wallWithWindowVertices.clone(), WallWithWindow.wallWithWindowIndices.clone());
+    mesh = new Mesh(gl, WallWithWindow.vertices.clone(), WallWithWindow.indices.clone());
     shader = new Shader(gl, "assets/shaders/vs_standard.txt", "assets/shaders/fs_standard_1t.txt");
     material = new Material(new Vec3(0.1f, 0.5f, 0.91f), new Vec3(0.1f, 0.5f, 0.91f), new Vec3(0.3f, 0.3f, 0.3f), 4.0f);
     //material = new Material(basecolor, basecolor, new Vec3(0.3f, 0.3f, 0.3f), 4.0f);
@@ -339,8 +339,8 @@ public class L04_GLEventListener implements GLEventListener {
     tt4.render(gl);
     // tt5.setModelMatrix(getMforTT6());       // change transform
     // tt5.render(gl);
-    tt6.setModelMatrix(getMforTT7());       // change transform
-    tt6.render(gl);
+    // tt6.setModelMatrix(getMforTT7(elapsedTime));       // change transform
+    // tt6.render(gl);
     double elapsedTime = getSeconds() - startTime;
     float rotationSpeed = 5.0f; // Degrees per second
     rotationAngle += rotationSpeed ;// Continuous rotation
@@ -353,6 +353,8 @@ public class L04_GLEventListener implements GLEventListener {
     globe.setModelMatrix(modelMatrix);
     globe.render(gl);
     robot.render(gl);
+    tt6.setModelMatrix(getMforTT7(elapsedTime));       // change transform
+    tt6.render(gl);
     
 
   
@@ -449,14 +451,18 @@ public class L04_GLEventListener implements GLEventListener {
     return modelMatrix;
   }
   //Outside the window
-  private Mat4 getMforTT7() {
-    float size = 16f;
-    Mat4 modelMatrix = new Mat4(1);
-    modelMatrix = Mat4.multiply(Mat4Transform.scale(size*2f,1f,size*2f), modelMatrix);
-    modelMatrix = Mat4.multiply(Mat4Transform.rotateAroundY(90), modelMatrix);
-    modelMatrix = Mat4.multiply(Mat4Transform.rotateAroundZ(-90), modelMatrix);
-    modelMatrix = Mat4.multiply(Mat4Transform.translate(-size*0.5f-2f,size*0.5f,0), modelMatrix);
-    return modelMatrix;
+  private Mat4 getMforTT7(double elapsedTime) {
+      float size = 16f;
+      Mat4 modelMatrix = new Mat4(1);
+      modelMatrix = Mat4.multiply(Mat4Transform.scale(size*2f,1f,size*2f), modelMatrix);
+      float rotationY = 90 + (float)elapsedTime * 30; // 30 degrees per second
+      modelMatrix = Mat4.multiply(Mat4Transform.rotateAroundY(rotationY), modelMatrix);
+      // modelMatrix = Mat4.multiply(Mat4Transform.rotateAroundY(90), modelMatrix);
+      modelMatrix = Mat4.multiply(Mat4Transform.rotateAroundZ(-90), modelMatrix);
+      float translationX = -size * 0.5f - 2f + (float)Math.sin(elapsedTime) * 2f;
+      float translationY = size * 0.5f + (float)Math.cos(elapsedTime) * 1f;
+      modelMatrix = Mat4.multiply(Mat4Transform.translate(translationX, translationY,0), modelMatrix);
+      return modelMatrix;
   }
   // window
   private Mat4 getMforTT6() {
