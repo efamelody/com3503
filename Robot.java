@@ -24,14 +24,16 @@ public class Robot {
 
   private Model sphere, cube, cube2;
   private boolean isMoving = true;
+  private boolean isMovingSide = false;
   private boolean isTurning = false;
   private float turnAngle = 0f; // Current turn angle
   private float targetTurnAngle = 90f; // Target turn angle in degrees
-  private float turnSpeed = 10f; // Degrees per second
+  private float turnSpeed = 1f; // Degrees per second
 
   private SGNode robotRoot;
   private float xPosition = 0;
-  private float speed = 0.5f;   // Speed of the robot's movement (can be adjusted)
+  private float zPosition = 0;
+  private float speed = 0.01f;   // Speed of the robot's movement (can be adjusted)
     private float targetDistance = 9.0f; // Distance the robot should move
     private float distanceTraveled = 0f; // Track how much distance has been traveled
   private TransformNode robotMoveTranslate, leftArmRotate, rightArmRotate, robotPlaced, robotTurn;
@@ -200,77 +202,97 @@ public class Robot {
     robotRoot.draw(gl);
   }
 
-  public void incXPosition() {
-    xPosition += 0.5f;
-    if (xPosition>5f) xPosition = 5f;
-    updateMove();
-  }
+  // public void incXPosition() {
+  //   xPosition += 0.5f;
+  //   if (xPosition>5f) xPosition = 5f;
+  //   updateMove(); 
+  // }
    
-  public void decXPosition() {
-    xPosition -= 0.5f;
-    if (xPosition<-5f) xPosition = -5f;
-    updateMove();
-  }
+  // public void decXPosition() {
+  //   xPosition -= 0.5f;
+  //   if (xPosition<-5f) xPosition = -5f;
+  //   updateMove();
+  // }
  
-  private void updateMove() {
-    robotMoveTranslate.setTransform(Mat4Transform.translate(0,0,xPosition));
-    robotMoveTranslate.update();
-    System.out.println("Current position: " + xPosition);
-  }
-
-  private void updateTurn(double elapsedTime){
-    // Check if it's the beginning of the turn
-    if (isTurning && turnAngle == 0) {
-      System.out.println("Robot has started turning.");
-      System.out.println("Target turn angle: " + targetTurnAngle + " degrees.");
-   }
-    // Incrementally increase the turn angle
-    float angleIncrement = turnSpeed * (float) elapsedTime;
-    turnAngle += angleIncrement;
-    // Apply rotation transformation
-    robotTurn.setTransform(Mat4Transform.rotateAroundY(turnAngle));
-    // Print the current turn angle
-    System.out.println("Turning... Current angle: " + turnAngle + " degrees.");
-
-    // Check if the turn is complete
-    if (turnAngle >= targetTurnAngle) {
-        System.out.println("Turn complete.");
-        turnAngle = 0f; // Reset turn angle for the next turn
-        isTurning = false; // Stop turning
-        isMoving =true;
-    }
-  }
-   
-
-  // only does left arm
-  public void updateAnimation(double elapsedTime) {
-    float rotateAngle = 180f+90f*(float)Math.sin(elapsedTime);
-    leftArmRotate.setTransform(Mat4Transform.rotateAroundX(rotateAngle));
-    leftArmRotate.update();
+  private void updateMove(double elapsedTime) {
     if (isMoving) {
-      // Calculate movement
-      float movement = (float)(elapsedTime * speed);
-      // Track distance traveled
-      distanceTraveled += Math.abs(movement);
-      // Check if the target distance has been reached
-      if (distanceTraveled >= targetDistance) {
-          // Stop movement after reaching target distance
-          System.out.println("Target distance reached. Robot stops or turns.");
-          distanceTraveled = 0f; // Reset the distance for the next move
-          isMoving = false; // Stop movement by setting flag to false
-          // updateTurn(elapsedTime);
-          isTurning=true;
-      } else {
-          // Continue moving if not stopped
-          xPosition += movement;
-      }
-    }
-    if (isTurning) {
-      updateTurn(elapsedTime);
+        // Moving along the z-axis first
+        float movementZ = (float) (elapsedTime * speed);
+        zPosition += movementZ;  // Update Z position
+        robotMoveTranslate.setTransform(Mat4Transform.translate(0, 0, zPosition));
+        robotMoveTranslate.update();
+        System.out.println("Moving along Z. Current position: Z=" + zPosition);
     }
 
-    updateMove();
+    if (isMovingSide) {
+        // After turning, move along the x-axis
+        float movementX = (float) (elapsedTime * speed);
+        xPosition += movementX;  // Update X position
+        robotMoveTranslate.setTransform(Mat4Transform.translate(xPosition, 0, 0));
+        robotMoveTranslate.update();
+        System.out.println("Moving along X after turn. Current position: X=" + xPosition);
+    }
+}
+
+  private void updateTurn(double elapsedTime) {
+      // Check if it's the beginning of the turn
+      if (isTurning && turnAngle == 0) {
+          System.out.println("Robot has started turning.");
+          System.out.println("Target turn angle: " + targetTurnAngle + " degrees.");
+      }
+
+      // Incrementally increase the turn angle
+      float angleIncrement = turnSpeed * (float) elapsedTime;
+      turnAngle += angleIncrement;
+
+      // Apply rotation transformation
+      robotTurn.setTransform(Mat4Transform.rotateAroundY(turnAngle));
+      robotTurn.update();
+      System.out.println("Turning... Current angle: " + turnAngle + " degrees.");
+
+      // Check if the turn is complete
+      if (turnAngle >= targetTurnAngle) {
+          System.out.println("Turn complete.");
+          turnAngle = 0f; // Reset turn angle for the next turn
+          isTurning = false; // Stop turning
+          isMovingSide = true; // Start moving sideways (along the x-axis)
+          // isMoving=true;
+      }
   }
+
+  // Update the animation and movement logic
+  public void updateAnimation(double elapsedTime) {
+      // Left arm animation (unchanged)
+      float rotateAngle = 180f + 90f * (float) Math.sin(elapsedTime);
+      leftArmRotate.setTransform(Mat4Transform.rotateAroundX(rotateAngle));
+      leftArmRotate.update();
+
+      // Move the robot
+      if (isMoving) {
+          // Calculate movement along the Z-axis
+          float movement = (float) (elapsedTime * speed);
+
+          // Track distance traveled
+          distanceTraveled += Math.abs(movement);
+
+          // Check if the target distance has been reached
+          if (distanceTraveled >= targetDistance) {
+              System.out.println("Target distance reached. Robot stops or turns.");
+              distanceTraveled = 0f; // Reset the distance for the next move
+              isMoving = false;      // Stop movement
+              isTurning = true;      // Start turning
+          } else {
+              // Continue moving along the Z-axis if not stopped
+              updateMove(elapsedTime);
+          }
+      }
+
+      // Handle the turning logic
+      if (isTurning) {
+          updateTurn(elapsedTime);
+      }
+  }
+
 
   public void loweredArms() {
     leftArmRotate.setTransform(Mat4Transform.rotateAroundX(180));
