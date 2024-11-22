@@ -60,7 +60,7 @@ public class Robot {
     robotRoot = new NameNode("root");
     robotMoveTranslate = new TransformNode("robot transform",Mat4Transform.translate(xPosition,0,0));
     robotPlaced = new TransformNode("robot transform",Mat4Transform.translate(4f,0,-4f));
-    robotTurn = new TransformNode("leftarm rotate",Mat4Transform.rotateAroundZ(turnAngle));
+    robotTurn = new TransformNode("leftarm rotate",Mat4Transform.rotateAroundY(turnAngle));
     
     TransformNode robotTranslate = new TransformNode("robot transform",Mat4Transform.translate(0,legLength,0));
     
@@ -219,17 +219,25 @@ public class Robot {
   }
 
   private void updateTurn(double elapsedTime){
+    // Check if it's the beginning of the turn
+    if (isTurning && turnAngle == 0) {
+      System.out.println("Robot has started turning.");
+      System.out.println("Target turn angle: " + targetTurnAngle + " degrees.");
+   }
     // Incrementally increase the turn angle
     float angleIncrement = turnSpeed * (float) elapsedTime;
     turnAngle += angleIncrement;
     // Apply rotation transformation
     robotTurn.setTransform(Mat4Transform.rotateAroundY(turnAngle));
+    // Print the current turn angle
+    System.out.println("Turning... Current angle: " + turnAngle + " degrees.");
 
     // Check if the turn is complete
     if (turnAngle >= targetTurnAngle) {
         System.out.println("Turn complete.");
         turnAngle = 0f; // Reset turn angle for the next turn
         isTurning = false; // Stop turning
+        isMoving =true;
     }
   }
    
@@ -250,12 +258,16 @@ public class Robot {
           System.out.println("Target distance reached. Robot stops or turns.");
           distanceTraveled = 0f; // Reset the distance for the next move
           isMoving = false; // Stop movement by setting flag to false
-          updateTurn(elapsedTime);
+          // updateTurn(elapsedTime);
+          isTurning=true;
       } else {
           // Continue moving if not stopped
           xPosition += movement;
       }
-    } 
+    }
+    if (isTurning) {
+      updateTurn(elapsedTime);
+    }
 
     updateMove();
   }
