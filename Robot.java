@@ -25,6 +25,7 @@ public class Robot {
   private Model sphere, cube, cube2;
   private boolean isMoving = true;
   private boolean isMovingSide = false;
+  private boolean isMovingStraight = true;
   private boolean isTurning = false;
   private float turnAngle = 0f; // Current turn angle
   private float targetTurnAngle = 90f; // Target turn angle in degrees
@@ -215,7 +216,7 @@ public class Robot {
   // }
  
   private void updateMove(double elapsedTime) {
-    if (isMoving) {
+    if (isMovingStraight) {
         // Moving along the z-axis first
         float movementZ = (float) (elapsedTime * speed);
         zPosition += movementZ;  // Update Z position
@@ -228,7 +229,7 @@ public class Robot {
         // After turning, move along the x-axis
         float movementX = (float) (elapsedTime * speed);
         xPosition += movementX;  // Update X position
-        robotMoveTranslate.setTransform(Mat4Transform.translate(xPosition, 0, 0));
+        robotMoveTranslate.setTransform(Mat4Transform.translate(-xPosition, 0, zPosition));
         robotMoveTranslate.update();
         System.out.println("Moving along X after turn. Current position: X=" + xPosition);
     }
@@ -246,7 +247,7 @@ public class Robot {
       turnAngle += angleIncrement;
 
       // Apply rotation transformation
-      robotTurn.setTransform(Mat4Transform.rotateAroundY(turnAngle));
+      robotTurn.setTransform(Mat4Transform.rotateAroundY(-turnAngle));
       robotTurn.update();
       System.out.println("Turning... Current angle: " + turnAngle + " degrees.");
 
@@ -256,7 +257,9 @@ public class Robot {
           turnAngle = 0f; // Reset turn angle for the next turn
           isTurning = false; // Stop turning
           isMovingSide = true; // Start moving sideways (along the x-axis)
-          // isMoving=true;
+          isMovingStraight=false;
+          isMoving=true;
+          // updateMove(elapsedTime);
       }
   }
 
@@ -271,7 +274,6 @@ public class Robot {
       if (isMoving) {
           // Calculate movement along the Z-axis
           float movement = (float) (elapsedTime * speed);
-
           // Track distance traveled
           distanceTraveled += Math.abs(movement);
 
