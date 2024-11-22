@@ -271,37 +271,13 @@ public class Robot {
         distanceTraveled += Math.abs(movementZ);
         if (distanceTraveled >= targetDistance) {
             distanceTraveled = 0f; // Reset distance
-            movementStepCounter = 0; // Reset for next cycle
+            movementStepCounter = 5; // Reset for next cycle
+            // robotMoveTranslate.setTransform(Mat4Transform.translate(0, 0, 0));
+            robotMoveTranslate.update();
             System.out.println("Cycle complete. Resetting counter.");
         }
     }
 }
-
-
-
-  // private void updateTurn(double elapsedTime) {
-  //   if (isTurning && turnAngle == 0) {
-  //       System.out.println("Robot has started turning.");
-  //       System.out.println("Target turn angle: " + targetTurnAngle + " degrees.");
-  //   }
-
-  //   // Incrementally increase the turn angle
-  //   float angleIncrement = turnSpeed * (float) elapsedTime;
-  //   turnAngle += angleIncrement;
-
-  //   // Apply rotation transformation
-  //   robotTurn.setTransform(Mat4Transform.rotateAroundY(-turnAngle));
-  //   robotTurn.update();
-  //   System.out.println("Turning... Current angle: " + turnAngle + " degrees.");
-
-  //   // Check if the turn is complete
-  //   if (turnAngle >= targetTurnAngle) {
-  //       System.out.println("Turn complete.");
-  //       turnAngle = 0f; // Reset turn angle for the next turn
-  //       isTurning = false;  // End turning phase
-  //       // movementStepCounter++;
-  //   }
-  // }
 
 
   // Update the animation and movement logic
@@ -310,6 +286,10 @@ public class Robot {
     float rotateAngle = 180f + 90f * (float) Math.sin(elapsedTime);
     leftArmRotate.setTransform(Mat4Transform.rotateAroundX(rotateAngle));
     leftArmRotate.update();
+    if (movementStepCounter == 5) {
+      System.out.println("Animation stopped. Final position reached.");
+      return; // Exit to stop further updates
+  }
     System.out.println("Current Step Counter: " + movementStepCounter);
     updateMove(elapsedTime);
   }
