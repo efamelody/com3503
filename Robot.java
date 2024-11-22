@@ -24,13 +24,17 @@ public class Robot {
 
   private Model sphere, cube, cube2;
   private boolean isMoving = true;
+  private boolean isTurning = false;
+  private float turnAngle = 0f; // Current turn angle
+  private float targetTurnAngle = 90f; // Target turn angle in degrees
+  private float turnSpeed = 10f; // Degrees per second
 
   private SGNode robotRoot;
   private float xPosition = 0;
   private float speed = 0.5f;   // Speed of the robot's movement (can be adjusted)
-    private float targetDistance = 3.0f; // Distance the robot should move
+    private float targetDistance = 9.0f; // Distance the robot should move
     private float distanceTraveled = 0f; // Track how much distance has been traveled
-  private TransformNode robotMoveTranslate, leftArmRotate, rightArmRotate, robotPlaced;
+  private TransformNode robotMoveTranslate, leftArmRotate, rightArmRotate, robotPlaced, robotTurn;
    
   public Robot(GL3 gl, Camera cameraIn, Light lightIn, Texture t1, Texture t2, Texture t3, Texture t4, Texture t5, Texture t6) {
 
@@ -56,6 +60,7 @@ public class Robot {
     robotRoot = new NameNode("root");
     robotMoveTranslate = new TransformNode("robot transform",Mat4Transform.translate(xPosition,0,0));
     robotPlaced = new TransformNode("robot transform",Mat4Transform.translate(4f,0,-4f));
+    robotTurn = new TransformNode("leftarm rotate",Mat4Transform.rotateAroundZ(turnAngle));
     
     TransformNode robotTranslate = new TransformNode("robot transform",Mat4Transform.translate(0,legLength,0));
     
@@ -68,15 +73,16 @@ public class Robot {
     NameNode rightLeg = makeRightLeg(gl, bodyWidth, legLength, legScale, cube);
     
     //Once all the pieces are created, then the whole robot can be created.
-    robotRoot.addChild(robotPlaced);
-    robotPlaced.addChild(robotMoveTranslate);
-      robotMoveTranslate.addChild(robotTranslate);
-        robotTranslate.addChild(body);
-          body.addChild(head);
-          body.addChild(leftArm);
-          body.addChild(rightArm);
-          body.addChild(leftLeg);
-          body.addChild(rightLeg);
+    robotRoot.addChild(robotPlaced);                     // Root node
+    robotPlaced.addChild(robotMoveTranslate);            // Translate the robot for movement
+    robotMoveTranslate.addChild(robotTurn);              // Rotate the robot for turning
+    robotTurn.addChild(robotTranslate);                  // Translate the robot vertically
+    robotTranslate.addChild(body);                       // Attach body
+      body.addChild(head);                               // Attach head
+      body.addChild(leftArm);                            // Attach left arm
+      body.addChild(rightArm);                           // Attach right arm
+      body.addChild(leftLeg);                            // Attach left leg
+      body.addChild(rightLeg);                           // Attach right leg
     
     robotRoot.update();  // IMPORTANT - don't forget this
 
@@ -212,6 +218,22 @@ public class Robot {
     System.out.println("Current position: " + xPosition);
   }
 
+  private void updateTurn(double elapsedTime){
+    // Incrementally increase the turn angle
+    float angleIncrement = turnSpeed * (float) elapsedTime;
+    turnAngle += angleIncrement;
+    // Apply rotation transformation
+    robotTurn.setTransform(Mat4Transform.rotateAroundY(turnAngle));
+
+    // Check if the turn is complete
+    if (turnAngle >= targetTurnAngle) {
+        System.out.println("Turn complete.");
+        turnAngle = 0f; // Reset turn angle for the next turn
+        isTurning = false; // Stop turning
+    }
+  }
+   
+
   // only does left arm
   public void updateAnimation(double elapsedTime) {
     float rotateAngle = 180f+90f*(float)Math.sin(elapsedTime);
@@ -220,21 +242,20 @@ public class Robot {
     if (isMoving) {
       // Calculate movement
       float movement = (float)(elapsedTime * speed);
-
       // Track distance traveled
       distanceTraveled += Math.abs(movement);
-
       // Check if the target distance has been reached
       if (distanceTraveled >= targetDistance) {
           // Stop movement after reaching target distance
           System.out.println("Target distance reached. Robot stops or turns.");
           distanceTraveled = 0f; // Reset the distance for the next move
           isMoving = false; // Stop movement by setting flag to false
+          updateTurn(elapsedTime);
       } else {
           // Continue moving if not stopped
           xPosition += movement;
       }
-    }
+    } 
 
     updateMove();
   }
