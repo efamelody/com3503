@@ -94,6 +94,8 @@ public class L04_GLEventListener implements GLEventListener {
   private float rotateUpper1AngleStart = -60, rotateUpper1Angle = rotateUpper1AngleStart;
   private float rotateUpper2AngleStart = 30, rotateUpper2Angle = rotateUpper2AngleStart;
   private float rotationAngle = 0.0f;
+  private float previousTime = 0f;
+  
 
   public L04_GLEventListener(Robot robot) {
     this.robot = robot;  // Initialize the robot object through constructor or setter
@@ -111,6 +113,7 @@ public class L04_GLEventListener implements GLEventListener {
     textures.add(gl, "cloud", "assets/textures/cloud.jpg", GL3.GL_LINEAR, GL3.GL_LINEAR);
     textures.add(gl, "star", "assets/textures/star.png", GL3.GL_CLAMP_TO_EDGE, GL3.GL_CLAMP_TO_EDGE);
     textures.add(gl, "earth", "assets/textures/earth.png", GL3.GL_CLAMP_TO_EDGE, GL3.GL_CLAMP_TO_EDGE);
+    textures.add(gl, "clown", "assets/textures/clown.png", GL3.GL_CLAMP_TO_EDGE, GL3.GL_CLAMP_TO_EDGE);
     textures.add(gl, "rightWall", "assets/textures/rightWall.png", GL3.GL_REPEAT, GL3.GL_REPEAT);   
     textures.add(gl, "base", "assets/textures/base.png", GL3.GL_REPEAT, GL3.GL_REPEAT);
     textures.add(gl, "body", "assets/textures/body.png", GL3.GL_REPEAT, GL3.GL_REPEAT);  
@@ -118,8 +121,10 @@ public class L04_GLEventListener implements GLEventListener {
     textures.add(gl, "face", "assets/textures/face.png", GL3.GL_REPEAT, GL3.GL_REPEAT);
     textures.add(gl, "face2", "assets/textures/face2.png", GL3.GL_REPEAT, GL3.GL_REPEAT);  
     textures.add(gl, "cheetah", "assets/textures/cheetah.png", GL3.GL_REPEAT, GL3.GL_REPEAT); 
+    textures.add(gl, "bear", "assets/textures/bear.png", GL3.GL_REPEAT, GL3.GL_REPEAT); 
     textures.add(gl, "zebra", "assets/textures/zebra.png", GL3.GL_REPEAT, GL3.GL_REPEAT); 
     textures.add(gl, "wall", "assets/textures/wall.png", GL3.GL_REPEAT, GL3.GL_REPEAT); 
+    textures.add(gl, "pedestal", "assets/textures/pedestal.png", GL3.GL_CLAMP_TO_EDGE, GL3.GL_CLAMP_TO_EDGE);
     textures.add(gl, "circus", "assets/textures/circus.png", GL3.GL_CLAMP_TO_EDGE, GL3.GL_CLAMP_TO_EDGE);
     light = new Light(gl);
     light.setCamera(camera);
@@ -168,13 +173,13 @@ public class L04_GLEventListener implements GLEventListener {
     material = new Material(new Vec3(0.1f, 0.5f, 0.91f), new Vec3(0.1f, 0.5f, 0.91f), new Vec3(0.3f, 0.3f, 0.3f), 4.0f);
     //material = new Material(basecolor, basecolor, new Vec3(0.3f, 0.3f, 0.3f), 4.0f);
     // no textures for this model
-    tt4 = new Model(name, mesh, new Mat4(1), shader, material, light, camera , textures.get("rightWall"));
+    tt4 = new Model(name, mesh, new Mat4(1), shader, material, light, camera , textures.get("bear"));
 
     name = "cube";
     mesh = new Mesh(gl, Cube.vertices.clone(), Cube.indices.clone());
     shader = new Shader(gl, "assets/shaders/vs_standard.txt", "assets/shaders/fs_standard_2t.txt");
     material = new Material(new Vec3(1.0f, 0.5f, 0.31f), new Vec3(1.0f, 0.5f, 0.31f), new Vec3(0.5f, 0.5f, 0.5f), 32.0f);
-    cube = new Model(name, mesh, new Mat4(1), shader, material, light, camera, textures.get("diffuse"), textures.get("specular"));
+    cube = new Model(name, mesh, new Mat4(1), shader, material, light, camera, textures.get("pedestal"), textures.get("pedestal"));
 
    float cubeHeight =1.0F;
    float globeRadius = 3.0f;
@@ -197,7 +202,7 @@ public class L04_GLEventListener implements GLEventListener {
     //Robot 2
     robot = new Robot(gl, camera, light, 
                       textures.get("face2"), textures.get("cheetah"),
-                      textures.get("zebra"), textures.get("zebra"),
+                      textures.get("clown"), textures.get("zebra"),
                       textures.get("base"), textures.get("base")); 
     
     //ROBOT 1
@@ -367,7 +372,12 @@ public class L04_GLEventListener implements GLEventListener {
     // Update and render the globe
     globe.setModelMatrix(modelMatrix);
     globe.render(gl);
-    robot.updateAnimation(elapsedTime);
+    // double elapsedTime = getSeconds(); // Or however you retrieve the elapsed time
+    float deltaTime = (float) (elapsedTime - previousTime); // Calculate deltaTime (time difference between frames)
+    System.out.println("Elapsed Time: " + elapsedTime);
+    System.out.println("Delta Time: " + deltaTime);
+    previousTime = (float) elapsedTime; // Update previousTime for the next frame
+    robot.updateAnimation(deltaTime*500f);
     robot.render(gl);
     tt6.setModelMatrix(getMforTT7(elapsedTime));       // change transform
     tt6.render(gl);
