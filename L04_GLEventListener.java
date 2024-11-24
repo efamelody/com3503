@@ -111,7 +111,10 @@ public class L04_GLEventListener implements GLEventListener {
     textures.add(gl, "base", "assets/textures/base.png", GL3.GL_REPEAT, GL3.GL_REPEAT);
     textures.add(gl, "body", "assets/textures/body.png", GL3.GL_REPEAT, GL3.GL_REPEAT);  
     textures.add(gl, "arm", "assets/textures/arm.png", GL3.GL_REPEAT, GL3.GL_REPEAT); 
-    textures.add(gl, "face", "assets/textures/face.png", GL3.GL_REPEAT, GL3.GL_REPEAT); 
+    textures.add(gl, "face", "assets/textures/face.png", GL3.GL_REPEAT, GL3.GL_REPEAT);
+    textures.add(gl, "face2", "assets/textures/face2.png", GL3.GL_REPEAT, GL3.GL_REPEAT);  
+    textures.add(gl, "cheetah", "assets/textures/cheetah.png", GL3.GL_REPEAT, GL3.GL_REPEAT); 
+    textures.add(gl, "zebra", "assets/textures/zebra.png", GL3.GL_REPEAT, GL3.GL_REPEAT); 
     light = new Light(gl);
     light.setCamera(camera);
     
@@ -187,9 +190,9 @@ public class L04_GLEventListener implements GLEventListener {
 
     //Robot 2
     robot = new Robot(gl, camera, light, 
-                      textures.get("jade_diffuse"), textures.get("jade_specular"),
-                      textures.get("container_diffuse"), textures.get("container_specular"),
-                      textures.get("watt_diffuse"), textures.get("watt_specular")); 
+                      textures.get("face2"), textures.get("cheetah"),
+                      textures.get("zebra"), textures.get("zebra"),
+                      textures.get("base"), textures.get("base")); 
     
     //ROBOT 1
 
@@ -313,9 +316,9 @@ public class L04_GLEventListener implements GLEventListener {
   public void render(GL3 gl) {
     gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
 
-    //updateLightColour();
-    // light.setPosition(getLightPosition());  // changing light position each frame
-    // light.render(gl);
+    // updateLightColour();
+    light.setPosition(getLightPosition());  // changing light position each frame
+    light.render(gl);
     // updateBranches();
 
     //IF XPOSITION IS A CERTAIN DISTANCE, STOP DANCING
@@ -358,6 +361,7 @@ public class L04_GLEventListener implements GLEventListener {
     robot.render(gl);
     tt6.setModelMatrix(getMforTT7(elapsedTime));       // change transform
     tt6.render(gl);
+    
     
 
   

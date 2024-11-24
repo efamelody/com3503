@@ -81,7 +81,7 @@ public class Light {
    */
   // anticlockwise/counterclockwise ordering
   
-    private float[] vertices = new float[] {  // x,y,z
+    public static final float[] vertices = new float[] {  // x,y,z
       -0.5f, -0.5f, -0.5f,  // 0
       -0.5f, -0.5f,  0.5f,  // 1
       -0.5f,  0.5f, -0.5f,  // 2
@@ -92,7 +92,7 @@ public class Light {
        0.5f,  0.5f,  0.5f   // 7
      };
     
-    private int[] indices =  new int[] {
+    public static final int[] indices =  new int[] {
       0,1,3, // x -ve 
       3,2,0, // x -ve
       4,6,7, // x +ve
@@ -115,7 +115,7 @@ public class Light {
    */
 
   private int[] vertexBufferId = new int[1];
-  private int[] vertexArrayId = new int[1];
+  public int[] vertexArrayId = new int[1];
   private int[] elementBufferId = new int[1];
     
   private void fillBuffers(GL3 gl) {

@@ -37,14 +37,15 @@ public class Robot {
   private float xPosition = 0;
   private float zPosition = 0;
   private float speed = 0.01f;   // Speed of the robot's movement (can be adjusted)
-    private float targetDistance = 9.0f; // Distance the robot should move
-    private float distanceTraveled = 0f; // Track how much distance has been traveled
-  private TransformNode robotMoveTranslate, leftArmRotate, rightArmRotate, robotPlaced, robotTurn;
+  private float targetDistance = 9.0f; // Distance the robot should move
+  private float distanceTraveled = 0f; // Track how much distance has been traveled
+  private TransformNode robotMoveTranslate, leftArmRotate, rightArmRotate, robotPlaced, robotTurn, rotatingAntenna;
    
   public Robot(GL3 gl, Camera cameraIn, Light lightIn, Texture t1, Texture t2, Texture t3, Texture t4, Texture t5, Texture t6) {
 
     this.camera = cameraIn;
     this.light = lightIn;
+    light = new Light(gl);
 
     sphere = makeSphere(gl, t1,t2);
 
@@ -61,15 +62,18 @@ public class Robot {
     float armScale = 0.5f;
     float legLength = 3.5f;
     float legScale = 0.67f;
+
     
     robotRoot = new NameNode("root");
     robotMoveTranslate = new TransformNode("robot transform",Mat4Transform.translate(xPosition,0,0));
     robotPlaced = new TransformNode("robot transform",Mat4Transform.translate(4f,0,-4f));
     robotTurn = new TransformNode("leftarm rotate",Mat4Transform.rotateAroundY(turnAngle));
+
     
     TransformNode robotTranslate = new TransformNode("robot transform",Mat4Transform.translate(0,legLength,0));
     
     // make pieces
+    // Add a light node to the scene graph
     NameNode body = makeBody(gl, bodyWidth,bodyHeight,bodyDepth, cube);
     NameNode head = makeHead(gl, bodyHeight, headScale, sphere);
     NameNode leftArm = makeLeftArm(gl, bodyWidth, bodyHeight, armLength, armScale, cube2);
@@ -88,6 +92,7 @@ public class Robot {
       body.addChild(rightArm);                           // Attach right arm
       body.addChild(leftLeg);                            // Attach left leg
       body.addChild(rightLeg);                           // Attach right leg
+      
     
     robotRoot.update();  // IMPORTANT - don't forget this
 
@@ -266,10 +271,10 @@ public class Robot {
           System.out.println("Turning started. Target angle: " + targetTurnAngle);
       }
 
-      float angleIncrement = turnSpeed * (float) elapsedTime;
+      float angleIncrement = (turnSpeed * (float) elapsedTime);
       turnAngle += angleIncrement;
 
-      robotTurn.setTransform(Mat4Transform.rotateAroundY(-turnAngle));
+      robotTurn.setTransform(Mat4Transform.rotateAroundY(-turnAngle - 90f));
       robotTurn.update();
       System.out.println("Turning... Current angle: " + turnAngle);
 
@@ -322,10 +327,33 @@ public class Robot {
       distanceTraveled += Math.abs(movementX);
       if (distanceTraveled >= targetDistance) {
           distanceTraveled = 0f; // Reset distance
-          movementStepCounter=0; // Advance to turn step
+          movementStepCounter++; // Advance to turn step
+      }
+    }else if (movementStepCounter == 7) {  // Step 7: Final Turn to Reset Orientation
+      if (isTurning && turnAngle == 0) {
+          System.out.println("Turning back to initial orientation. Target angle: " + targetTurnAngle);
+      }
+  
+      float angleIncrement = turnSpeed * (float) elapsedTime;
+      turnAngle += angleIncrement;
+  
+      robotTurn.setTransform(Mat4Transform.rotateAroundY(turnAngle +90f));
+      robotTurn.update();
+      System.out.println("Turning back... Current angle: " + turnAngle);
+  
+      if (turnAngle >= targetTurnAngle) {
+          turnAngle = 0f; // Reset angle
+          isTurning = false; // Turn complete
+          movementStepCounter = 0; // Reset for next cycle
+          System.out.println("Final turn complete. Resetting to step: " + movementStepCounter);
       }
   }
-}
+  }
+
+
+
+
+
 
 
   // Update the animation and movement logic
@@ -363,4 +391,6 @@ public class Robot {
     cube.dispose(gl);
     cube2.dispose(gl);
   }
+
+
 }
