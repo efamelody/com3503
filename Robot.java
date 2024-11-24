@@ -32,6 +32,8 @@ public class Robot {
   private float turnAngle = 0f; // Current turn angle
   private float targetTurnAngle = 90f; // Target turn angle in degrees
   private float turnSpeed = 1f; // Degrees per second
+  private boolean nearRobot1 =false;
+
 
   private SGNode robotRoot;
   private float xPosition = 0;
@@ -349,6 +351,20 @@ public class Robot {
       }
    }
   }
+  public void nearRobot1(){
+    if (movementStepCounter == 3 || movementStepCounter == 4 || movementStepCounter ==5 || movementStepCounter == 6 ) {
+      nearRobot1 =true;
+      System.out.println("Near robot 1: TRUE");
+
+    } else {
+      nearRobot1 =false;
+      System.out.println("Near robot 1: FALSE");
+    }
+  }
+
+  public boolean isNearRobot1() {
+    return nearRobot1;
+ }
 
 
 

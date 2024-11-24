@@ -95,6 +95,10 @@ public class L04_GLEventListener implements GLEventListener {
   private float rotateUpper2AngleStart = 30, rotateUpper2Angle = rotateUpper2AngleStart;
   private float rotationAngle = 0.0f;
 
+  public L04_GLEventListener(Robot robot) {
+    this.robot = robot;  // Initialize the robot object through constructor or setter
+  }
+
   
   public void initialise(GL3 gl) {
     textures = new TextureLibrary();
@@ -115,6 +119,8 @@ public class L04_GLEventListener implements GLEventListener {
     textures.add(gl, "face2", "assets/textures/face2.png", GL3.GL_REPEAT, GL3.GL_REPEAT);  
     textures.add(gl, "cheetah", "assets/textures/cheetah.png", GL3.GL_REPEAT, GL3.GL_REPEAT); 
     textures.add(gl, "zebra", "assets/textures/zebra.png", GL3.GL_REPEAT, GL3.GL_REPEAT); 
+    textures.add(gl, "wall", "assets/textures/wall.png", GL3.GL_REPEAT, GL3.GL_REPEAT); 
+    textures.add(gl, "circus", "assets/textures/circus.png", GL3.GL_CLAMP_TO_EDGE, GL3.GL_CLAMP_TO_EDGE);
     light = new Light(gl);
     light.setCamera(camera);
     
@@ -130,7 +136,7 @@ public class L04_GLEventListener implements GLEventListener {
     shader = new Shader(gl, "assets/shaders/vs_standard.txt", "assets/shaders/fs_standard_1t.txt");
     // material = new Material(basecolor, basecolor, new Vec3(0.3f, 0.3f, 0.3f), 4.0f);
     // diffuse texture only for this model
-    tt2 = new Model(name, mesh, new Mat4(1), shader, material, light, camera, textures.get("cloud"));
+    tt2 = new Model(name, mesh, new Mat4(1), shader, material, light, camera, textures.get("circus"));
     
     name = "window";
     mesh = new Mesh(gl, TwoTriangles.vertices.clone(), TwoTriangles.indices.clone());
@@ -146,7 +152,7 @@ public class L04_GLEventListener implements GLEventListener {
     material = new Material(new Vec3(0.1f, 0.5f, 0.91f), new Vec3(0.1f, 0.5f, 0.91f), new Vec3(0.3f, 0.3f, 0.3f), 4.0f);
     //material = new Material(basecolor, basecolor, new Vec3(0.3f, 0.3f, 0.3f), 4.0f);
     // no textures for this model
-    tt3 = new Model(name, mesh, new Mat4(1), shader, material, light, camera , textures.get("cloud"));
+    tt3 = new Model(name, mesh, new Mat4(1), shader, material, light, camera , textures.get("wall"));
 
     name = "stars";
     mesh = new Mesh(gl, TwoTriangles.vertices.clone(), TwoTriangles.indices.clone());
@@ -322,7 +328,11 @@ public class L04_GLEventListener implements GLEventListener {
     // updateBranches();
 
     //IF XPOSITION IS A CERTAIN DISTANCE, STOP DANCING
-    updateBranches();
+    
+    if (robot.isNearRobot1()) {
+      updateBranches();  // Only update branches during these steps
+   }
+    robot.nearRobot1();
     twoBranchRoot.draw(gl);
     cube.setModelMatrix(getMforCube());     // change transform
     cube.render(gl);
