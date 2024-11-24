@@ -307,7 +307,7 @@ public class Robot {
       float angleIncrement = turnSpeed * (float) elapsedTime;
       turnAngle += angleIncrement;
 
-      robotTurn.setTransform(Mat4Transform.rotateAroundY(-turnAngle));
+      robotTurn.setTransform(Mat4Transform.rotateAroundY(turnAngle));
       robotTurn.update();
       System.out.println("Turning... Current angle: " + turnAngle);
 
@@ -337,7 +337,7 @@ public class Robot {
       float angleIncrement = turnSpeed * (float) elapsedTime;
       turnAngle += angleIncrement;
   
-      robotTurn.setTransform(Mat4Transform.rotateAroundY(turnAngle +90f));
+      robotTurn.setTransform(Mat4Transform.rotateAroundY(0));
       robotTurn.update();
       System.out.println("Turning back... Current angle: " + turnAngle);
   
@@ -347,7 +347,7 @@ public class Robot {
           movementStepCounter = 0; // Reset for next cycle
           System.out.println("Final turn complete. Resetting to step: " + movementStepCounter);
       }
-  }
+   }
   }
 
 
