@@ -379,7 +379,8 @@ public class Robot {
   }
 
   public Vec3 getPosition() {
-    return new Vec3(xPosition, 10f, zPosition);
+    float offset =4f;
+    return new Vec3(xPosition + offset, 9f, zPosition- offset);
   }
 
 

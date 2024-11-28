@@ -337,6 +337,7 @@ public class L04_GLEventListener implements GLEventListener {
     // updateLightColour();
 
     Vec3 robotPos = robot.getPosition();
+    float offset = 5f;
     System.out.println("Robot Position: X=" + robotPos.x + ", Y=" + robotPos.y + ", Z=" + robotPos.z);
     light.setPosition(robotPos);  // changing light position each frame
     // light.setPosition(getLightPosition());
