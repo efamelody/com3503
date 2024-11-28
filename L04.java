@@ -1,6 +1,13 @@
 import java.awt.*;
 import java.awt.event.*;
+
+import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+
 import com.jogamp.opengl.*;
 import com.jogamp.opengl.awt.GLCanvas;
 import com.jogamp.opengl.util.FPSAnimator;
@@ -32,6 +39,21 @@ public class L04 extends JFrame {
     canvas.addMouseMotionListener(new MyMouseInput(camera));
     canvas.addKeyListener(new MyKeyboardInput(camera));
     getContentPane().add(canvas, BorderLayout.CENTER);
+
+    // JMenuBar menuBar=new JMenuBar();
+    // this.setJMenuBar(menuBar);
+    //   JMenu fileMenu = new JMenu("File");
+    //     JMenuItem quitItem = new JMenuItem("Quit");
+    //     quitItem.addActionListener(this);
+    //     fileMenu.add(quitItem);
+    // menuBar.add(fileMenu);
+    
+    // JPanel p = new JPanel();
+    //   JButton b = new JButton("Dance");
+    //   b.addActionListener(this);
+    //   p.add(b);
+    // this.add(p, BorderLayout.SOUTH);
+
     addWindowListener(new WindowAdapter() {
       public void windowClosing(WindowEvent e) {
         animator.stop();
@@ -43,8 +65,15 @@ public class L04 extends JFrame {
     animator = new FPSAnimator(canvas, 60);
     animator.start();
   }
+  // public void actionPerformed(ActionEvent e) {
+  //   if (e.getActionCommand().equalsIgnoreCase("Dancing")) {
+  //     glEventListener.dance();
+  //   }
+  // }
   
 }
+
+
 
 class MyKeyboardInput extends KeyAdapter  {
   private Camera camera;

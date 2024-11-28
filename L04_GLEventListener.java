@@ -262,6 +262,13 @@ public class L04_GLEventListener implements GLEventListener {
     twoBranchRoot.update();  // IMPORTANT – must be done every time any part of the scene graph changes
   }
 
+  public void dance() {
+    updateBranches();
+  }
+
+
+
+
   // the following two methods are quite similar and could be replaced with one method with suitable parameterisation
   private SGNode makeLowerBranch(Model sphere, float sx, float sy, float sz) {
     NameNode lowerBranchName = new NameNode("lower branch");
@@ -328,7 +335,11 @@ public class L04_GLEventListener implements GLEventListener {
     gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
 
     // updateLightColour();
-    light.setPosition(getLightPosition());  // changing light position each frame
+
+    Vec3 robotPos = robot.getPosition();
+    System.out.println("Robot Position: X=" + robotPos.x + ", Y=" + robotPos.y + ", Z=" + robotPos.z);
+    light.setPosition(robotPos);  // changing light position each frame
+    // light.setPosition(getLightPosition());
     light.render(gl);
     // updateBranches();
 

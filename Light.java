@@ -22,6 +22,8 @@ public class Light {
     shader = new Shader(gl, "assets/shaders/vs_light_01.txt", "assets/shaders/fs_light_01.txt");
     fillBuffers(gl);
   }
+
+
   
   public void setPosition(Vec3 v) {
     position.x = v.x;
