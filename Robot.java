@@ -83,6 +83,7 @@ public class Robot {
 
     
     TransformNode robotTranslate = new TransformNode("robot transform",Mat4Transform.translate(0,legLength,0));
+    TransformNode robotScale = new TransformNode("robot scale",Mat4Transform.scale(1f,0.5f,1f));
     
     // make pieces
     // Add a light node to the scene graph
@@ -92,16 +93,19 @@ public class Robot {
     NameNode rightArm = makeRightArm(gl, bodyWidth, bodyHeight, armLength, armScale, cube2);
     NameNode leftLeg = makeLeftLeg(gl, bodyWidth, legLength, legScale, cube);
     NameNode rightLeg = makeRightLeg(gl, bodyWidth, legLength, legScale, cube);
+    // NameNode casing = makeCasing(gl, bodyWidth, bodyHeight, bodyDepth, cube);
     
     //Once all the pieces are created, then the whole robot can be created.
     robotRoot.addChild(robotPlaced);                     // Root node
     robotPlaced.addChild(robotMoveTranslate);            // Translate the robot for movement
     robotMoveTranslate.addChild(robotTurn);              // Rotate the robot for turning
     robotTurn.addChild(robotTranslate);                  // Translate the robot vertically
-    robotTranslate.addChild(body);                       // Attach body
+    robotTranslate.addChild(robotScale);
+    robotScale.addChild(body);                       // Attach body
       body.addChild(head);                               // Attach head
       head.addChild(lightTransform);      // Add the light's transform to the head
       lightTransform.addChild(lightNode); // Add the light node to the transform
+      // lightNode.addChild(casing);
 
       body.addChild(leftArm);                            // Attach left arm
       body.addChild(rightArm);                           // Attach right arm
@@ -136,6 +140,18 @@ public class Robot {
     Model cube = new Model(name, mesh, modelMatrix, shader, material, light, camera, t1, t2);
     return cube;
   } 
+
+  // private NameNode makeCasing(GL3 gl, float bodyWidth, float bodyHeight, float bodyDepth, Model cube) {
+  //   NameNode body = new NameNode("body");
+  //   Mat4 m = Mat4Transform.scale(0.3f,1f,0.3f);
+  //   m = Mat4.multiply(m, Mat4Transform.translate(0,bodyHeight-1f,0));
+  //   TransformNode bodyTransform = new TransformNode("body transform", m);
+  //   ModelNode bodyShape = new ModelNode("Cube(body)", cube);
+  //   body.addChild(bodyTransform);
+  //   bodyTransform.addChild(bodyShape);
+  //   return body;
+  // }
+  
 
   private NameNode makeBody(GL3 gl, float bodyWidth, float bodyHeight, float bodyDepth, Model cube) {
     NameNode body = new NameNode("body");
