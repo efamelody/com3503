@@ -76,9 +76,14 @@ public class Light {
     gl.glBindVertexArray(0);
 
     // Render casing
+    // Render casing with a different shader
+    Shader casingShader = new Shader(gl, "assets/shaders/vs_standard.txt", "assets/shaders/fs_standard_2t.txt");
+    casingShader.use(gl); // Switch to the casing shader
+
     Mat4 casingModel = Mat4.multiply(Mat4Transform.translate(position), Mat4Transform.scale(0.5f, 0.5f, 0.5f));
     Mat4 casingMvpMatrix = Mat4.multiply(camera.getPerspectiveMatrix(), Mat4.multiply(camera.getViewMatrix(), casingModel));
-    shader.setFloatArray(gl, "mvpMatrix", casingMvpMatrix.toFloatArrayForGLSL());
+    casingShader.setFloatArray(gl, "mvpMatrix", casingMvpMatrix.toFloatArrayForGLSL());
+
     gl.glBindVertexArray(casingVertexArrayId[0]);
     gl.glDrawElements(GL.GL_TRIANGLES, casingIndices.length, GL.GL_UNSIGNED_INT, 0);
 
