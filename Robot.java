@@ -77,13 +77,13 @@ public class Robot {
 
     
     robotRoot = new NameNode("root");
-    robotMoveTranslate = new TransformNode("robot transform",Mat4Transform.translate(xPosition,0,0));
+    robotMoveTranslate = new TransformNode("robot transform",Mat4Transform.translate(xPosition,-1f,0));
     robotPlaced = new TransformNode("robot transform",Mat4Transform.translate(4f,0,-4f));
     robotTurn = new TransformNode("leftarm rotate",Mat4Transform.rotateAroundY(turnAngle));
 
     
     TransformNode robotTranslate = new TransformNode("robot transform",Mat4Transform.translate(0,legLength,0));
-    TransformNode robotScale = new TransformNode("robot scale",Mat4Transform.scale(1f,0.5f,1f));
+    TransformNode robotScale = new TransformNode("robot scale",Mat4Transform.scale(1f,0.75f,1f));
     
     // make pieces
     // Add a light node to the scene graph
@@ -396,7 +396,7 @@ public class Robot {
 
   public Vec3 getPosition() {
     float offset =4f;
-    return new Vec3(xPosition + offset, 9f, zPosition- offset);
+    return new Vec3(xPosition + offset, 7.5f, zPosition- offset);
   }
 
 
