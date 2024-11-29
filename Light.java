@@ -11,6 +11,9 @@ public class Light {
   private Shader shader;
   private Camera camera;
   //private Mat4 perspective;
+  private int[] casingVertexBufferId = new int[1];
+  private int[] casingElementBufferId = new int[1];
+  private int[] casingVertexArrayId = new int[1];
     
   public Light(GL3 gl) {
     material = new Material();
@@ -21,6 +24,7 @@ public class Light {
     model = new Mat4(1);
     shader = new Shader(gl, "assets/shaders/vs_light_01.txt", "assets/shaders/fs_light_01.txt");
     fillBuffers(gl);
+    fillCasingBuffers(gl);
   }
 
 
@@ -70,18 +74,109 @@ public class Light {
     gl.glBindVertexArray(vertexArrayId[0]);
     gl.glDrawElements(GL.GL_TRIANGLES, indices.length, GL.GL_UNSIGNED_INT, 0);
     gl.glBindVertexArray(0);
+
+    // Render casing
+    Mat4 casingModel = Mat4.multiply(Mat4Transform.translate(position), Mat4Transform.scale(0.5f, 0.5f, 0.5f));
+    Mat4 casingMvpMatrix = Mat4.multiply(camera.getPerspectiveMatrix(), Mat4.multiply(camera.getViewMatrix(), casingModel));
+    shader.setFloatArray(gl, "mvpMatrix", casingMvpMatrix.toFloatArrayForGLSL());
+    gl.glBindVertexArray(casingVertexArrayId[0]);
+    gl.glDrawElements(GL.GL_TRIANGLES, casingIndices.length, GL.GL_UNSIGNED_INT, 0);
+
+  }
+
+  private void fillLightBuffers(GL3 gl) {
+    // Light geometry buffers (existing logic)
+    gl.glGenVertexArrays(1, vertexArrayId, 0);
+    gl.glBindVertexArray(vertexArrayId[0]);
+
+    gl.glGenBuffers(1, vertexBufferId, 0);
+    gl.glBindBuffer(GL.GL_ARRAY_BUFFER, vertexBufferId[0]);
+    FloatBuffer fb = Buffers.newDirectFloatBuffer(vertices);
+    gl.glBufferData(GL.GL_ARRAY_BUFFER, Float.BYTES * vertices.length, fb, GL.GL_STATIC_DRAW);
+
+    gl.glVertexAttribPointer(0, 3, GL.GL_FLOAT, false, 3 * Float.BYTES, 0);
+    gl.glEnableVertexAttribArray(0);
+
+    gl.glGenBuffers(1, elementBufferId, 0);
+    IntBuffer ib = Buffers.newDirectIntBuffer(indices);
+    gl.glBindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, elementBufferId[0]);
+    gl.glBufferData(GL.GL_ELEMENT_ARRAY_BUFFER, Integer.BYTES * indices.length, ib, GL.GL_STATIC_DRAW);
+  }
+
+  private void fillCasingBuffers(GL3 gl) {
+    // float[] casingVertices = new float[] {
+    //   -0.6f, -0.6f, -0.6f,
+    //   -0.6f, -0.6f,  0.6f,
+    //   -0.6f,  0.6f, -0.6f,
+    //   -0.6f,  0.6f,  0.6f,
+    //    0.6f, -0.6f, -0.6f,
+    //    0.6f, -0.6f,  0.6f,
+    //    0.6f,  0.6f, -0.6f,
+    //    0.6f,  0.6f,  0.6f
+    // };
+
+    // int[] casingIndices = new int[] {
+    //   0, 1, 3, 3, 2, 0, // front
+    //   4, 5, 7, 7, 6, 4, // back
+    //   0, 4, 6, 6, 2, 0, // left
+    //   1, 5, 7, 7, 3, 1, // right
+    //   2, 3, 7, 7, 6, 2, // top
+    //   0, 1, 5, 5, 4, 0  // bottom
+    // };
+
+    gl.glGenVertexArrays(1, casingVertexArrayId, 0);
+    gl.glBindVertexArray(casingVertexArrayId[0]);
+
+    gl.glGenBuffers(1, casingVertexBufferId, 0);
+    gl.glBindBuffer(GL.GL_ARRAY_BUFFER, casingVertexBufferId[0]);
+    FloatBuffer fb = Buffers.newDirectFloatBuffer(casingVertices);
+    gl.glBufferData(GL.GL_ARRAY_BUFFER, Float.BYTES * casingVertices.length, fb, GL.GL_STATIC_DRAW);
+
+    gl.glVertexAttribPointer(0, 3, GL.GL_FLOAT, false, 3 * Float.BYTES, 0);
+    gl.glEnableVertexAttribArray(0);
+
+    gl.glGenBuffers(1, casingElementBufferId, 0);
+    IntBuffer ib = Buffers.newDirectIntBuffer(casingIndices);
+    gl.glBindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, casingElementBufferId[0]);
+    gl.glBufferData(GL.GL_ELEMENT_ARRAY_BUFFER, Integer.BYTES * casingIndices.length, ib, GL.GL_STATIC_DRAW);
   }
 
   public void dispose(GL3 gl) {
     gl.glDeleteBuffers(1, vertexBufferId, 0);
     gl.glDeleteVertexArrays(1, vertexArrayId, 0);
     gl.glDeleteBuffers(1, elementBufferId, 0);
+
+    gl.glDeleteBuffers(1, casingVertexBufferId, 0);
+    gl.glDeleteVertexArrays(1, casingVertexArrayId, 0);
+    gl.glDeleteBuffers(1, casingElementBufferId, 0);
   }
 
     // ***************************************************
   /* THE DATA
    */
   // anticlockwise/counterclockwise ordering
+
+    public static final float[] casingVertices = new float[] {  // x,y,z
+      -0.6f, -0.6f, -0.6f,
+      -0.6f, -0.6f,  0.6f,
+      -0.6f,  0.6f, -0.6f,
+      -0.6f,  0.6f,  0.6f,
+       0.6f, -0.6f, -0.6f,
+       0.6f, -0.6f,  0.6f,
+       0.6f,  0.6f, -0.6f,
+       0.6f,  0.6f,  0.6f
+    };
+
+    public static final int[] casingIndices =  new int[] {
+      0, 1, 3, 3, 2, 0, // front
+      4, 5, 7, 7, 6, 4, // back
+      0, 4, 6, 6, 2, 0, // left
+      1, 5, 7, 7, 3, 1, // right
+      2, 3, 7, 7, 6, 2, // top
+      0, 1, 5, 5, 4, 0  // bottom
+    };
+
+    
   
     public static final float[] vertices = new float[] {  // x,y,z
       -0.5f, -0.5f, -0.5f,  // 0
