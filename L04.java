@@ -16,9 +16,10 @@ public class L04 extends JFrame {
   
   private static final int WIDTH = 1024;
   private static final int HEIGHT = 768;
+  private Robot robot;
   private static final Dimension dimension = new Dimension(WIDTH, HEIGHT);
   private GLCanvas canvas;
-  private GLEventListener glEventListener;
+  private L04_GLEventListener glEventListener;
   private final FPSAnimator animator; 
 
   public static void main(String[] args) {
@@ -28,6 +29,7 @@ public class L04 extends JFrame {
     b1.setVisible(true);
     b1.canvas.requestFocusInWindow();
   }
+
 
   public L04(String textForTitleBar) {
     super(textForTitleBar);
@@ -40,19 +42,24 @@ public class L04 extends JFrame {
     canvas.addKeyListener(new MyKeyboardInput(camera));
     getContentPane().add(canvas, BorderLayout.CENTER);
 
-    // JMenuBar menuBar=new JMenuBar();
-    // this.setJMenuBar(menuBar);
-    //   JMenu fileMenu = new JMenu("File");
-    //     JMenuItem quitItem = new JMenuItem("Quit");
-    //     quitItem.addActionListener(this);
-    //     fileMenu.add(quitItem);
-    // menuBar.add(fileMenu);
-    
-    // JPanel p = new JPanel();
-    //   JButton b = new JButton("Dance");
-    //   b.addActionListener(this);
-    //   p.add(b);
-    // this.add(p, BorderLayout.SOUTH);
+    // Add a JPanel with a dummy button
+    JPanel buttonPanel = new JPanel(); // JPanel to hold the button
+    JButton danceButton = new JButton("Dance Button"); // Create the button
+    buttonPanel.add(danceButton); // Add the button to the panel
+
+    // Optionally, add an action listener to the button
+    danceButton.addActionListener(e -> {
+      Robot robot = glEventListener.getRobot();
+      if (robot != null) { // Check if robot is initialized
+        robot.setNearRobot1(true); 
+        System.out.println("Button clicked: nearRobot1 is now TRUE");
+      } else {
+          System.out.println("Robot is not initialized!");
+    }
+    });
+
+    // Add the panel to the bottom of the frame
+    this.add(buttonPanel, BorderLayout.SOUTH);
 
     addWindowListener(new WindowAdapter() {
       public void windowClosing(WindowEvent e) {

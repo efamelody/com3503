@@ -14,6 +14,7 @@ public class Light {
   private int[] casingVertexBufferId = new int[1];
   private int[] casingElementBufferId = new int[1];
   private int[] casingVertexArrayId = new int[1];
+  
     
   public Light(GL3 gl) {
     material = new Material();
@@ -80,7 +81,7 @@ public class Light {
     Shader casingShader = new Shader(gl, "assets/shaders/vs_standard.txt", "assets/shaders/fs_standard_2t.txt");
     casingShader.use(gl); // Switch to the casing shader
 
-    Mat4 casingModel = Mat4.multiply(Mat4Transform.translate(position), Mat4Transform.scale(0.5f, 0.5f, 0.5f));
+    Mat4 casingModel = Mat4.multiply(Mat4Transform.translate(position), Mat4Transform.scale(1f, 1f, 1f));
     Mat4 casingMvpMatrix = Mat4.multiply(camera.getPerspectiveMatrix(), Mat4.multiply(camera.getViewMatrix(), casingModel));
     casingShader.setFloatArray(gl, "mvpMatrix", casingMvpMatrix.toFloatArrayForGLSL());
 
@@ -161,25 +162,27 @@ public class Light {
    */
   // anticlockwise/counterclockwise ordering
 
-    public static final float[] casingVertices = new float[] {  // x,y,z
-      -0.6f, -0.6f, -0.6f,
-      -0.6f, -0.6f,  0.6f,
-      -0.6f,  0.6f, -0.6f,
-      -0.6f,  0.6f,  0.6f,
-       0.6f, -0.6f, -0.6f,
-       0.6f, -0.6f,  0.6f,
-       0.6f,  0.6f, -0.6f,
-       0.6f,  0.6f,  0.6f
-    };
+  
+  public static final float[] casingVertices = {
+    // Copy the Sphere's vertex data here
+    -0.5f, -0.5f, -0.5f,  // 0
+    -0.5f, -0.5f,  0.5f,  // 1
+    -0.5f,  0.5f, -0.5f,  // 2
+    -0.5f,  0.5f,  0.5f,  // 3
+     0.5f, -0.5f, -0.5f,  // 4
+     0.5f, -0.5f,  0.5f,  // 5
+     0.5f,  0.5f, -0.5f,  // 6
+     0.5f,  0.5f,  0.5f   // 7
+  };
 
-    public static final int[] casingIndices =  new int[] {
+  public static final int[] casingIndices = {
       0, 1, 3, 3, 2, 0, // front
-      4, 5, 7, 7, 6, 4, // back
+      4, 6, 7, 7, 5, 4, // back
       0, 4, 6, 6, 2, 0, // left
       1, 5, 7, 7, 3, 1, // right
       2, 3, 7, 7, 6, 2, // top
       0, 1, 5, 5, 4, 0  // bottom
-    };
+  };
 
     
   

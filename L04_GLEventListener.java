@@ -15,6 +15,7 @@ public class L04_GLEventListener implements GLEventListener {
   
   private static final boolean DISPLAY_SHADERS = false;
   private Camera camera;
+  
     
   /* The constructor is not used to initialise anything */
   public L04_GLEventListener(Camera camera) {
@@ -204,6 +205,8 @@ public class L04_GLEventListener implements GLEventListener {
                       textures.get("face2"), textures.get("cheetah"),
                       textures.get("clown"), textures.get("zebra"),
                       textures.get("base"), textures.get("base")); 
+
+    
     
     //ROBOT 1
 
@@ -265,6 +268,16 @@ public class L04_GLEventListener implements GLEventListener {
   public void dance() {
     updateBranches();
   }
+
+  // Getter method for Robot
+  public Robot getRobot() {
+    if (robot == null) {
+      System.out.println("Robot is not initialized!");
+    }
+    return robot;
+  }
+
+  
 
 
 
@@ -560,6 +573,10 @@ public class L04_GLEventListener implements GLEventListener {
     modelMatrix = Mat4.multiply(Mat4Transform.translate(0, size, 0), modelMatrix); // Move up to form ceiling
     return modelMatrix;
   }
+
+
+
+
 
 
   

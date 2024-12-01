@@ -415,6 +415,12 @@ public class Robot {
     return nearRobot1;
  }
 
+  public void setNearRobot1(boolean state) {
+    nearRobot1 = state;
+  }
+
+
+
 
 
 
