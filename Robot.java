@@ -29,6 +29,8 @@ public class Robot {
   private boolean isMovingBack = false;
   private boolean isTurning = false;
   private boolean buttonClicked = false;
+  private boolean stopButtonClicked = false;
+
   private int movementStepCounter =0;
   private float turnAngle = 0f; // Current turn angle
   private float targetTurnAngle = 90f; // Target turn angle in degrees
@@ -407,29 +409,43 @@ public class Robot {
   public boolean isButtonClicked() {
       return buttonClicked;
   }
+
+  public void setStopButtonClicked(boolean stopButtonClicked) {
+    this.stopButtonClicked = stopButtonClicked;
+  }
+
+  public boolean isStopButtonClicked() {
+      return stopButtonClicked;
+  }
   public void nearRobot1() {
     System.out.println("isButtonClicked: " + isButtonClicked());
 
     // Check if the stop button was clicked (this should be set when the stop button is clicked)
-    if (!isButtonClicked()) {
-        nearRobot1 = false; // Stop dancing when the button is not clicked
-        System.out.println("Near robot 1: FALSE (Stop button clicked or no button click)");
-        return; // Exit early since the stop condition is met
+    if (isStopButtonClicked()) {
+        nearRobot1 = false;  // Immediately stop when stop button is clicked
+        System.out.println("Near robot 1: FALSE (Stop button clicked)");
+        return;  // Exit early since stop button condition is met
     }
 
     // If the button is clicked, keep nearRobot1 as true
-    nearRobot1 = true;
-    System.out.println("Near robot 1: TRUE (Button Clicked)");
-
-    // Check movement step conditions if the button was clicked
-    if (movementStepCounter == 3 || movementStepCounter == 4 || movementStepCounter == 5 || movementStepCounter == 6) {
+    if (isButtonClicked()) {
         nearRobot1 = true;
-        System.out.println("Near robot 1: TRUE (Movement step condition met)");
+        System.out.println("Near robot 1: TRUE (Dance button clicked)");
+
+        // Check movement step conditions if the button was clicked
+        if (movementStepCounter == 3 || movementStepCounter == 4 || movementStepCounter == 5 || movementStepCounter == 6) {
+            nearRobot1 = true;
+            System.out.println("Near robot 1: TRUE (Movement step condition met)");
+        } else {
+            // nearRobot1 = false;
+            System.out.println("Near robot 1: FALSE (Movement step condition not met)");
+        }
     } else {
+        // If no button is clicked, set nearRobot1 to false
         nearRobot1 = false;
-        System.out.println("Near robot 1: FALSE (Movement step condition not met)");
+        System.out.println("Near robot 1: FALSE (No button clicked)");
     }
-  }
+}
 
 
   public boolean isNearRobot1() {

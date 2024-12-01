@@ -18,6 +18,7 @@ public class L04 extends JFrame {
   private static final int HEIGHT = 768;
   private Robot robot;
   private boolean buttonClicked = false; 
+  private boolean stopButtonClicked = false;
   private static final Dimension dimension = new Dimension(WIDTH, HEIGHT);
   private GLCanvas canvas;
   private L04_GLEventListener glEventListener;
@@ -64,6 +65,7 @@ public class L04 extends JFrame {
       if (robot != null) { // Check if robot is initialized
         robot.setButtonClicked(true); 
         robot.setNearRobot1(true); 
+        robot.setStopButtonClicked(false);
         System.out.println("Button clicked: nearRobot1 is now TRUE");
       } else {
           System.out.println("Robot is not initialized!");
@@ -74,7 +76,8 @@ public class L04 extends JFrame {
     stopButton.addActionListener(e -> {
         Robot robot = glEventListener.getRobot();
         if (robot != null) {  // Check if robot is initialized
-            robot.setButtonClicked(false); // Stop dancing
+            robot.setButtonClicked(false);
+            robot.setStopButtonClicked(true); // Stop dancing
             robot.setNearRobot1(false);     // Optionally reset nearRobot1 state
             System.out.println("Stop button clicked: Robot stopped.");
         } else {
