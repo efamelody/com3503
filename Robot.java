@@ -407,21 +407,30 @@ public class Robot {
   public boolean isButtonClicked() {
       return buttonClicked;
   }
-  public void nearRobot1(){
+  public void nearRobot1() {
     System.out.println("isButtonClicked: " + isButtonClicked());
-    if (isButtonClicked()) {
-      // If the button was clicked, keep nearRobot1 as true
-      nearRobot1 = true;
-      System.out.println("Near robot 1: TRUE (Button Clicked)");
-      return;
-    } else if (movementStepCounter == 3 || movementStepCounter == 4 || movementStepCounter ==5 || movementStepCounter == 6 ) {
-      nearRobot1 =true;
-      System.out.println("Near robot 1: TRUE");
+
+    // Check if the stop button was clicked (this should be set when the stop button is clicked)
+    if (!isButtonClicked()) {
+        nearRobot1 = false; // Stop dancing when the button is not clicked
+        System.out.println("Near robot 1: FALSE (Stop button clicked or no button click)");
+        return; // Exit early since the stop condition is met
+    }
+
+    // If the button is clicked, keep nearRobot1 as true
+    nearRobot1 = true;
+    System.out.println("Near robot 1: TRUE (Button Clicked)");
+
+    // Check movement step conditions if the button was clicked
+    if (movementStepCounter == 3 || movementStepCounter == 4 || movementStepCounter == 5 || movementStepCounter == 6) {
+        nearRobot1 = true;
+        System.out.println("Near robot 1: TRUE (Movement step condition met)");
     } else {
-      nearRobot1 =false;
-      System.out.println("Near robot 1: FALSE");
-    }  
+        nearRobot1 = false;
+        System.out.println("Near robot 1: FALSE (Movement step condition not met)");
+    }
   }
+
 
   public boolean isNearRobot1() {
     return nearRobot1;

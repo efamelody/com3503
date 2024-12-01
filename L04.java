@@ -69,7 +69,19 @@ public class L04 extends JFrame {
           System.out.println("Robot is not initialized!");
     }
     });
-
+    buttonPanel.add(danceButton);
+    JButton stopButton = new JButton("Stop Dancing");
+    stopButton.addActionListener(e -> {
+        Robot robot = glEventListener.getRobot();
+        if (robot != null) {  // Check if robot is initialized
+            robot.setButtonClicked(false); // Stop dancing
+            robot.setNearRobot1(false);     // Optionally reset nearRobot1 state
+            System.out.println("Stop button clicked: Robot stopped.");
+        } else {
+            System.out.println("Robot is not initialized!");
+        }
+    });
+    buttonPanel.add(stopButton);
     // Add the panel to the bottom of the frame
     this.add(buttonPanel, BorderLayout.SOUTH);
 
