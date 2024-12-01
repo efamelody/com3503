@@ -17,6 +17,7 @@ public class L04 extends JFrame {
   private static final int WIDTH = 1024;
   private static final int HEIGHT = 768;
   private Robot robot;
+  private boolean buttonClicked = false; 
   private static final Dimension dimension = new Dimension(WIDTH, HEIGHT);
   private GLCanvas canvas;
   private L04_GLEventListener glEventListener;
@@ -29,6 +30,16 @@ public class L04 extends JFrame {
     b1.setVisible(true);
     b1.canvas.requestFocusInWindow();
   }
+  // Getter for buttonClicked
+  // public boolean isButtonClicked() {
+  //   return buttonClicked;
+  // }
+
+  // // Setter for buttonClicked
+  // public void setButtonClicked(boolean buttonClicked) {
+  //   this.buttonClicked = buttonClicked;
+  // }
+
 
 
   public L04(String textForTitleBar) {
@@ -51,6 +62,7 @@ public class L04 extends JFrame {
     danceButton.addActionListener(e -> {
       Robot robot = glEventListener.getRobot();
       if (robot != null) { // Check if robot is initialized
+        robot.setButtonClicked(true); 
         robot.setNearRobot1(true); 
         System.out.println("Button clicked: nearRobot1 is now TRUE");
       } else {

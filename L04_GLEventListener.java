@@ -86,6 +86,7 @@ public class L04_GLEventListener implements GLEventListener {
   private SGNode robotRoot;
   private Model sphere, sphereBase, sphereBody, sphereArm, sphereHead;
   private SGNode twoBranchRoot;
+  // private boolean buttonClicked = false;
 
   private TransformNode translateX, rotateAll, rotateUpper1, rotateUpper2, rotateHead;
   private float xPosition = 0.5f;
@@ -342,7 +343,13 @@ public class L04_GLEventListener implements GLEventListener {
     twoBranchRoot.update(); // IMPORTANT – the scene graph has changed
   }
    
- 
+  // public void setButtonClicked(boolean buttonClicked) {
+  //   this.buttonClicked = buttonClicked;
+  // }
+
+  // public boolean isButtonClicked() {
+  //     return buttonClicked;
+  // }
   
   public void render(GL3 gl) {
     gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);

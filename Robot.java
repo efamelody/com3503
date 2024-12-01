@@ -28,6 +28,7 @@ public class Robot {
   private boolean isMovingStraight = true;
   private boolean isMovingBack = false;
   private boolean isTurning = false;
+  private boolean buttonClicked = false;
   private int movementStepCounter =0;
   private float turnAngle = 0f; // Current turn angle
   private float targetTurnAngle = 90f; // Target turn angle in degrees
@@ -265,7 +266,7 @@ public class Robot {
         robotMoveTranslate.setTransform(Mat4Transform.translate(0, 0, zPosition));
         robotMoveTranslate.update();
         light.setPosition(new Vec3(xPosition, robotHeight, zPosition));
-        System.out.println("STRAIGHT: Moving along Z. Current position: Z=" + zPosition);
+        // System.out.println("STRAIGHT: Moving along Z. Current position: Z=" + zPosition);
         distanceTraveled += Math.abs(movementZ);
 
         if (distanceTraveled >= targetDistance) {
@@ -275,7 +276,7 @@ public class Robot {
         }
     } else if (movementStepCounter == 1 ) {  // Step 2 & Step 4: Turn
         if (isTurning && turnAngle == 0) {
-            System.out.println("Turning started. Target angle: " + targetTurnAngle);
+            // System.out.println("Turning started. Target angle: " + targetTurnAngle);
         }
 
         float angleIncrement = turnSpeed * (float) elapsedTime;
@@ -284,13 +285,13 @@ public class Robot {
         robotTurn.setTransform(Mat4Transform.rotateAroundY(-turnAngle));
         robotTurn.update();
         
-        System.out.println("Turning... Current angle: " + turnAngle);
+        // System.out.println("Turning... Current angle: " + turnAngle);
 
         if (turnAngle >= targetTurnAngle) {
             turnAngle = 0f; // Reset angle
             isTurning = false; // Turn complete
             movementStepCounter++; // Advance to next step
-            System.out.println("Turn complete. Advancing to step: " + movementStepCounter);
+            // System.out.println("Turn complete. Advancing to step: " + movementStepCounter);
         }
     } else if (movementStepCounter == 2) {  // Step 3: Move Side
         float movementX = (float) (elapsedTime * speed);
@@ -298,7 +299,7 @@ public class Robot {
         robotMoveTranslate.setTransform(Mat4Transform.translate(xPosition, 0, zPosition));
         robotMoveTranslate.update();
         light.setPosition(new Vec3(xPosition, robotHeight, zPosition));
-        System.out.println("SIDE: Moving along X. Current position: X=" + xPosition);
+        // System.out.println("SIDE: Moving along X. Current position: X=" + xPosition);
 
         distanceTraveled += Math.abs(movementX);
         if (distanceTraveled >= targetDistance) {
@@ -307,7 +308,7 @@ public class Robot {
         }
     } else if (movementStepCounter == 3) {  // Step 2 & Step 4: Turn
       if (isTurning && turnAngle == 0) {
-          System.out.println("Turning started. Target angle: " + targetTurnAngle);
+          // System.out.println("Turning started. Target angle: " + targetTurnAngle);
       }
 
       float angleIncrement = (turnSpeed * (float) elapsedTime);
@@ -316,13 +317,13 @@ public class Robot {
       robotTurn.setTransform(Mat4Transform.rotateAroundY(-turnAngle - 90f));
       robotTurn.update();
       light.setPosition(new Vec3(xPosition, robotHeight, zPosition));
-      System.out.println("Turning... Current angle: " + turnAngle);
+      // System.out.println("Turning... Current angle: " + turnAngle);
 
       if (turnAngle >= targetTurnAngle) {
           turnAngle = 0f; // Reset angle
           isTurning = false; // Turn complete
           movementStepCounter++; // Advance to next step
-          System.out.println("Turn complete. Advancing to step: " + movementStepCounter);
+          // System.out.println("Turn complete. Advancing to step: " + movementStepCounter);
       } 
     }else if (movementStepCounter == 4) {  // Step 5: Move Backward
         float movementZ = (float) (elapsedTime * speed);
@@ -330,7 +331,7 @@ public class Robot {
         robotMoveTranslate.setTransform(Mat4Transform.translate(xPosition, 0, zPosition));
         robotMoveTranslate.update();
         light.setPosition(new Vec3(xPosition, robotHeight, zPosition));
-        System.out.println("BACKWARD: Moving along Z. Current position: Z=" + zPosition);
+        // System.out.println("BACKWARD: Moving along Z. Current position: Z=" + zPosition);
 
         distanceTraveled += Math.abs(movementZ);
         if (distanceTraveled >= targetDistance) {
@@ -342,7 +343,7 @@ public class Robot {
         }
     }else if (movementStepCounter == 5) {  // Step 2 & Step 4: Turn
       if (isTurning && turnAngle == 0) {
-          System.out.println("Turning started. Target angle: " + targetTurnAngle);
+          // System.out.println("Turning started. Target angle: " + targetTurnAngle);
       }
 
       float angleIncrement = turnSpeed * (float) elapsedTime;
@@ -351,13 +352,13 @@ public class Robot {
       robotTurn.setTransform(Mat4Transform.rotateAroundY(turnAngle));
       robotTurn.update();
       light.setPosition(new Vec3(xPosition, robotHeight, zPosition));
-      System.out.println("Turning... Current angle: " + turnAngle);
+      // System.out.println("Turning... Current angle: " + turnAngle);
 
       if (turnAngle >= targetTurnAngle) {
           turnAngle = 0f; // Reset angle
           isTurning = false; // Turn complete
           movementStepCounter++; // Advance to next step
-          System.out.println("Turn complete. Advancing to step: " + movementStepCounter);
+          // System.out.println("Turn complete. Advancing to step: " + movementStepCounter);
       }
     }else if (movementStepCounter == 6) {  // Step 3: Move Side
       float movementX = (float) (elapsedTime * speed);
@@ -365,7 +366,7 @@ public class Robot {
       robotMoveTranslate.setTransform(Mat4Transform.translate(xPosition, 0, zPosition));
       robotMoveTranslate.update();
       light.setPosition(new Vec3(xPosition, robotHeight, zPosition));
-      System.out.println("SIDE: Moving along X. Current position: X=" + xPosition);
+      // System.out.println("SIDE: Moving along X. Current position: X=" + xPosition);
 
       distanceTraveled += Math.abs(movementX);
       if (distanceTraveled >= targetDistance) {
@@ -374,7 +375,7 @@ public class Robot {
       }
     }else if (movementStepCounter == 7) {  // Step 7: Final Turn to Reset Orientation
       if (isTurning && turnAngle == 0) {
-          System.out.println("Turning back to initial orientation. Target angle: " + targetTurnAngle);
+          // System.out.println("Turning back to initial orientation. Target angle: " + targetTurnAngle);
       }
   
       float angleIncrement = turnSpeed * (float) elapsedTime;
@@ -389,7 +390,7 @@ public class Robot {
           turnAngle = 0f; // Reset angle
           isTurning = false; // Turn complete
           movementStepCounter = 0; // Reset for next cycle
-          System.out.println("Final turn complete. Resetting to step: " + movementStepCounter);
+          // System.out.println("Final turn complete. Resetting to step: " + movementStepCounter);
       }
    }
   }
@@ -399,16 +400,27 @@ public class Robot {
     return new Vec3(xPosition + offset, 7.5f, zPosition- offset);
   }
 
+  public void setButtonClicked(boolean buttonClicked) {
+    this.buttonClicked = buttonClicked;
+  }
 
+  public boolean isButtonClicked() {
+      return buttonClicked;
+  }
   public void nearRobot1(){
-    if (movementStepCounter == 3 || movementStepCounter == 4 || movementStepCounter ==5 || movementStepCounter == 6 ) {
+    System.out.println("isButtonClicked: " + isButtonClicked());
+    if (isButtonClicked()) {
+      // If the button was clicked, keep nearRobot1 as true
+      nearRobot1 = true;
+      System.out.println("Near robot 1: TRUE (Button Clicked)");
+      return;
+    } else if (movementStepCounter == 3 || movementStepCounter == 4 || movementStepCounter ==5 || movementStepCounter == 6 ) {
       nearRobot1 =true;
       System.out.println("Near robot 1: TRUE");
-
     } else {
       nearRobot1 =false;
       System.out.println("Near robot 1: FALSE");
-    }
+    }  
   }
 
   public boolean isNearRobot1() {
@@ -437,7 +449,7 @@ public class Robot {
   //     System.out.println("Animation stopped. Final position reached.");
   //     return; // Exit to stop further updates
   // }
-    System.out.println("Current Step Counter: " + movementStepCounter);
+    // System.out.println("Current Step Counter: " + movementStepCounter);
     updateMove(elapsedTime);
   }
 
