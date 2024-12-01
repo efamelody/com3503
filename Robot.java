@@ -431,20 +431,14 @@ public class Robot {
     if (isButtonClicked()) {
         nearRobot1 = true;
         System.out.println("Near robot 1: TRUE (Dance button clicked)");
+    }
 
         // Check movement step conditions if the button was clicked
-        if (movementStepCounter == 3 || movementStepCounter == 4 || movementStepCounter == 5 || movementStepCounter == 6) {
-            nearRobot1 = true;
-            System.out.println("Near robot 1: TRUE (Movement step condition met)");
-        } else {
-            // nearRobot1 = false;
-            System.out.println("Near robot 1: FALSE (Movement step condition not met)");
-        }
-    } else {
-        // If no button is clicked, set nearRobot1 to false
-        nearRobot1 = false;
-        System.out.println("Near robot 1: FALSE (No button clicked)");
-    }
+    if (movementStepCounter == 3 || movementStepCounter == 4 || movementStepCounter == 5 || movementStepCounter == 6) {
+        nearRobot1 = true;
+        System.out.println("Near robot 1: TRUE (Movement step condition met)");
+    }  
+    
 }
 
 
