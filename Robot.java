@@ -431,13 +431,15 @@ public class Robot {
     if (isButtonClicked()) {
         nearRobot1 = true;
         System.out.println("Near robot 1: TRUE (Dance button clicked)");
+        return;
     }
 
         // Check movement step conditions if the button was clicked
     if (movementStepCounter == 3 || movementStepCounter == 4 || movementStepCounter == 5 || movementStepCounter == 6) {
         nearRobot1 = true;
         System.out.println("Near robot 1: TRUE (Movement step condition met)");
-    } else if (movementStepCounter == 0 || movementStepCounter == 1 || movementStepCounter == 2 || movementStepCounter == 7){
+    } 
+    if (movementStepCounter == 0 || movementStepCounter == 1 || movementStepCounter == 2 || movementStepCounter == 7){
       nearRobot1 = false;
     } 
     

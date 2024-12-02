@@ -85,17 +85,7 @@ public class L04 extends JFrame {
         }
     });
     buttonPanel.add(stopButton);
-    JButton stop2Button = new JButton("Start Robot 2");
-    stop2Button.addActionListener(e -> {
-        // Robot robot = glEventListener.getRobot();
-         // Check if robot is initialized
-        glEventListener.setButtonClicked2(true);
-        System.out.println("Move button clicked: Robot 2 starts moving.");
-       
-    });
-    buttonPanel.add(stop2Button);
-
-    JButton pauseButton = new JButton("Pause Robot 2");
+    JButton pauseButton = new JButton("Start/Stop Robot 2");
     pauseButton.addActionListener(e -> {
         glEventListener.setPauseButton(!glEventListener.isPaused()); // Toggle pause state
         if (glEventListener.isPaused()) {

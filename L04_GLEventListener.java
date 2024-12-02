@@ -343,14 +343,6 @@ public class L04_GLEventListener implements GLEventListener {
     rotateUpper2.setTransform(Mat4Transform.rotateAroundZ(rotateUpper2Angle));
     twoBranchRoot.update(); // IMPORTANT – the scene graph has changed
   }
-   
-  public void setButtonClicked2(boolean buttonClicked2) {
-    this.buttonClicked2 = buttonClicked2;
-  }
-
-  public boolean isStopButtonClicked2() {
-      return buttonClicked2;
-  }
 
   public void setPauseButton(boolean paused) {
     this.paused = paused;
@@ -419,14 +411,11 @@ public class L04_GLEventListener implements GLEventListener {
     System.out.println("Elapsed Time: " + elapsedTime);
     System.out.println("Delta Time: " + deltaTime);
     previousTime = (float) elapsedTime; // Update previousTime for the next frame
-    if (!isPaused()){
-      
+    if (!isPaused()){  
       robot.updateAnimation(deltaTime*500f);
-      robot.nearRobot1();
-     
-
+      // robot.nearRobot1();
     } else{
-      robot.nearRobot1();
+      // robot.nearRobot1();
       System.out.println("Robot 2 is paused.");
     }
     // robot.updateAnimation(deltaTime*500f);
