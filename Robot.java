@@ -439,7 +439,9 @@ public class Robot {
         System.out.println("Near robot 1: TRUE (Movement step condition met)");
     }  
     
-}
+  }
+
+
 
 
   public boolean isNearRobot1() {

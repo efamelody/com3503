@@ -86,7 +86,7 @@ public class L04_GLEventListener implements GLEventListener {
   private SGNode robotRoot;
   private Model sphere, sphereBase, sphereBody, sphereArm, sphereHead;
   private SGNode twoBranchRoot;
-  // private boolean buttonClicked = false;
+  private boolean buttonClicked2 = false;
 
   private TransformNode translateX, rotateAll, rotateUpper1, rotateUpper2, rotateHead;
   private float xPosition = 0.5f;
@@ -343,13 +343,13 @@ public class L04_GLEventListener implements GLEventListener {
     twoBranchRoot.update(); // IMPORTANT – the scene graph has changed
   }
    
-  // public void setButtonClicked(boolean buttonClicked) {
-  //   this.buttonClicked = buttonClicked;
-  // }
+  public void setButtonClicked2(boolean buttonClicked2) {
+    this.buttonClicked2 = buttonClicked2;
+  }
 
-  // public boolean isButtonClicked() {
-  //     return buttonClicked;
-  // }
+  public boolean isStopButtonClicked2() {
+      return buttonClicked2;
+  }
   
   public void render(GL3 gl) {
     gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
@@ -409,7 +409,10 @@ public class L04_GLEventListener implements GLEventListener {
     System.out.println("Elapsed Time: " + elapsedTime);
     System.out.println("Delta Time: " + deltaTime);
     previousTime = (float) elapsedTime; // Update previousTime for the next frame
-    robot.updateAnimation(deltaTime*500f);
+    if (isStopButtonClicked2()){
+      robot.updateAnimation(deltaTime*500f);
+    }
+    // robot.updateAnimation(deltaTime*500f);
     robot.render(gl);
     tt6.setModelMatrix(getMforTT7(elapsedTime));       // change transform
     tt6.render(gl);
