@@ -85,7 +85,7 @@ public class L04 extends JFrame {
         }
     });
     buttonPanel.add(stopButton);
-    JButton stop2Button = new JButton("Stop Robot 2");
+    JButton stop2Button = new JButton("Start Robot 2");
     stop2Button.addActionListener(e -> {
         // Robot robot = glEventListener.getRobot();
          // Check if robot is initialized
@@ -94,6 +94,17 @@ public class L04 extends JFrame {
        
     });
     buttonPanel.add(stop2Button);
+
+    JButton pauseButton = new JButton("Pause Robot 2");
+    pauseButton.addActionListener(e -> {
+        glEventListener.setPauseButton(!glEventListener.isPaused()); // Toggle pause state
+        if (glEventListener.isPaused()) {
+            System.out.println("Pause button clicked: Robot 2 is now paused.");
+        } else {
+            System.out.println("Pause button clicked: Robot 2 resumes moving.");
+        }
+    });
+    buttonPanel.add(pauseButton); 
     // Add the panel to the bottom of the frame
     this.add(buttonPanel, BorderLayout.SOUTH);
 

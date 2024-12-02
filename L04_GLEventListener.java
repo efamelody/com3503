@@ -87,6 +87,7 @@ public class L04_GLEventListener implements GLEventListener {
   private Model sphere, sphereBase, sphereBody, sphereArm, sphereHead;
   private SGNode twoBranchRoot;
   private boolean buttonClicked2 = false;
+  private boolean paused = false;
 
   private TransformNode translateX, rotateAll, rotateUpper1, rotateUpper2, rotateHead;
   private float xPosition = 0.5f;
@@ -350,6 +351,14 @@ public class L04_GLEventListener implements GLEventListener {
   public boolean isStopButtonClicked2() {
       return buttonClicked2;
   }
+
+  public void setPauseButton(boolean paused) {
+    this.paused = paused;
+  }
+
+  public boolean isPaused() {
+      return paused;
+  }
   
   public void render(GL3 gl) {
     gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
@@ -368,7 +377,8 @@ public class L04_GLEventListener implements GLEventListener {
     
     if (robot.isNearRobot1()) {
       updateBranches();  // Only update branches during these steps
-   }
+   } 
+   
     robot.nearRobot1();
     twoBranchRoot.draw(gl);
     cube.setModelMatrix(getMforCube());     // change transform
@@ -409,8 +419,10 @@ public class L04_GLEventListener implements GLEventListener {
     System.out.println("Elapsed Time: " + elapsedTime);
     System.out.println("Delta Time: " + deltaTime);
     previousTime = (float) elapsedTime; // Update previousTime for the next frame
-    if (isStopButtonClicked2()){
+    if (isStopButtonClicked2() && !isPaused()){
       robot.updateAnimation(deltaTime*500f);
+    } else{
+      System.out.println("Robot 2 is paused.");
     }
     // robot.updateAnimation(deltaTime*500f);
     robot.render(gl);
