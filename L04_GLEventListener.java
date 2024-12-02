@@ -419,9 +419,14 @@ public class L04_GLEventListener implements GLEventListener {
     System.out.println("Elapsed Time: " + elapsedTime);
     System.out.println("Delta Time: " + deltaTime);
     previousTime = (float) elapsedTime; // Update previousTime for the next frame
-    if (isStopButtonClicked2() && !isPaused()){
+    if (!isPaused()){
+      
       robot.updateAnimation(deltaTime*500f);
+      robot.nearRobot1();
+     
+
     } else{
+      robot.nearRobot1();
       System.out.println("Robot 2 is paused.");
     }
     // robot.updateAnimation(deltaTime*500f);

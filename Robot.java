@@ -437,7 +437,9 @@ public class Robot {
     if (movementStepCounter == 3 || movementStepCounter == 4 || movementStepCounter == 5 || movementStepCounter == 6) {
         nearRobot1 = true;
         System.out.println("Near robot 1: TRUE (Movement step condition met)");
-    }  
+    } else if (movementStepCounter == 0 || movementStepCounter == 1 || movementStepCounter == 2 || movementStepCounter == 7){
+      nearRobot1 = false;
+    } 
     
   }
 
