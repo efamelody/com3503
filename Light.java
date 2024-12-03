@@ -14,6 +14,10 @@ public class Light {
   private int[] casingVertexBufferId = new int[1];
   private int[] casingElementBufferId = new int[1];
   private int[] casingVertexArrayId = new int[1];
+  public static final float[] vertices =Sphere.vertices.clone();
+  public static final int[] indices = Sphere.indices.clone();
+  public static final float[] casingVertices = Sphere.vertices.clone();
+  public static final int[] casingIndices = Sphere.indices.clone();
   
     
   public Light(GL3 gl) {
@@ -63,10 +67,11 @@ public class Light {
   }*/
   
   public void render(GL3 gl) { //, Mat4 perspective, Mat4 view) {
+    float time = (float) System.currentTimeMillis() / 1000.0f; // Dynamic rotation based on time
+    float angle = time * 50.0f; // 50 degrees per second
     Mat4 model = new Mat4(1);
-    model = Mat4.multiply(Mat4Transform.scale(0.3f,1f,0.3f), model);
+    model = Mat4.multiply(Mat4Transform.scale(0.3f,0.3f,0.3f), model);
     model = Mat4.multiply(Mat4Transform.translate(position), model);
-    
     Mat4 mvpMatrix = Mat4.multiply(camera.getPerspectiveMatrix(), Mat4.multiply(camera.getViewMatrix(), model));
     
     shader.use(gl);
@@ -80,8 +85,26 @@ public class Light {
     // Render casing with a different shader
     Shader casingShader = new Shader(gl, "assets/shaders/vs_standard.txt", "assets/shaders/fs_standard_2t.txt");
     casingShader.use(gl); // Switch to the casing shader
-
-    Mat4 casingModel = Mat4.multiply(Mat4Transform.translate(position), Mat4Transform.scale(1f, 1f, 1f));
+    Mat4 casingModel = new Mat4(1);
+    // casingModel = Mat4.multiply(Mat4Transform.translate(position),casingModel);
+    // casingModel = Mat4.multiply(Mat4Transform.translate(0.0f, 0.0f, -0.5f), casingModel);
+    // casingModel = Mat4.multiply(casingModel, Mat4Transform.translate(0.5f,0.0f,0.0f));
+    // casingModel = Mat4.multiply(Mat4Transform.rotateAroundY(angle), casingModel);
+    // casingModel = Mat4.multiply(casingModel, Mat4Transform.translate(0.5f,0.0f,0.5f));
+    casingModel = Mat4.multiply(Mat4Transform.scale(0.3f, 0.3f, 0.3f), casingModel);
+    // casingModel = Mat4.multiply(Mat4Transform.translate(position),casingModel);
+    casingModel = Mat4.multiply(Mat4Transform.translate(0.1f,0.0f,0.1f), casingModel);
+    
+    casingModel = Mat4.multiply(Mat4Transform.rotateAroundY(angle), casingModel);
+    casingModel = Mat4.multiply(Mat4Transform.translate(position),casingModel);
+    // casingModel = Mat4.multiply(Mat4Transform.translate(0.1f,0.0f,0.1f), casingModel);
+    // Step 1: Offset the casing away from the light source
+    // casingModel = Mat4.multiply(Mat4Transform.rotateAroundY(angle), casingModel);
+    // casingModel = Mat4.multiply(Mat4Transform.translate(position),casingModel);
+    // casingModel = Mat4.multiply(Mat4Transform.rotateAroundY(angle), casingModel);
+    // casingModel = Mat4.multiply(Mat4Transform.translate(0.0001f,0.0f,0.0001f), casingModel);
+    // casingModel = Mat4.multiply(Mat4Transform.translate(position),casingModel);
+    // casingModel = Mat4.multiply(casingModel, Mat4Transform.translate(0.5f,0.0f,0.5f));
     Mat4 casingMvpMatrix = Mat4.multiply(camera.getPerspectiveMatrix(), Mat4.multiply(camera.getViewMatrix(), casingModel));
     casingShader.setFloatArray(gl, "mvpMatrix", casingMvpMatrix.toFloatArrayForGLSL());
 
@@ -110,42 +133,33 @@ public class Light {
   }
 
   private void fillCasingBuffers(GL3 gl) {
-    // float[] casingVertices = new float[] {
-    //   -0.6f, -0.6f, -0.6f,
-    //   -0.6f, -0.6f,  0.6f,
-    //   -0.6f,  0.6f, -0.6f,
-    //   -0.6f,  0.6f,  0.6f,
-    //    0.6f, -0.6f, -0.6f,
-    //    0.6f, -0.6f,  0.6f,
-    //    0.6f,  0.6f, -0.6f,
-    //    0.6f,  0.6f,  0.6f
-    // };
-
-    // int[] casingIndices = new int[] {
-    //   0, 1, 3, 3, 2, 0, // front
-    //   4, 5, 7, 7, 6, 4, // back
-    //   0, 4, 6, 6, 2, 0, // left
-    //   1, 5, 7, 7, 3, 1, // right
-    //   2, 3, 7, 7, 6, 2, // top
-    //   0, 1, 5, 5, 4, 0  // bottom
-    // };
+    int stride = vertexStride; // Use the same stride as in fillBuffers
+    int numXYZFloats = vertexXYZFloats; // Use the same number of floats for position
 
     gl.glGenVertexArrays(1, casingVertexArrayId, 0);
     gl.glBindVertexArray(casingVertexArrayId[0]);
 
+    // Generate and bind the vertex buffer
     gl.glGenBuffers(1, casingVertexBufferId, 0);
     gl.glBindBuffer(GL.GL_ARRAY_BUFFER, casingVertexBufferId[0]);
     FloatBuffer fb = Buffers.newDirectFloatBuffer(casingVertices);
     gl.glBufferData(GL.GL_ARRAY_BUFFER, Float.BYTES * casingVertices.length, fb, GL.GL_STATIC_DRAW);
 
-    gl.glVertexAttribPointer(0, 3, GL.GL_FLOAT, false, 3 * Float.BYTES, 0);
+    // Setup vertex attributes
+    int offset = 0;
+    gl.glVertexAttribPointer(0, numXYZFloats, GL.GL_FLOAT, false, stride * Float.BYTES, offset);
     gl.glEnableVertexAttribArray(0);
 
+    // Generate and bind the element buffer
     gl.glGenBuffers(1, casingElementBufferId, 0);
     IntBuffer ib = Buffers.newDirectIntBuffer(casingIndices);
     gl.glBindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, casingElementBufferId[0]);
     gl.glBufferData(GL.GL_ELEMENT_ARRAY_BUFFER, Integer.BYTES * casingIndices.length, ib, GL.GL_STATIC_DRAW);
+
+    // Unbind the VAO
+    gl.glBindVertexArray(0);
   }
+
 
   public void dispose(GL3 gl) {
     gl.glDeleteBuffers(1, vertexBufferId, 0);
@@ -162,57 +176,13 @@ public class Light {
    */
   // anticlockwise/counterclockwise ordering
 
-  
-  public static final float[] casingVertices = {
-    // Copy the Sphere's vertex data here
-    -0.5f, -0.5f, -0.5f,  // 0
-    -0.5f, -0.5f,  0.5f,  // 1
-    -0.5f,  0.5f, -0.5f,  // 2
-    -0.5f,  0.5f,  0.5f,  // 3
-     0.5f, -0.5f, -0.5f,  // 4
-     0.5f, -0.5f,  0.5f,  // 5
-     0.5f,  0.5f, -0.5f,  // 6
-     0.5f,  0.5f,  0.5f   // 7
-  };
 
-  public static final int[] casingIndices = {
-      0, 1, 3, 3, 2, 0, // front
-      4, 6, 7, 7, 5, 4, // back
-      0, 4, 6, 6, 2, 0, // left
-      1, 5, 7, 7, 3, 1, // right
-      2, 3, 7, 7, 6, 2, // top
-      0, 1, 5, 5, 4, 0  // bottom
-  };
 
     
   
-    public static final float[] vertices = new float[] {  // x,y,z
-      -0.5f, -0.5f, -0.5f,  // 0
-      -0.5f, -0.5f,  0.5f,  // 1
-      -0.5f,  0.5f, -0.5f,  // 2
-      -0.5f,  0.5f,  0.5f,  // 3
-       0.5f, -0.5f, -0.5f,  // 4
-       0.5f, -0.5f,  0.5f,  // 5
-       0.5f,  0.5f, -0.5f,  // 6
-       0.5f,  0.5f,  0.5f   // 7
-     };
+
     
-    public static final int[] indices =  new int[] {
-      0,1,3, // x -ve 
-      3,2,0, // x -ve
-      4,6,7, // x +ve
-      7,5,4, // x +ve
-      1,5,7, // z +ve
-      7,3,1, // z +ve
-      6,4,0, // z -ve
-      0,2,6, // z -ve
-      0,4,5, // y -ve
-      5,1,0, // y -ve
-      2,3,7, // y +ve
-      7,6,2  // y +ve
-    };
-    
-  private int vertexStride = 3;
+  private int vertexStride = 8;
   private int vertexXYZFloats = 3;
   
   // ***************************************************
