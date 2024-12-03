@@ -89,15 +89,16 @@ public class L04_GLEventListener implements GLEventListener {
   private boolean buttonClicked2 = false;
   private boolean paused = false;
 
-  private TransformNode translateX, rotateAll, rotateUpper1, rotateUpper2, rotateHead;
+  private TransformNode translateX, rotateAll, rotateUpper1, rotateUpper2, rotateHead, headBalloon;
   private float xPosition = 0.5f;
   
   private float rotateAllAngleStart = 25, rotateAllAngle = rotateAllAngleStart;
   private float rotateHeadStart = 30, rotateHeadAngle = rotateHeadStart;
-  private float rotateUpper1AngleStart = -60, rotateUpper1Angle = rotateUpper1AngleStart;
-  private float rotateUpper2AngleStart = 30, rotateUpper2Angle = rotateUpper2AngleStart;
+  private float rotateUpper1AngleStart = 120, rotateUpper1Angle = rotateUpper1AngleStart;
+  private float rotateUpper2AngleStart = 90, rotateUpper2Angle = rotateUpper2AngleStart;
   private float rotationAngle = 0.0f;
   private float previousTime = 0f;
+  private float headScaleFactor;
   
 
   public L04_GLEventListener(Robot robot) {
@@ -241,7 +242,9 @@ public class L04_GLEventListener implements GLEventListener {
     rotateAll = new TransformNode("rotateAroundZ("+rotateAllAngle+")", Mat4Transform.rotateAroundZ(rotateAllAngle));
     rotateUpper1 = new TransformNode("rotateAroundZ("+rotateUpper1Angle+")",Mat4Transform.rotateAroundZ(rotateUpper1Angle));
     rotateUpper2 = new TransformNode("rotateAroundZ("+rotateUpper2Angle+")",Mat4Transform.rotateAroundZ(rotateUpper2Angle));
-    rotateHead = new TransformNode("rotateAroundZ("+rotateHead+")",Mat4Transform.rotateAroundZ(rotateHeadAngle));
+    rotateHead = new TransformNode("rotateAroundZ("+rotateHead+")",Mat4Transform.rotateAroundY(rotateHeadAngle));
+    headBalloon = new TransformNode("scaleHead", Mat4Transform.scale(headScaleFactor,headScaleFactor,headScaleFactor));  //Translating it to the corner of the room
+    headBalloon.setTransform(Mat4Transform.scale(1.0f, 1.0f, 1.0f));
     // TransformNode sceneTranslation = new TransformNode("translate(" + 5.0f + "," + 0.0f + "," + -10f + ")",Mat4Transform.translate(15.0f, 0.0f, -10f));
 
     twoBranchRoot.addChild(translateX);
@@ -259,8 +262,9 @@ public class L04_GLEventListener implements GLEventListener {
               // upperBranch2.addChild(head);
               // head.addChild(rotateHead);
           lowerBranch.addChild(translateBaseToTop);
-            translateBaseToTop.addChild(head);
-              head.addChild(rotateHead);
+            translateBaseToTop.addChild(rotateHead);
+            rotateHead.addChild(headBalloon);
+              headBalloon.addChild(head);
           //   base.addChild(rotateHead);
               // sceneTranslation.addChild(translateX);
                 // upperBranch2.addChild(sceneTranslation);
@@ -334,13 +338,16 @@ public class L04_GLEventListener implements GLEventListener {
   private void updateBranches() {
     double elapsedTime = getSeconds()-startTime;
     rotateAllAngle = rotateAllAngleStart*(float)Math.sin(elapsedTime);
-    rotateUpper1Angle = rotateUpper1AngleStart*(float)Math.sin(elapsedTime*0.7f);
-    rotateUpper2Angle = rotateUpper2AngleStart*(float)Math.sin(elapsedTime*0.7f);
+    rotateUpper1Angle = rotateUpper1AngleStart*(float)Math.sin(elapsedTime*0.4f);
+    rotateUpper2Angle = rotateUpper2AngleStart*(float)Math.sin(elapsedTime*0.4f);
     rotateHeadAngle = rotateHeadStart*(float)Math.sin(elapsedTime*0.7f);
     rotateHead.setTransform(Mat4Transform.rotateAroundZ(rotateHeadAngle));
     rotateAll.setTransform(Mat4Transform.rotateAroundZ(rotateAllAngle));
     rotateUpper1.setTransform(Mat4Transform.rotateAroundZ(rotateUpper1Angle));
     rotateUpper2.setTransform(Mat4Transform.rotateAroundZ(rotateUpper2Angle));
+    headScaleFactor = 2.0f + 0.5f *(float)Math.sin(elapsedTime*0.7f);
+    // headBalloon.setTransform(Mat4Transform.scale(1.0f, 1.0f, 1.0f));
+    headBalloon.setTransform(Mat4Transform.scale(headScaleFactor, headScaleFactor, headScaleFactor));
     twoBranchRoot.update(); // IMPORTANT – the scene graph has changed
   }
 

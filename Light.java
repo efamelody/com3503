@@ -92,19 +92,9 @@ public class Light {
     // casingModel = Mat4.multiply(Mat4Transform.rotateAroundY(angle), casingModel);
     // casingModel = Mat4.multiply(casingModel, Mat4Transform.translate(0.5f,0.0f,0.5f));
     casingModel = Mat4.multiply(Mat4Transform.scale(0.3f, 0.3f, 0.3f), casingModel);
-    // casingModel = Mat4.multiply(Mat4Transform.translate(position),casingModel);
     casingModel = Mat4.multiply(Mat4Transform.translate(0.1f,0.0f,0.1f), casingModel);
-    
     casingModel = Mat4.multiply(Mat4Transform.rotateAroundY(angle), casingModel);
     casingModel = Mat4.multiply(Mat4Transform.translate(position),casingModel);
-    // casingModel = Mat4.multiply(Mat4Transform.translate(0.1f,0.0f,0.1f), casingModel);
-    // Step 1: Offset the casing away from the light source
-    // casingModel = Mat4.multiply(Mat4Transform.rotateAroundY(angle), casingModel);
-    // casingModel = Mat4.multiply(Mat4Transform.translate(position),casingModel);
-    // casingModel = Mat4.multiply(Mat4Transform.rotateAroundY(angle), casingModel);
-    // casingModel = Mat4.multiply(Mat4Transform.translate(0.0001f,0.0f,0.0001f), casingModel);
-    // casingModel = Mat4.multiply(Mat4Transform.translate(position),casingModel);
-    // casingModel = Mat4.multiply(casingModel, Mat4Transform.translate(0.5f,0.0f,0.5f));
     Mat4 casingMvpMatrix = Mat4.multiply(camera.getPerspectiveMatrix(), Mat4.multiply(camera.getViewMatrix(), casingModel));
     casingShader.setFloatArray(gl, "mvpMatrix", casingMvpMatrix.toFloatArrayForGLSL());
 
