@@ -461,8 +461,8 @@ public class L04_GLEventListener implements GLEventListener {
   // As the transforms do not change over time for this object, they could be stored once rather than continually being calculated
   private Mat4 getMforCube() {
     Mat4 modelMatrix = new Mat4(1);
-    modelMatrix = Mat4.multiply(Mat4Transform.translate(2.0f,0.5f,2.0f), modelMatrix);
-    modelMatrix = Mat4.multiply(Mat4Transform.scale(2f,4f,2f), modelMatrix);
+    modelMatrix = Mat4.multiply(Mat4Transform.translate(6.0f,0.5f,4.0f), modelMatrix);
+    modelMatrix = Mat4.multiply(Mat4Transform.scale(1f,4f,1f), modelMatrix);
     return modelMatrix;
   }
 
@@ -479,7 +479,7 @@ public class L04_GLEventListener implements GLEventListener {
     modelMatrix = Mat4.multiply(Mat4Transform.rotateAroundY(angle), modelMatrix);
 
     // Position the globe 4 units up along the Y-axis
-    modelMatrix = Mat4.multiply(Mat4Transform.translate(4.0f, cubeHeight/2 + globeRadius+ 0.5f, 4.0f), modelMatrix);
+    modelMatrix = Mat4.multiply(Mat4Transform.translate(6.0f, cubeHeight/2 + globeRadius+ 0.5f, 4.0f), modelMatrix);
 
    
     return modelMatrix;
