@@ -61,8 +61,8 @@ public class Robot {
     
     float bodyHeight = 3f;
     float bodyWidth = 2f;
-    float bodyDepth = 1f;
-    float headScale = 2f;
+    float bodyDepth = 2.5f;
+    float headScale = 1.5f;
     float armLength = 3.5f;
     float armScale = 0.5f;
     float legLength = 3.5f;
@@ -80,12 +80,12 @@ public class Robot {
 
     
     robotRoot = new NameNode("root");
-    robotMoveTranslate = new TransformNode("robot transform",Mat4Transform.translate(xPosition,-1f,0));
+    robotMoveTranslate = new TransformNode("robot transform",Mat4Transform.translate(0f,0f,0));
     robotPlaced = new TransformNode("robot transform",Mat4Transform.translate(4f,0,-4f));
     robotTurn = new TransformNode("leftarm rotate",Mat4Transform.rotateAroundY(turnAngle));
 
     
-    TransformNode robotTranslate = new TransformNode("robot transform",Mat4Transform.translate(0,legLength,0));
+    TransformNode robotTranslate = new TransformNode("robot transform",Mat4Transform.translate(0,2f,0));
     TransformNode robotScale = new TransformNode("robot scale",Mat4Transform.scale(1f,0.75f,1f));
     
     // make pieces
@@ -107,15 +107,7 @@ public class Robot {
     robotScale.addChild(body);                       // Attach body
       body.addChild(head);                               // Attach head
       head.addChild(lightTransform);      // Add the light's transform to the head
-      lightTransform.addChild(lightNode); // Add the light node to the transform
-      // lightNode.addChild(casing);
-
-      body.addChild(leftArm);                            // Attach left arm
-      body.addChild(rightArm);                           // Attach right arm
-      body.addChild(leftLeg);                            // Attach left leg
-      body.addChild(rightLeg);                           // Attach right leg
-      
-    
+      lightTransform.addChild(lightNode); // Add the light node to the transform    
     robotRoot.update();  // IMPORTANT - don't forget this
 
   }
@@ -144,22 +136,12 @@ public class Robot {
     return cube;
   } 
 
-  // private NameNode makeCasing(GL3 gl, float bodyWidth, float bodyHeight, float bodyDepth, Model cube) {
-  //   NameNode body = new NameNode("body");
-  //   Mat4 m = Mat4Transform.scale(0.3f,1f,0.3f);
-  //   m = Mat4.multiply(m, Mat4Transform.translate(0,bodyHeight-1f,0));
-  //   TransformNode bodyTransform = new TransformNode("body transform", m);
-  //   ModelNode bodyShape = new ModelNode("Cube(body)", cube);
-  //   body.addChild(bodyTransform);
-  //   bodyTransform.addChild(bodyShape);
-  //   return body;
-  // }
   
 
   private NameNode makeBody(GL3 gl, float bodyWidth, float bodyHeight, float bodyDepth, Model cube) {
     NameNode body = new NameNode("body");
     Mat4 m = Mat4Transform.scale(bodyWidth,bodyHeight,bodyDepth);
-    m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
+    m = Mat4.multiply(m, Mat4Transform.translate(0,0.0f,0));
     TransformNode bodyTransform = new TransformNode("body transform", m);
     ModelNode bodyShape = new ModelNode("Cube(body)", cube);
     body.addChild(bodyTransform);
@@ -170,7 +152,7 @@ public class Robot {
   private NameNode makeHead(GL3 gl, float bodyHeight, float headScale, Model sphere) {
     NameNode head = new NameNode("head"); 
     Mat4 m = new Mat4(1);
-    m = Mat4.multiply(m, Mat4Transform.translate(0,bodyHeight,0));
+    m = Mat4.multiply(m, Mat4Transform.translate(0,0f,1.5f));
     m = Mat4.multiply(m, Mat4Transform.scale(headScale,headScale,headScale));
     m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
     TransformNode headTransform = new TransformNode("head transform", m);
@@ -261,7 +243,7 @@ public class Robot {
   // }
  
   private void updateMove(double elapsedTime) {
-    float robotHeight =8.5f;
+    float robotHeight =4f;
     if (movementStepCounter == 0) {  // Step 1: Move Straight
         float movementZ = (float) (elapsedTime * speed);
         zPosition += movementZ;  // Update Z position
@@ -399,7 +381,7 @@ public class Robot {
 
   public Vec3 getPosition() {
     float offset =4f;
-    return new Vec3(xPosition + offset, 7.5f, zPosition- offset);
+    return new Vec3(xPosition + offset, 4f, zPosition- offset);
   }
 
   public void setButtonClicked(boolean buttonClicked) {
