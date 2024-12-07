@@ -40,7 +40,16 @@ public class L04_GLEventListener implements GLEventListener {
     gl.glFrontFace(GL.GL_CCW);    // default is 'CCW'
     gl.glEnable(GL.GL_CULL_FACE); // default is 'not enabled'
     gl.glCullFace(GL.GL_BACK);   // default is 'back', assuming CCW
-
+    spotlight = new Light(gl);
+    spotlight.setCamera(camera);
+    // Configure the spotlight properties
+    // spotlight.setPosition(new Vec3(2.0f, 4.0f, 2.0f)); // Spotlight position
+    // spotlight.setDirection(new Vec3(2, 4, 2)); // Spotlight direction (pointing down)
+    spotlight.setCutOff((float)Math.cos(Math.toRadians(20.5f))); // Inner cutoff angle
+    spotlight.setOuterCutOff((float)Math.cos(Math.toRadians(30.5f))); // Outer cutoff angle
+    spotlight.setConstant(1.0f); // Attenuation constant
+    spotlight.setLinear(0.09f); // Attenuation linear term
+    spotlight.setQuadratic(0.032f); // Attenuation quadratic term
     initialise(gl);
     startTime = getSeconds();
   }
@@ -56,6 +65,7 @@ public class L04_GLEventListener implements GLEventListener {
   /* Draw */
   public void display(GLAutoDrawable drawable) {
     GL3 gl = drawable.getGL().getGL3();
+    spotlight.render(gl);
     render(gl);
   }
 
@@ -81,6 +91,7 @@ public class L04_GLEventListener implements GLEventListener {
   private Model cube, tt1, tt2, tt3, tt4, tt5, tt6, globe;
   private Mat4 perspective;
   private Light light;
+  private Light spotlight;
   private Robot robot;
   private Mat4[] roomTransforms;
   private SGNode robotRoot;
@@ -135,14 +146,14 @@ public class L04_GLEventListener implements GLEventListener {
     
     String name = "flat plane";
     Mesh mesh = new Mesh(gl, TwoTriangles.vertices.clone(), TwoTriangles.indices.clone());
-    Shader shader = new Shader(gl, "assets/shaders/vs_standard.txt", "assets/shaders/fs_standard_1t.txt");
+    Shader shader = new Shader(gl, "assets/shaders/vs_standard.txt", "assets/shaders/fs_spotlight.txt");
     Material material = new Material(new Vec3(0.1f, 0.5f, 0.91f), new Vec3(0.1f, 0.5f, 0.91f), new Vec3(0.3f, 0.3f, 0.3f), 4.0f);
     // no textures for this model
     tt1 = new Model(name, mesh, new Mat4(1), shader, material, light, camera , textures.get("floor_texture"));
 
     name = "back wall";
     mesh = new Mesh(gl, TwoTriangles.vertices.clone(), TwoTriangles.indices.clone());
-    shader = new Shader(gl, "assets/shaders/vs_standard.txt", "assets/shaders/fs_standard_1t.txt");
+    shader = new Shader(gl, "assets/shaders/vs_standard.txt", "assets/shaders/fs_spotlight.txt");
     // material = new Material(basecolor, basecolor, new Vec3(0.3f, 0.3f, 0.3f), 4.0f);
     // diffuse texture only for this model
     tt2 = new Model(name, mesh, new Mat4(1), shader, material, light, camera, textures.get("circus"));
@@ -157,7 +168,7 @@ public class L04_GLEventListener implements GLEventListener {
    
     name = "sidewall";
     mesh = new Mesh(gl, WallWithWindow.vertices.clone(), WallWithWindow.indices.clone());
-    shader = new Shader(gl, "assets/shaders/vs_standard.txt", "assets/shaders/fs_standard_1t.txt");
+    shader = new Shader(gl, "assets/shaders/vs_standard.txt", "assets/shaders/fs_spotlight.txt");
     material = new Material(new Vec3(0.1f, 0.5f, 0.91f), new Vec3(0.1f, 0.5f, 0.91f), new Vec3(0.3f, 0.3f, 0.3f), 4.0f);
     //material = new Material(basecolor, basecolor, new Vec3(0.3f, 0.3f, 0.3f), 4.0f);
     // no textures for this model
@@ -165,15 +176,15 @@ public class L04_GLEventListener implements GLEventListener {
 
     name = "stars";
     mesh = new Mesh(gl, TwoTriangles.vertices.clone(), TwoTriangles.indices.clone());
-    shader = new Shader(gl, "assets/shaders/vs_standard.txt", "assets/shaders/fs_standard_1t.txt");
+    shader = new Shader(gl, "assets/shaders/vs_standard.txt", "assets/shaders/fs_spotlight.txt");
     material = new Material(new Vec3(0.1f, 0.5f, 0.91f), new Vec3(0.1f, 0.5f, 0.91f), new Vec3(0.3f, 0.3f, 0.3f), 4.0f);
     //material = new Material(basecolor, basecolor, new Vec3(0.3f, 0.3f, 0.3f), 4.0f);
     // no textures for this model
-    tt6 = new Model(name, mesh, new Mat4(1), shader, material, light, camera , textures.get("star"));
+    tt6 = new Model(name, mesh, new Mat4(1), shader, material, light, camera , textures.get("star"), textures.get("star"));
     
     name = "Right wall";
     mesh = new Mesh(gl, RightWall.vertices.clone(), RightWall.indices.clone());
-    shader = new Shader(gl, "assets/shaders/vs_standard.txt", "assets/shaders/fs_standard_1t.txt");
+    shader = new Shader(gl, "assets/shaders/vs_standard.txt", "assets/shaders/fs_spotlight.txt");
     material = new Material(new Vec3(0.1f, 0.5f, 0.91f), new Vec3(0.1f, 0.5f, 0.91f), new Vec3(0.3f, 0.3f, 0.3f), 4.0f);
     //material = new Material(basecolor, basecolor, new Vec3(0.3f, 0.3f, 0.3f), 4.0f);
     // no textures for this model
@@ -370,7 +381,29 @@ public class L04_GLEventListener implements GLEventListener {
     light.setPosition(robotPos);  // changing light position each frame
     // light.setPosition(getLightPosition());
     light.render(gl);
-    // updateBranches();
+    spotlight.setPosition(new Vec3(0.0f, 6.0f, 0.0f));
+    spotlight.setDirection(new Vec3(3.0f, 8.0f, -3.0f)); // Directly downward
+   // Set the spotlight position slightly above the robot
+  //  Vec3 spotlightPos = new Vec3(robotPos.x, robotPos.y + 2.0f, robotPos.z); // Adjust the height as needed
+  //  spotlight.setPosition(spotlightPos);
+
+  //  // Define the back wall position
+  //  // Assume the back wall is centered at (0, size * 0.5f, -size * 0.5f) based on getMforTT2()
+  //  float size = 16f; // Same as the size in getMforTT2()
+  //  Vec3 backWallCenter =  new Vec3(0f, 8.0f, 8.0f); 
+
+  //  // Set the spotlight's direction to point at the back wall
+  //  Vec3 direction = Vec3.subtract(robotPos, spotlightPos);
+  //  direction.normalize(); // Normalize the direction vector
+  //  spotlight.setDirection(direction);
+
+  //   // Debug logs
+  //   System.out.println("Spotlight Position: " + spotlightPos);
+  //   System.out.println("Back Wall Center: " + backWallCenter);
+  //   System.out.println("Spotlight Direction: " + direction);
+
+   // Render the spotlight
+     spotlight.render(gl);
 
     //IF XPOSITION IS A CERTAIN DISTANCE, STOP DANCING
     

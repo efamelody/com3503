@@ -1,0 +1,52 @@
+#version 330 core
+
+// Output fragment color
+out vec4 FragColor;
+
+// Input from the vertex shader
+in vec3 FragPos;  // Fragment position in world space
+in vec3 Normal;   // Normal at the fragment
+in vec2 TexCoords; // Texture coordinates
+
+// Material properties
+struct Material {
+    sampler2D diffuse;
+    sampler2D specular;
+    float shininess;
+};
+
+// Spotlight properties
+struct Light {
+    vec3 position;
+    vec3 direction;
+    float cutOff;
+    float outerCutOff;
+
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+
+    float constant;
+    float linear;
+    float quadratic;
+};
+
+// Uniforms
+uniform Material material;
+uniform Light light;
+uniform vec3 viewPos;
+
+void main() {
+    vec3 lightDir = normalize(light.position - FragPos); // Normalize light direction
+    float theta = dot(lightDir, normalize(-light.direction)); // Calculate the angle
+
+    float epsilon = light.cutOff - light.outerCutOff; // Calculate the cutoff range
+    float intensity = clamp((theta - light.outerCutOff) / epsilon, 0.0, 1.0); // Clamp intensity
+
+    FragColor = vec4(vec3(intensity), 1.0); // Visualize spotlight intensity
+}
+
+
+
+
+

@@ -7,8 +7,16 @@ public class Light {
   
   private Material material;
   private Vec3 position;
+  private Vec3 direction;
+  private float cutOff; // Inner cutoff in radians
+  private float outerCutOff; // Outer cutoff in radians
+  private float constant;
+  private float linear;
+  private float quadratic;
+
   private Mat4 model;
   private Shader shader;
+  private Shader casingShader;
   private Camera camera;
   //private Mat4 perspective;
   private int[] casingVertexBufferId = new int[1];
@@ -18,16 +26,48 @@ public class Light {
   public static final int[] indices = Sphere.indices.clone();
   public static final float[] casingVertices = Sphere.vertices.clone();
   public static final int[] casingIndices = Sphere.indices.clone();
+
+  public void setDirection(Vec3 direction) {
+    this.direction = direction;
+  }
+
+  public void setCutOff(float cutOff) {
+      this.cutOff = cutOff;
+  }
+
+  public void setOuterCutOff(float outerCutOff) {
+      this.outerCutOff = outerCutOff;
+  }
+
+  public void setConstant(float constant) {
+      this.constant = constant;
+  }
+
+  public void setLinear(float linear) {
+      this.linear = linear;
+  }
+
+  public void setQuadratic(float quadratic) {
+      this.quadratic = quadratic;
+  }
+
   
     
   public Light(GL3 gl) {
     material = new Material();
-    material.setAmbient(0.3f, 0.3f, 0.3f);
-    material.setDiffuse(0.7f, 0.7f, 0.7f);
-    material.setSpecular(0.7f, 0.7f, 0.7f);
-    position = new Vec3(3f,2f,1f);
+    material.setAmbient(0.2f, 0.2f, 0.2f);
+    material.setDiffuse(0.8f, 0.8f, 0.8f);
+    material.setSpecular(1.0f, 1.0f, 1.0f);
+    position = new Vec3(2.0f, 4.0f, 2.0f);
+    direction = new Vec3(8.0f, 8.0f, 8.0f);
+    cutOff = (float) Math.cos(Math.toRadians(20.5f));
+    outerCutOff = (float) Math.cos(Math.toRadians(30.5f));
+    constant = 1.0f;
+    linear = 0.09f;
+    quadratic = 0.032f;
     model = new Mat4(1);
     shader = new Shader(gl, "assets/shaders/vs_light_01.txt", "assets/shaders/fs_light_01.txt");
+    casingShader = new Shader(gl, "assets/shaders/vs_standard.txt", "assets/shaders/fs_standard_2t.txt");
     fillBuffers(gl);
     fillCasingBuffers(gl);
   }
@@ -76,6 +116,21 @@ public class Light {
     
     shader.use(gl);
     shader.setFloatArray(gl, "mvpMatrix", mvpMatrix.toFloatArrayForGLSL());
+    shader.setVec3(gl, "light.position", position);
+    shader.setVec3(gl, "light.direction", direction);
+    shader.setFloat(gl, "light.cutOff", cutOff);
+    shader.setFloat(gl, "light.outerCutOff", outerCutOff);
+    shader.setFloat(gl, "light.constant", constant);
+    shader.setFloat(gl, "light.linear", linear);
+    shader.setFloat(gl, "light.quadratic", quadratic);
+    shader.setVec3(gl, "light.ambient", material.getAmbient());
+    shader.setVec3(gl, "light.diffuse", material.getDiffuse());
+    shader.setVec3(gl, "light.specular", material.getSpecular());
+    System.out.println("Light Position: " + position);
+    System.out.println("Light Direction: " + direction);
+    System.out.println("Cutoff: " + cutOff + ", Outer Cutoff: " + outerCutOff);
+
+
   
     gl.glBindVertexArray(vertexArrayId[0]);
     gl.glDrawElements(GL.GL_TRIANGLES, indices.length, GL.GL_UNSIGNED_INT, 0);

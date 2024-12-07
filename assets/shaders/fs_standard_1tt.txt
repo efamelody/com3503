@@ -1,0 +1,60 @@
+#version 330 core
+
+struct Light {
+    vec3 position; // Light position
+    vec3 direction; // Spotlight direction
+    vec3 ambient; // Ambient color
+    vec3 diffuse; // Diffuse color
+    vec3 specular; // Specular color
+    float innerCutOff; // Inner cut-off cosine
+    float outerCutOff; // Outer cut-off cosine
+    float constant; // Attenuation constant
+    float linear; // Attenuation linear factor
+    float quadratic; // Attenuation quadratic factor
+};
+
+struct Material {
+    vec3 ambient; // Material ambient color
+    vec3 diffuse; // Material diffuse color
+    vec3 specular; // Material specular color
+    float shininess; // Shininess factor
+};
+
+uniform Light light;
+uniform Material material;
+uniform vec3 viewPos;
+
+in vec3 aPos;
+in vec3 aNormal;
+
+out vec4 fragColor;
+
+void main() {
+    // Ambient component
+    vec3 ambient = light.ambient * material.ambient;
+
+    // Diffuse component
+    vec3 norm = normalize(aNormal);
+    vec3 lightDir = normalize(light.position - aPos);
+    float diff = max(dot(norm, lightDir), 0.0);
+    vec3 diffuse = light.diffuse * (diff * material.diffuse);
+
+    // Specular component
+    vec3 viewDir = normalize(viewPos - aPos);
+    vec3 reflectDir = reflect(-lightDir, norm);
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+    vec3 specular = light.specular * (spec * material.specular);
+
+    // Spotlight intensity
+    float theta = dot(lightDir, normalize(-light.direction));
+    float epsilon = light.innerCutOff - light.outerCutOff;
+    float intensity = clamp((theta - light.outerCutOff) / epsilon, 0.0, 1.0);
+
+    // Attenuation
+    float distance = length(light.position - aPos);
+    float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
+
+    // Combine results
+    vec3 result = (ambient + (diffuse + specular) * intensity) * attenuation;
+    fragColor = vec4(result, 1.0);
+}
