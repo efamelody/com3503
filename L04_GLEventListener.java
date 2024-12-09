@@ -133,6 +133,7 @@ public class L04_GLEventListener implements GLEventListener {
     light = new Light(gl);
     light.setCamera(camera);
     
+    
     String name = "flat plane";
     Mesh mesh = new Mesh(gl, TwoTriangles.vertices.clone(), TwoTriangles.indices.clone());
     Shader shader = new Shader(gl, "assets/shaders/vs_standard.txt", "assets/shaders/fs_standard_1t.txt");
