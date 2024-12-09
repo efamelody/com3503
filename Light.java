@@ -6,6 +6,7 @@ import com.jogamp.opengl.*;
 public class Light {
   
   private Material material;
+  private float intensity = 1.0f;
   private Vec3 position;
   private Mat4 model;
   private Shader shader;
@@ -22,14 +23,26 @@ public class Light {
     
   public Light(GL3 gl) {
     material = new Material();
-    material.setAmbient(0.3f, 0.3f, 0.3f);
-    material.setDiffuse(0.7f, 0.7f, 0.7f);
-    material.setSpecular(0.7f, 0.7f, 0.7f);
+    // this.intensity = intensity;
+    material.setAmbient(0.3f * intensity, 0.3f * intensity, 0.3f * intensity);
+    material.setDiffuse(0.7f * intensity, 0.7f * intensity, 0.7f * intensity);
+    material.setSpecular(0.7f * intensity, 0.7f * intensity, 0.7f * intensity);
     position = new Vec3(3f,2f,1f);
     model = new Mat4(1);
     shader = new Shader(gl, "assets/shaders/vs_light_01.txt", "assets/shaders/fs_light_01.txt");
     fillBuffers(gl);
     fillCasingBuffers(gl);
+  }
+
+  public float getIntensity() {
+    return intensity;
+  }
+
+  public void setIntensity(float intensity){
+    this.intensity=intensity;
+    material.setAmbient(0.3f * intensity, 0.3f * intensity, 0.3f * intensity);
+    material.setDiffuse(0.7f * intensity, 0.7f * intensity, 0.7f * intensity);
+    material.setSpecular(0.7f * intensity, 0.7f * intensity, 0.7f * intensity);
   }
 
 
@@ -76,6 +89,10 @@ public class Light {
     
     shader.use(gl);
     shader.setFloatArray(gl, "mvpMatrix", mvpMatrix.toFloatArrayForGLSL());
+    shader.setVec3(gl, "light.ambient", material.getAmbient());
+    shader.setVec3(gl, "light.diffuse", material.getDiffuse());
+    shader.setVec3(gl, "light.specular", material.getSpecular());
+
   
     gl.glBindVertexArray(vertexArrayId[0]);
     gl.glDrawElements(GL.GL_TRIANGLES, indices.length, GL.GL_UNSIGNED_INT, 0);

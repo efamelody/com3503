@@ -7,6 +7,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JSlider;
 
 import com.jogamp.opengl.*;
 import com.jogamp.opengl.awt.GLCanvas;
@@ -17,6 +18,7 @@ public class L04 extends JFrame {
   private static final int WIDTH = 1024;
   private static final int HEIGHT = 768;
   private Robot robot;
+  private Light light;
   private boolean buttonClicked = false; 
   private boolean stopButtonClicked = false;
   private static final Dimension dimension = new Dimension(WIDTH, HEIGHT);
@@ -95,6 +97,21 @@ public class L04 extends JFrame {
         }
     });
     buttonPanel.add(pauseButton); 
+    // Add a slider for light intensity control
+    JSlider lightIntensitySlider = new JSlider(JSlider.HORIZONTAL, 0, 100, 70); // Min=0, Max=100, Initial=70
+    lightIntensitySlider.setMajorTickSpacing(20);
+    lightIntensitySlider.setMinorTickSpacing(5);
+    lightIntensitySlider.setPaintTicks(true);
+    lightIntensitySlider.setPaintLabels(true);
+    lightIntensitySlider.addChangeListener(e -> {
+        int sliderValue = lightIntensitySlider.getValue();
+        float intensity = sliderValue / 100.0f; // Convert to 0.0 to 1.0
+        if (glEventListener.getLight() != null) {
+            glEventListener.getLight().setIntensity(intensity);
+        }
+    });
+    buttonPanel.add(lightIntensitySlider);
+
     // Add the panel to the bottom of the frame
     this.add(buttonPanel, BorderLayout.SOUTH);
 

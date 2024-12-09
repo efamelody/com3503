@@ -263,7 +263,7 @@ public class Robot {
             // System.out.println("Turning started. Target angle: " + targetTurnAngle);
         }
 
-        float angleIncrement = turnSpeed * (float) elapsedTime;
+        float angleIncrement = Math.max(turnSpeed * (float) elapsedTime, 0.001f);
         turnAngle += angleIncrement;
         light.setPosition(new Vec3(xPosition, robotHeight, zPosition));
         robotTurn.setTransform(Mat4Transform.rotateAroundY(-turnAngle));
@@ -295,7 +295,7 @@ public class Robot {
           // System.out.println("Turning started. Target angle: " + targetTurnAngle);
       }
 
-      float angleIncrement = (turnSpeed * (float) elapsedTime);
+      float angleIncrement = Math.max(turnSpeed * (float) elapsedTime, 0.1f);
       turnAngle += angleIncrement;
 
       robotTurn.setTransform(Mat4Transform.rotateAroundY(-turnAngle - 90f));
@@ -330,7 +330,7 @@ public class Robot {
           // System.out.println("Turning started. Target angle: " + targetTurnAngle);
       }
 
-      float angleIncrement = turnSpeed * (float) elapsedTime;
+      float angleIncrement = Math.max(turnSpeed * (float) elapsedTime, 0.1f);
       turnAngle += angleIncrement;
 
       robotTurn.setTransform(Mat4Transform.rotateAroundY(turnAngle));
@@ -378,6 +378,11 @@ public class Robot {
       }
    }
   }
+
+  public Light getLight() {
+    return this.light;
+  }
+
 
   public Vec3 getPosition() {
     float offset =4f;

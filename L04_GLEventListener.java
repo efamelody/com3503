@@ -286,6 +286,10 @@ public class L04_GLEventListener implements GLEventListener {
     return robot;
   }
 
+  public Light getLight() {
+    return light;
+  }
+
   
 
 
