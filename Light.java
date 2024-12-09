@@ -92,6 +92,7 @@ public class Light {
     shader.setVec3(gl, "light.ambient", material.getAmbient());
     shader.setVec3(gl, "light.diffuse", material.getDiffuse());
     shader.setVec3(gl, "light.specular", material.getSpecular());
+    shader.setVec3(gl, "light.direction", new Vec3(8f, 8.0f, 8f));
 
   
     gl.glBindVertexArray(vertexArrayId[0]);
