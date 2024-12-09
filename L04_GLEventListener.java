@@ -111,6 +111,8 @@ public class L04_GLEventListener implements GLEventListener {
     startTime = System.currentTimeMillis();
     textures.add(gl, "diffuse", "assets/textures/container2.jpg", GL3.GL_CLAMP_TO_EDGE, GL3.GL_CLAMP_TO_EDGE);
     textures.add(gl, "specular", "assets/textures/container2_specular.jpg", GL3.GL_CLAMP_TO_EDGE, GL3.GL_CLAMP_TO_EDGE);
+    textures.add(gl, "diffuse_nur", "assets/textures/diffuse_nur.jpg", GL3.GL_CLAMP_TO_EDGE, GL3.GL_CLAMP_TO_EDGE);
+    textures.add(gl, "specular_nur", "assets/textures/specular_nur.jpg", GL3.GL_CLAMP_TO_EDGE, GL3.GL_CLAMP_TO_EDGE);
     textures.add(gl, "floor_texture", "assets/textures/chequerboard.jpg", GL3.GL_CLAMP_TO_EDGE, GL3.GL_CLAMP_TO_EDGE);
     textures.add(gl, "ceiling_texture", "assets/textures/cloud.jpg", GL3.GL_CLAMP_TO_EDGE, GL3.GL_CLAMP_TO_EDGE);
     textures.add(gl, "wall_texture", "assets/textures/wattBook.jpg", GL3.GL_CLAMP_TO_EDGE, GL3.GL_CLAMP_TO_EDGE);
@@ -143,10 +145,10 @@ public class L04_GLEventListener implements GLEventListener {
 
     name = "back wall";
     mesh = new Mesh(gl, TwoTriangles.vertices.clone(), TwoTriangles.indices.clone());
-    shader = new Shader(gl, "assets/shaders/vs_standard.txt", "assets/shaders/fs_standard_1t.txt");
+    shader = new Shader(gl, "assets/shaders/vs_standard.txt", "assets/shaders/fs_standard_2t.txt");
     // material = new Material(basecolor, basecolor, new Vec3(0.3f, 0.3f, 0.3f), 4.0f);
     // diffuse texture only for this model
-    tt2 = new Model(name, mesh, new Mat4(1), shader, material, light, camera, textures.get("circus"));
+    tt2 = new Model(name, mesh, new Mat4(1), shader, material, light, camera, textures.get("diffuse_nur"), textures.get("specular_nur"));
     
     name = "window";
     mesh = new Mesh(gl, TwoTriangles.vertices.clone(), TwoTriangles.indices.clone());
