@@ -3,6 +3,7 @@ import java.awt.event.*;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -98,6 +99,7 @@ public class L04 extends JFrame {
     });
     buttonPanel.add(pauseButton); 
     // Add a slider for light intensity control
+    JLabel lightIntensityLabel = new JLabel("Light Intensity: 70%");
     JSlider lightIntensitySlider = new JSlider(JSlider.HORIZONTAL, 0, 100, 70); // Min=0, Max=100, Initial=70
     lightIntensitySlider.setMajorTickSpacing(20);
     lightIntensitySlider.setMinorTickSpacing(5);
@@ -105,12 +107,14 @@ public class L04 extends JFrame {
     lightIntensitySlider.setPaintLabels(true);
     lightIntensitySlider.addChangeListener(e -> {
         int sliderValue = lightIntensitySlider.getValue();
+        lightIntensityLabel.setText("Light Intensity: " + sliderValue + "%");
         float intensity = sliderValue / 100.0f; // Convert to 0.0 to 1.0
         if (glEventListener.getLight() != null) {
             glEventListener.getLight().setIntensity(intensity);
         }
     });
     buttonPanel.add(lightIntensitySlider);
+    buttonPanel.add(lightIntensityLabel);
 
     // Add the panel to the bottom of the frame
     this.add(buttonPanel, BorderLayout.SOUTH);
