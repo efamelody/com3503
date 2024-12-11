@@ -19,6 +19,12 @@ public class Light {
   public static final int[] indices = Sphere.indices.clone();
   public static final float[] casingVertices = Sphere.vertices.clone();
   public static final int[] casingIndices = Sphere.indices.clone();
+  // private float intensity;
+  private float cutOff;
+  private float outerCutOff;
+  private float constant, linear, quadratic;
+  private boolean isSpotlight = false;
+  private Vec3 direction;
   
     
   public Light(GL3 gl) {
@@ -32,6 +38,87 @@ public class Light {
     shader = new Shader(gl, "assets/shaders/vs_light_01.txt", "assets/shaders/fs_light_01.txt");
     fillBuffers(gl);
     fillCasingBuffers(gl);
+    this.direction = new Vec3(0.0f, 2.0f, 0.0f);
+    this.cutOff = 0.9978f;
+    this.outerCutOff = 0.953f;
+    this.constant = 1.0f;
+    this.linear = 0.7f;
+    this.quadratic = 1.8f;
+    this.intensity = .3f;
+  }
+
+  // Getter for material ambient
+  public Vec3 getAmbient() {
+    return material.getAmbient();
+  }
+
+
+  // Getter for material diffuse
+  public Vec3 getDiffuse() {
+    return material.getDiffuse();
+  }
+
+  // Getter for material specular
+  public Vec3 getSpecular() {
+    return material.getSpecular();
+  }
+
+  public boolean getIsSpotlight() {
+    return isSpotlight;
+  }
+
+  public void setIsSpotlight(boolean isSpotlight) {
+    this.isSpotlight = isSpotlight;
+  }
+  
+
+
+  public Vec3 getDirection() {
+    return direction;
+  }
+
+  public void setDirection(Vec3 direction) {
+      this.direction = direction;
+  }
+
+  public float getCutOff() {
+      return cutOff;
+  }
+
+  public void setCutOff(float cutOff) {
+      this.cutOff = cutOff;
+  }
+
+  public float getOuterCutOff() {
+      return outerCutOff;
+  }
+
+  public void setOuterCutOff(float outerCutOff) {
+      this.outerCutOff = outerCutOff;
+  }
+
+  public float getConstant() {
+      return constant;
+  }
+
+  public void setConstant(float constant) {
+      this.constant = constant;
+  }
+
+  public float getLinear() {
+      return linear;
+  }
+
+  public void setLinear(float linear) {
+      this.linear = linear;
+  }
+
+  public float getQuadratic() {
+      return quadratic;
+  }
+
+  public void setQuadratic(float quadratic) {
+      this.quadratic = quadratic;
   }
 
   public float getIntensity() {

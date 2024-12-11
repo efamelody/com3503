@@ -91,6 +91,7 @@ public class L04_GLEventListener implements GLEventListener {
   private SGNode twoBranchRoot;
   private boolean buttonClicked2 = false;
   private boolean paused = false;
+  private Shader shader;
 
   private TransformNode translateX, rotateAll, rotateUpper1, rotateUpper2, rotateHead, headBalloon;
   private float xPosition = 0.5f;
@@ -144,10 +145,11 @@ public class L04_GLEventListener implements GLEventListener {
     
     String name = "flat plane";
     Mesh mesh = new Mesh(gl, TwoTriangles.vertices.clone(), TwoTriangles.indices.clone());
-    Shader shader = new Shader(gl, "assets/shaders/vs_standard.txt", "assets/shaders/fs_standard_m_1t.txt");
+    Shader shader = new Shader(gl, "assets/shaders/vs_standard.txt", "assets/shaders/fs_standard_m_0t.txt");
     Material material = new Material(new Vec3(0.1f, 0.5f, 0.91f), new Vec3(0.1f, 0.5f, 0.91f), new Vec3(0.3f, 0.3f, 0.3f), 4.0f);
+    // Material material = new Material(basecolor, basecolor, new Vec3(0.3f, 0.3f, 0.3f), 4.0f);
     // no textures for this model
-    tt1 = new ModelMultipleLights(name, mesh, new Mat4(1), shader, material, lights, camera , textures.get("floor_texture"));
+    tt1 = new ModelMultipleLights(name, mesh, new Mat4(1), shader, material, lights, camera );
 
     name = "back wall";
     mesh = new Mesh(gl, TwoTriangles.vertices.clone(), TwoTriangles.indices.clone());
@@ -387,11 +389,36 @@ public class L04_GLEventListener implements GLEventListener {
 
     //IF XPOSITION IS A CERTAIN DISTANCE, STOP DANCING
 
-    lights[0].setPosition(getLight0Position());  // changing light position each frame
+    // lights[0].setPosition(getLight0Position());  // changing light position each frame
     lights[0].render(gl);
 
-    lights[1].setPosition(getLight1Position());  // changing light position each frame
+    // lights[1].setPosition(getLight1Position());  // changing light position each frame
     lights[1].render(gl);
+    // lights[0] = new Light(gl);
+    // //lights[0].setIsSpotlight(true); // This light is a spotlight
+
+    // lights[1] = new Light(gl);
+    // //lights[1].setIsSpotlight(false); // This light is not a spotlight
+
+    // for (int i=0; i<lights.length; i++) {
+    //   // System.out.println(lights[i].getIsSpotlight());
+      
+    //   shader.setVec3(gl, "lights["+i+"].position", lights[i].getPosition());
+    //   shader.setVec3(gl, "lights["+i+"].ambient", lights[i].getMaterial().getAmbient());
+    //   shader.setVec3(gl, "lights["+i+"].diffuse", lights[i].getMaterial().getDiffuse());
+    //   shader.setVec3(gl, "lights["+i+"].specular", lights[i].getMaterial().getSpecular());
+
+    //   shader.setVec3(gl, "lights["+i+"].direction", lights[i].getDirection());
+    //   shader.setFloat(gl, "lights["+i+"].intensity", lights[i].getIntensity());
+    //   shader.setFloat(gl, "lights["+i+"].cutOff", lights[i].getCutOff());
+    //   shader.setFloat(gl, "lights["+i+"].outerCutOff", lights[i].getOuterCutOff());
+    //   shader.setFloat(gl, "lights["+i+"].constant", lights[i].getConstant());
+    //   shader.setFloat(gl, "lights["+i+"].linear", lights[i].getLinear());
+    //   shader.setFloat(gl, "lights["+i+"].quadratric", lights[i].getQuadratic());
+
+    //   //hader.setFloat(gl, "lights["+i+"].isSpotlight", lights[i].getIsSpotlight());
+
+    // }
     
     if (robot.isNearRobot1()) {
       updateBranches();  // Only update branches during these steps

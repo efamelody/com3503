@@ -116,6 +116,14 @@ public class ModelMultipleLights {
       shader.setVec3(gl, "lights["+i+"].ambient", lights[i].getMaterial().getAmbient());
       shader.setVec3(gl, "lights["+i+"].diffuse", lights[i].getMaterial().getDiffuse());
       shader.setVec3(gl, "lights["+i+"].specular", lights[i].getMaterial().getSpecular());
+      shader.setVec3(gl, "lights["+i+"].direction", lights[i].getDirection());
+      shader.setFloat(gl, "lights["+i+"].intensity", lights[i].getIntensity());
+      shader.setFloat(gl, "lights["+i+"].cutOff", lights[i].getCutOff());
+      shader.setFloat(gl, "lights["+i+"].outerCutOff", lights[i].getOuterCutOff());
+      shader.setFloat(gl, "lights["+i+"].constant", lights[i].getConstant());
+      shader.setFloat(gl, "lights["+i+"].linear", lights[i].getLinear());
+      shader.setFloat(gl, "lights["+i+"].quadratric", lights[i].getQuadratic());
+      // shader.setFloat(gl, "lights["+i+"].isSpotlight", lights[i].getIsSpotlight());
     }
 
     shader.setVec3(gl, "material.ambient", material.getAmbient());
