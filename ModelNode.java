@@ -2,9 +2,9 @@ import com.jogamp.opengl.*;
 
 public class ModelNode extends SGNode {
 
-  protected Model model;
+  protected ModelMultipleLights model;
 
-  public ModelNode(String name, Model m) {
+  public ModelNode(String name, ModelMultipleLights m) {
     super(name);
     model = m; 
   }

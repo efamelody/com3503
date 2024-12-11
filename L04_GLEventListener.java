@@ -78,13 +78,16 @@ public class L04_GLEventListener implements GLEventListener {
   // textures
   private TextureLibrary textures;
 
-  private Model cube, tt1, tt2, tt3, tt4, tt5, tt6, globe;
+  // private Model cube, tt1, tt2, tt3, tt4, tt5, tt6, globe;
   private Mat4 perspective;
+  private ModelMultipleLights cube, tt1, tt2, tt3, tt4, tt5, tt6, globe, sphere, sphereBase, sphereBody, sphereArm, sphereHead;
+
   private Light light;
   private Robot robot;
   private Mat4[] roomTransforms;
   private SGNode robotRoot;
-  private Model sphere, sphereBase, sphereBody, sphereArm, sphereHead;
+  private Light[] lights = new Light[2];
+  // private Model  sphereBase, sphereBody, sphereArm, sphereHead;
   private SGNode twoBranchRoot;
   private boolean buttonClicked2 = false;
   private boolean paused = false;
@@ -132,8 +135,11 @@ public class L04_GLEventListener implements GLEventListener {
     textures.add(gl, "wall", "assets/textures/wall.png", GL3.GL_REPEAT, GL3.GL_REPEAT); 
     textures.add(gl, "pedestal", "assets/textures/pedestal.png", GL3.GL_CLAMP_TO_EDGE, GL3.GL_CLAMP_TO_EDGE);
     textures.add(gl, "circus", "assets/textures/circus.png", GL3.GL_CLAMP_TO_EDGE, GL3.GL_CLAMP_TO_EDGE);
-    light = new Light(gl);
-    light.setCamera(camera);
+    lights[0] = new Light(gl);
+    lights[0].setCamera(camera);
+    lights[1] = new Light(gl);
+    lights[1].setCamera(camera);
+    
     
     
     String name = "flat plane";
@@ -141,14 +147,14 @@ public class L04_GLEventListener implements GLEventListener {
     Shader shader = new Shader(gl, "assets/shaders/vs_standard.txt", "assets/shaders/fs_standard_1t.txt");
     Material material = new Material(new Vec3(0.1f, 0.5f, 0.91f), new Vec3(0.1f, 0.5f, 0.91f), new Vec3(0.3f, 0.3f, 0.3f), 4.0f);
     // no textures for this model
-    tt1 = new Model(name, mesh, new Mat4(1), shader, material, light, camera , textures.get("floor_texture"));
+    tt1 = new ModelMultipleLights(name, mesh, new Mat4(1), shader, material, lights, camera , textures.get("floor_texture"));
 
     name = "back wall";
     mesh = new Mesh(gl, TwoTriangles.vertices.clone(), TwoTriangles.indices.clone());
     shader = new Shader(gl, "assets/shaders/vs_standard.txt", "assets/shaders/fs_standard_2t.txt");
     // material = new Material(basecolor, basecolor, new Vec3(0.3f, 0.3f, 0.3f), 4.0f);
     // diffuse texture only for this model
-    tt2 = new Model(name, mesh, new Mat4(1), shader, material, light, camera, textures.get("diffuse_nur"), textures.get("specular_nur"));
+    tt2 = new ModelMultipleLights(name, mesh, new Mat4(1), shader, material, lights, camera, textures.get("diffuse_nur"), textures.get("specular_nur"));
     
     name = "window";
     mesh = new Mesh(gl, TwoTriangles.vertices.clone(), TwoTriangles.indices.clone());
@@ -156,7 +162,7 @@ public class L04_GLEventListener implements GLEventListener {
     material = new Material(new Vec3(0.1f, 0.5f, 0.91f), new Vec3(0.1f, 0.5f, 0.91f), new Vec3(0.3f, 0.3f, 0.3f), 4.0f);
     //material = new Material(basecolor, basecolor, new Vec3(0.3f, 0.3f, 0.3f), 4.0f);
     // no textures for this model
-    tt5 = new Model(name, mesh, new Mat4(1), shader, material, light, camera , textures.get("diffuse_jade"), textures.get("specular_jade"));
+    tt5 = new ModelMultipleLights(name, mesh, new Mat4(1), shader, material, lights, camera , textures.get("diffuse_jade"), textures.get("specular_jade"));
    
     name = "sidewall";
     mesh = new Mesh(gl, WallWithWindow.vertices.clone(), WallWithWindow.indices.clone());
@@ -164,7 +170,7 @@ public class L04_GLEventListener implements GLEventListener {
     material = new Material(new Vec3(0.1f, 0.5f, 0.91f), new Vec3(0.1f, 0.5f, 0.91f), new Vec3(0.3f, 0.3f, 0.3f), 4.0f);
     //material = new Material(basecolor, basecolor, new Vec3(0.3f, 0.3f, 0.3f), 4.0f);
     // no textures for this model
-    tt3 = new Model(name, mesh, new Mat4(1), shader, material, light, camera , textures.get("wall"));
+    tt3 = new ModelMultipleLights(name, mesh, new Mat4(1), shader, material, lights, camera , textures.get("wall"));
 
     name = "stars";
     mesh = new Mesh(gl, TwoTriangles.vertices.clone(), TwoTriangles.indices.clone());
@@ -172,7 +178,7 @@ public class L04_GLEventListener implements GLEventListener {
     material = new Material(new Vec3(0.1f, 0.5f, 0.91f), new Vec3(0.1f, 0.5f, 0.91f), new Vec3(0.3f, 0.3f, 0.3f), 4.0f);
     //material = new Material(basecolor, basecolor, new Vec3(0.3f, 0.3f, 0.3f), 4.0f);
     // no textures for this model
-    tt6 = new Model(name, mesh, new Mat4(1), shader, material, light, camera , textures.get("star"));
+    tt6 = new ModelMultipleLights(name, mesh, new Mat4(1), shader, material, lights, camera , textures.get("star"));
     
     name = "Right wall";
     mesh = new Mesh(gl, RightWall.vertices.clone(), RightWall.indices.clone());
@@ -180,13 +186,13 @@ public class L04_GLEventListener implements GLEventListener {
     material = new Material(new Vec3(0.1f, 0.5f, 0.91f), new Vec3(0.1f, 0.5f, 0.91f), new Vec3(0.3f, 0.3f, 0.3f), 4.0f);
     //material = new Material(basecolor, basecolor, new Vec3(0.3f, 0.3f, 0.3f), 4.0f);
     // no textures for this model
-    tt4 = new Model(name, mesh, new Mat4(1), shader, material, light, camera , textures.get("bear"));
+    tt4 = new ModelMultipleLights(name, mesh, new Mat4(1), shader, material, lights, camera , textures.get("bear"));
 
     name = "cube";
     mesh = new Mesh(gl, Cube.vertices.clone(), Cube.indices.clone());
     shader = new Shader(gl, "assets/shaders/vs_standard.txt", "assets/shaders/fs_standard_2t.txt");
     material = new Material(new Vec3(1.0f, 0.5f, 0.31f), new Vec3(1.0f, 0.5f, 0.31f), new Vec3(0.5f, 0.5f, 0.5f), 32.0f);
-    cube = new Model(name, mesh, new Mat4(1), shader, material, light, camera, textures.get("pedestal"), textures.get("pedestal"));
+    cube = new ModelMultipleLights(name, mesh, new Mat4(1), shader, material, lights, camera, textures.get("pedestal"), textures.get("pedestal"));
 
    float cubeHeight =1.0F;
    float globeRadius = 3.0f;
@@ -204,10 +210,10 @@ public class L04_GLEventListener implements GLEventListener {
     System.out.println(elapsedTime);
     // Mat4 modelMatrix =  Mat4Transform.rotateAroundY(angle);
     // globe = new Model(name, mesh, modelMatrix, shader, material, light, camera, textures.get("diffuse_jade"), textures.get("specular_jade"));
-    globe = new Model(name, mesh, new Mat4(1), shader, material, light, camera, textures.get("earth"));
+    globe = new ModelMultipleLights(name, mesh, new Mat4(1), shader, material, lights, camera, textures.get("earth"));
 
     //Robot 2
-    robot = new Robot(gl, camera, light, 
+    robot = new Robot(gl, camera, lights, 
                       textures.get("face2"), textures.get("cheetah"),
                       textures.get("clown"), textures.get("zebra"),
                       textures.get("base"), textures.get("base")); 
@@ -296,7 +302,7 @@ public class L04_GLEventListener implements GLEventListener {
 
 
   // the following two methods are quite similar and could be replaced with one method with suitable parameterisation
-  private SGNode makeLowerBranch(Model sphere, float sx, float sy, float sz) {
+  private SGNode makeLowerBranch(ModelMultipleLights sphere, float sx, float sy, float sz) {
     NameNode lowerBranchName = new NameNode("lower branch");
     Mat4 m = Mat4Transform.scale(sx,sy,sx);
     m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
@@ -307,7 +313,7 @@ public class L04_GLEventListener implements GLEventListener {
     return lowerBranchName;
   }
 
-  private SGNode makeUpperBranch(Model sphere, float sx, float sy, float sz) {
+  private SGNode makeUpperBranch(ModelMultipleLights sphere, float sx, float sy, float sz) {
     NameNode upperBranchName = new NameNode("upper branch");
     Mat4 m = Mat4Transform.scale(sx,sy,sz);
     // m = Mat4.multiply(Mat4Transform.rotateAroundX(90), m);
@@ -319,7 +325,7 @@ public class L04_GLEventListener implements GLEventListener {
     return upperBranchName;
   }
 
-  private SGNode makeBase(Model sphere, float sx, float sy, float sz) {
+  private SGNode makeBase(ModelMultipleLights  sphere, float sx, float sy, float sz) {
     NameNode upperBranchName = new NameNode("upper branch");
     Mat4 m = Mat4Transform.scale(sx,sy,sz);
     m = Mat4.multiply(Mat4Transform.rotateAroundX(90), m);
@@ -332,13 +338,13 @@ public class L04_GLEventListener implements GLEventListener {
   }
 
   //Creates 3D model returns a model Object, defines what object Looks like
-  private Model makeSphere(GL3 gl, Texture t1, Texture t2) {
+  private ModelMultipleLights makeSphere(GL3 gl, Texture t1, Texture t2) {
     String name= "sphere";
     Mesh mesh = new Mesh(gl, Sphere.vertices.clone(), Sphere.indices.clone());
     Shader shader = new Shader(gl, "assets/shaders/vs_standard.txt", "assets/shaders/fs_standard_2t.txt");
     Material material = new Material(new Vec3(1.0f, 0.5f, 0.31f), new Vec3(1.0f, 0.5f, 0.31f), new Vec3(0.5f, 0.5f, 0.5f), 32.0f);
     Mat4 modelMatrix = Mat4.multiply(Mat4Transform.scale(4,4,4), Mat4Transform.translate(0,0.5f,0));
-    Model sphere = new Model(name, mesh, modelMatrix, shader, material, light, camera, t1, t2);
+    ModelMultipleLights sphere = new ModelMultipleLights(name, mesh, modelMatrix, shader, material, lights, camera, t1, t2);
     return sphere;
   } 
 
@@ -374,12 +380,18 @@ public class L04_GLEventListener implements GLEventListener {
     Vec3 robotPos = robot.getPosition();
     float offset = 5f;
     System.out.println("Robot Position: X=" + robotPos.x + ", Y=" + robotPos.y + ", Z=" + robotPos.z);
-    light.setPosition(robotPos);  // changing light position each frame
-    // light.setPosition(getLightPosition());
-    light.render(gl);
+    // light.setPosition(robotPos);  // changing light position each frame
+    // // light.setPosition(getLightPosition());
+    // light.render(gl);
     // updateBranches();
 
     //IF XPOSITION IS A CERTAIN DISTANCE, STOP DANCING
+
+    lights[0].setPosition(getLight0Position());  // changing light position each frame
+    lights[0].render(gl);
+
+    lights[1].setPosition(getLight1Position());  // changing light position each frame
+    lights[1].render(gl);
     
     if (robot.isNearRobot1()) {
       updateBranches();  // Only update branches during these steps
@@ -620,4 +632,21 @@ public class L04_GLEventListener implements GLEventListener {
     return System.currentTimeMillis()/1000.0;
   }
 
+  private Vec3 getLight0Position() {
+    double elapsedTime = getSeconds()-startTime;
+    float x = 8.0f*(float)(Math.sin(Math.toRadians(elapsedTime*50)));
+    float y = 3.4f;
+    float z = 5.0f*(float)(Math.cos(Math.toRadians(elapsedTime*50)));
+    return new Vec3(x,y,z);
+  }
+
+  private Vec3 getLight1Position() {
+    double elapsedTime = getSeconds()-startTime;
+    float x = 8.0f*(float)(Math.sin(Math.toRadians(elapsedTime*80)));
+    float y = 7.4f;
+    float z = 3.0f*(float)(Math.cos(Math.toRadians(elapsedTime*80)));
+    return new Vec3(x,y,z);
+  }
+
 }
+
