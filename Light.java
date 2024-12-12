@@ -38,13 +38,13 @@ public class Light {
     shader = new Shader(gl, "assets/shaders/vs_light_01.txt", "assets/shaders/fs_light_01.txt");
     fillBuffers(gl);
     fillCasingBuffers(gl);
-    this.direction = new Vec3(0.0f, 2.0f, 0.0f);
+    this.direction = new Vec3(0.0f, 0.0f, -2.0f);
     this.cutOff = 0.9978f;
     this.outerCutOff = 0.953f;
     this.constant = 1.0f;
-    this.linear = 0.7f;
-    this.quadratic = 1.8f;
-    this.intensity = .3f;
+    this.linear = 0.09f;
+    this.quadratic = 0.032f;
+    this.intensity = .5f;
   }
 
   // Getter for material ambient
