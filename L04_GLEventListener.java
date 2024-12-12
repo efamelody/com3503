@@ -62,11 +62,41 @@ public class L04_GLEventListener implements GLEventListener {
   /* Clean up memory, if necessary */
   public void dispose(GLAutoDrawable drawable) {
     GL3 gl = drawable.getGL().getGL3();
-    cube.dispose(gl);
-    tt1.dispose(gl);
-    light.dispose(gl);
-    textures.destroy(gl);
-    sphere.dispose(gl);
+    // Dispose of models
+    if (cube != null) cube.dispose(gl);
+    if (tt1 != null) tt1.dispose(gl);
+    if (tt2 != null) tt2.dispose(gl);
+    if (tt3 != null) tt3.dispose(gl);
+    if (tt4 != null) tt4.dispose(gl);
+    if (tt5 != null) tt5.dispose(gl);
+    if (tt6 != null) tt6.dispose(gl);
+    if (globe != null) globe.dispose(gl);
+    if (sphere != null) sphere.dispose(gl);
+    if (sphereBase != null) sphereBase.dispose(gl);
+    if (sphereBody != null) sphereBody.dispose(gl);
+    if (sphereArm != null) sphereArm.dispose(gl);
+    if (sphereHead != null) sphereHead.dispose(gl);
+
+    // Dispose of textures
+    if (textures != null) {
+        textures.destroy(gl);
+    }
+
+    // Dispose of lights
+    if (lights != null) {
+        for (Light light : lights) {
+            if (light != null) {
+                light.dispose(gl);
+            }
+        }
+    }
+
+    // Dispose of the robot
+    if (robot != null) {
+        robot.dispose(gl);
+    }
+
+    System.out.println("Resources successfully disposed.");
   }
 
   // ***************************************************
@@ -394,6 +424,7 @@ public class L04_GLEventListener implements GLEventListener {
 
     // lights[1].setPosition(getLight1Position());  // changing light position each frame
     lights[1].render(gl);
+    lights[1].setPosition(robotPos);
     // lights[0] = new Light(gl);
     // //lights[0].setIsSpotlight(true); // This light is a spotlight
 
