@@ -25,6 +25,7 @@ public class Light {
   private float constant, linear, quadratic;
   private boolean isSpotlight = false;
   private Vec3 direction;
+  private int type = 0;
   
     
   public Light(GL3 gl) {
@@ -45,6 +46,14 @@ public class Light {
     this.linear = 0.09f;
     this.quadratic = 0.032f;
     this.intensity = .5f;
+  }
+
+  public int getType() {
+    return type;
+  }
+
+  public void setType(int type) {
+    this.type = type;
   }
 
   // Getter for material ambient

@@ -123,6 +123,7 @@ public class ModelMultipleLights {
       shader.setFloat(gl, "lights["+i+"].constant", lights[i].getConstant());
       shader.setFloat(gl, "lights["+i+"].linear", lights[i].getLinear());
       shader.setFloat(gl, "lights["+i+"].quadratric", lights[i].getQuadratic());
+      shader.setInt(gl, "lights[" + i + "].type", lights[i].getType());
       // shader.setFloat(gl, "lights["+i+"].isSpotlight", lights[i].getIsSpotlight());
     }
 

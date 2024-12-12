@@ -421,35 +421,12 @@ public class L04_GLEventListener implements GLEventListener {
 
     // lights[0].setPosition(getLight0Position());  // changing light position each frame
     lights[0].render(gl);
+    lights[0].setType(0);
 
     // lights[1].setPosition(getLight1Position());  // changing light position each frame
     lights[1].render(gl);
     lights[1].setPosition(robotPos);
-    // lights[0] = new Light(gl);
-    // //lights[0].setIsSpotlight(true); // This light is a spotlight
-
-    // lights[1] = new Light(gl);
-    // //lights[1].setIsSpotlight(false); // This light is not a spotlight
-
-    // for (int i=0; i<lights.length; i++) {
-    //   // System.out.println(lights[i].getIsSpotlight());
-      
-    //   shader.setVec3(gl, "lights["+i+"].position", lights[i].getPosition());
-    //   shader.setVec3(gl, "lights["+i+"].ambient", lights[i].getMaterial().getAmbient());
-    //   shader.setVec3(gl, "lights["+i+"].diffuse", lights[i].getMaterial().getDiffuse());
-    //   shader.setVec3(gl, "lights["+i+"].specular", lights[i].getMaterial().getSpecular());
-
-    //   shader.setVec3(gl, "lights["+i+"].direction", lights[i].getDirection());
-    //   shader.setFloat(gl, "lights["+i+"].intensity", lights[i].getIntensity());
-    //   shader.setFloat(gl, "lights["+i+"].cutOff", lights[i].getCutOff());
-    //   shader.setFloat(gl, "lights["+i+"].outerCutOff", lights[i].getOuterCutOff());
-    //   shader.setFloat(gl, "lights["+i+"].constant", lights[i].getConstant());
-    //   shader.setFloat(gl, "lights["+i+"].linear", lights[i].getLinear());
-    //   shader.setFloat(gl, "lights["+i+"].quadratric", lights[i].getQuadratic());
-
-    //   //hader.setFloat(gl, "lights["+i+"].isSpotlight", lights[i].getIsSpotlight());
-
-    // }
+    lights[1].setType(1);
     
     if (robot.isNearRobot1()) {
       updateBranches();  // Only update branches during these steps
