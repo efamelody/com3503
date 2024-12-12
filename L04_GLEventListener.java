@@ -403,6 +403,12 @@ public class L04_GLEventListener implements GLEventListener {
   public boolean isPaused() {
       return paused;
   }
+
+  public Light[] getLights() {
+    return lights;
+  }
+
+
   
   public void render(GL3 gl) {
     gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
@@ -420,10 +426,12 @@ public class L04_GLEventListener implements GLEventListener {
     //IF XPOSITION IS A CERTAIN DISTANCE, STOP DANCING
 
     // lights[0].setPosition(getLight0Position());  // changing light position each frame
+    //General Light
     lights[0].render(gl);
     lights[0].setType(0);
+    // lights[0].setIntensity(1.5f);
 
-    // lights[1].setPosition(getLight1Position());  // changing light position each frame
+    //Spotlight
     lights[1].render(gl);
     lights[1].setPosition(robotPos);
     lights[1].setType(1);
