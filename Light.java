@@ -217,7 +217,7 @@ public class Light {
     float translateZ = (float) (radius * Math.sin(theta)); // Circular Z-position
 
     // Apply translations to position casing around the light
-    casingModel = Mat4.multiply(casingModel, Mat4Transform.translate(position.x + translateX, position.y, position.z + translateZ));
+    casingModel = Mat4.multiply(casingModel, Mat4Transform.translate(position.x - translateX, position.y, position.z - translateZ));
     casingModel = Mat4.multiply(casingModel, Mat4Transform.rotateAroundY((float) Math.toDegrees(theta))); // Rotate casing around Y-axis
     casingModel = Mat4.multiply(casingModel, Mat4Transform.scale(0.2f, 0.2f, 0.2f)); // Scale casing
 
