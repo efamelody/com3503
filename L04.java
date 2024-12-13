@@ -137,9 +137,10 @@ public class L04 extends JFrame {
       // Spotlight Cone Size Panel
       JPanel spotlightControlPanel = new JPanel();
       spotlightControlPanel.setLayout(new GridLayout(1, 2));
+      int initialSliderValue = 3;
 
       JLabel spotlightLabel = new JLabel("Spotlight Cone Size: 0");
-      JSlider spotlightSlider = new JSlider(JSlider.HORIZONTAL, 0, 5, 0); // Range 0-5
+      JSlider spotlightSlider = new JSlider(JSlider.HORIZONTAL, 0, 5, initialSliderValue); // Range 0-5
       spotlightSlider.setMajorTickSpacing(1);
       spotlightSlider.setPaintTicks(true);
       spotlightSlider.setPaintLabels(true);
@@ -148,7 +149,7 @@ public class L04 extends JFrame {
           spotlightLabel.setText("Spotlight Cone Size: " + sliderValue);
 
           // Calculate inner and outer cutoff based on slider value
-          float innerCutoff = calculateInnerCutoff(sliderValue);
+          float innerCutoff = calculateInnerCutoff(initialSliderValue);
           float outerCutoff = calculateOuterCutoff(innerCutoff);
 
           // Update spotlight cutoff values
