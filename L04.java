@@ -243,13 +243,16 @@ public class L04 extends JFrame {
   }
   // Function to calculate inner cutoff based on slider value
   private float calculateInnerCutoff(int sliderValue) {
-    float[] innerCutoffValues = {0.91f, 0.93f, 0.95f, 0.97f, 0.99f, 0.9978f};
-    return innerCutoffValues[sliderValue];
+    // Map slider values (0 to 5) to cosines of angles for a smooth inner cutoff
+    float[] innerCutoffValues = {0.87f, 0.9f, 0.93f, 0.95f, 0.97f, 0.99f}; 
+    return innerCutoffValues[Math.min(sliderValue, innerCutoffValues.length - 1)];
   }
 
   // Function to calculate outer cutoff based on inner cutoff
   private float calculateOuterCutoff(float innerCutoff) {
-    return innerCutoff - 0.04f; // Fixed difference
+    // Make the outer cutoff 3-5% less than the inner cutoff for smooth transitions
+    float outerCutoff = innerCutoff - (0.03f + (1.0f - innerCutoff) * 0.02f);
+    return Math.max(outerCutoff, 0.1f); // Ensure it doesn't go below a minimum
   }
 }
 
