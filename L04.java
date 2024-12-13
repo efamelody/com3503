@@ -133,65 +133,96 @@ public class L04 extends JFrame {
       // Add slider row to the main panel
       mainPanel.add(sliderRow);
 
-      // Add cutoff controls for the spotlight
-      JPanel cutoffPanel = new JPanel();
-      cutoffPanel.setLayout(new GridLayout(2, 2)); // Organize sliders vertically
+      // // Add cutoff controls for the spotlight
+      // JPanel cutoffPanel = new JPanel();
+      // cutoffPanel.setLayout(new GridLayout(2, 2)); // Organize sliders vertically
 
-      JLabel innerCutoffLabel = new JLabel("Inner Cutoff: 85°");
-      JSlider innerCutoffSlider = new JSlider(JSlider.HORIZONTAL, 0, 90, 85);
-      innerCutoffSlider.setMajorTickSpacing(15);
-      innerCutoffSlider.setMinorTickSpacing(5);
-      innerCutoffSlider.setPaintTicks(true);
-      innerCutoffSlider.setPaintLabels(true);
+      // JLabel innerCutoffLabel = new JLabel("Inner Cutoff: 85°");
+      // JSlider innerCutoffSlider = new JSlider(JSlider.HORIZONTAL, 0, 90, 85);
+      // innerCutoffSlider.setMajorTickSpacing(15);
+      // innerCutoffSlider.setMinorTickSpacing(5);
+      // innerCutoffSlider.setPaintTicks(true);
+      // innerCutoffSlider.setPaintLabels(true);
 
-      JLabel outerCutoffLabel = new JLabel("Outer Cutoff: 90°");
-      JSlider outerCutoffSlider = new JSlider(JSlider.HORIZONTAL, 0, 90, 90);
-      outerCutoffSlider.setMajorTickSpacing(15);
-      outerCutoffSlider.setMinorTickSpacing(5);
-      outerCutoffSlider.setPaintTicks(true);
-      outerCutoffSlider.setPaintLabels(true);
+      // JLabel outerCutoffLabel = new JLabel("Outer Cutoff: 90°");
+      // JSlider outerCutoffSlider = new JSlider(JSlider.HORIZONTAL, 0, 90, 90);
+      // outerCutoffSlider.setMajorTickSpacing(15);
+      // outerCutoffSlider.setMinorTickSpacing(5);
+      // outerCutoffSlider.setPaintTicks(true);
+      // outerCutoffSlider.setPaintLabels(true);
 
-      // Inner cutoff listener
-      innerCutoffSlider.addChangeListener(e -> {
-          int innerValue = innerCutoffSlider.getValue();
-          int outerValue = outerCutoffSlider.getValue();
+      // // Inner cutoff listener
+      // innerCutoffSlider.addChangeListener(e -> {
+      //     int innerValue = innerCutoffSlider.getValue();
+      //     int outerValue = outerCutoffSlider.getValue();
 
-          if (innerValue >= outerValue) {
-              innerCutoffSlider.setValue(outerValue - 1);
-              return;
-          }
+      //     if (innerValue >= outerValue) {
+      //         innerCutoffSlider.setValue(outerValue - 1);
+      //         return;
+      //     }
 
-          innerCutoffLabel.setText("Inner Cutoff: " + innerValue + "°");
-          float innerCutoffCosine = (float) Math.cos(Math.toRadians(innerValue));
+      //     innerCutoffLabel.setText("Inner Cutoff: " + innerValue + "°");
+      //     float innerCutoffCosine = (float) Math.cos(Math.toRadians(innerValue));
+      //     Light[] lights = glEventListener.getLights();
+      //     if (lights != null && lights.length > 1) {
+      //         lights[1].setCutOff(innerCutoffCosine);
+      //     }
+      // });
+
+      // // Outer cutoff listener
+      // outerCutoffSlider.addChangeListener(e -> {
+      //     int innerValue = innerCutoffSlider.getValue();
+      //     int outerValue = outerCutoffSlider.getValue();
+
+      //     if (outerValue <= innerValue) {
+      //         outerCutoffSlider.setValue(innerValue + 1);
+      //         return;
+      //     }
+
+      //     outerCutoffLabel.setText("Outer Cutoff: " + outerValue + "°");
+      //     float outerCutoffCosine = (float) Math.cos(Math.toRadians(outerValue));
+      //     Light[] lights = glEventListener.getLights();
+      //     if (lights != null && lights.length > 1) {
+      //         lights[1].setOuterCutOff(outerCutoffCosine);
+      //     }
+      // });
+
+      // cutoffPanel.add(innerCutoffLabel);
+      // cutoffPanel.add(innerCutoffSlider);
+      // cutoffPanel.add(outerCutoffLabel);
+      // cutoffPanel.add(outerCutoffSlider);
+      
+
+      // Spotlight Cone Size Panel
+      JPanel spotlightControlPanel = new JPanel();
+      spotlightControlPanel.setLayout(new GridLayout(1, 2));
+
+      JLabel spotlightLabel = new JLabel("Spotlight Cone Size: 0");
+      JSlider spotlightSlider = new JSlider(JSlider.HORIZONTAL, 0, 5, 0); // Range 0-5
+      spotlightSlider.setMajorTickSpacing(1);
+      spotlightSlider.setPaintTicks(true);
+      spotlightSlider.setPaintLabels(true);
+      spotlightSlider.addChangeListener(e -> {
+          int sliderValue = spotlightSlider.getValue();
+          spotlightLabel.setText("Spotlight Cone Size: " + sliderValue);
+
+          // Calculate inner and outer cutoff based on slider value
+          float innerCutoff = calculateInnerCutoff(sliderValue);
+          float outerCutoff = calculateOuterCutoff(innerCutoff);
+
+          // Update spotlight cutoff values
           Light[] lights = glEventListener.getLights();
           if (lights != null && lights.length > 1) {
-              lights[1].setCutOff(innerCutoffCosine);
+              lights[1].setCutOff(innerCutoff);
+              lights[1].setOuterCutOff(outerCutoff);
+              System.out.printf("Updated Spotlight - Inner: %.4f, Outer: %.4f%n", innerCutoff, outerCutoff);
           }
       });
 
-      // Outer cutoff listener
-      outerCutoffSlider.addChangeListener(e -> {
-          int innerValue = innerCutoffSlider.getValue();
-          int outerValue = outerCutoffSlider.getValue();
-
-          if (outerValue <= innerValue) {
-              outerCutoffSlider.setValue(innerValue + 1);
-              return;
-          }
-
-          outerCutoffLabel.setText("Outer Cutoff: " + outerValue + "°");
-          float outerCutoffCosine = (float) Math.cos(Math.toRadians(outerValue));
-          Light[] lights = glEventListener.getLights();
-          if (lights != null && lights.length > 1) {
-              lights[1].setOuterCutOff(outerCutoffCosine);
-          }
-      });
-
-      cutoffPanel.add(innerCutoffLabel);
-      cutoffPanel.add(innerCutoffSlider);
-      cutoffPanel.add(outerCutoffLabel);
-      cutoffPanel.add(outerCutoffSlider);
-      mainPanel.add(cutoffPanel);
+      spotlightControlPanel.add(spotlightLabel);
+      spotlightControlPanel.add(spotlightSlider);
+      // mainPanel.add(cutoffPanel);
+      mainPanel.add(spotlightControlPanel);
 
 
       // Add the main panel to the bottom of the frame
@@ -210,7 +241,19 @@ public class L04 extends JFrame {
       animator = new FPSAnimator(canvas, 60);
       animator.start();
   }
+  // Function to calculate inner cutoff based on slider value
+  private float calculateInnerCutoff(int sliderValue) {
+    float[] innerCutoffValues = {0.91f, 0.93f, 0.95f, 0.97f, 0.99f, 0.9978f};
+    return innerCutoffValues[sliderValue];
+  }
+
+  // Function to calculate outer cutoff based on inner cutoff
+  private float calculateOuterCutoff(float innerCutoff) {
+    return innerCutoff - 0.04f; // Fixed difference
+  }
 }
+
+
 
 class MyKeyboardInput extends KeyAdapter {
   private Camera camera;
