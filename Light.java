@@ -175,46 +175,61 @@ public class Light {
     this.perspective = perspective;
   }*/
   
-  public void render(GL3 gl) { //, Mat4 perspective, Mat4 view) {
-    float time = (float) System.currentTimeMillis() / 1000.0f; // Dynamic rotation based on time
-    float angle = time * 50.0f; // 50 degrees per second
-    Mat4 model = new Mat4(1);
-    model = Mat4.multiply(Mat4Transform.scale(0.3f,0.3f,0.3f), model);
-    model = Mat4.multiply(Mat4Transform.translate(position), model);
-    Mat4 mvpMatrix = Mat4.multiply(camera.getPerspectiveMatrix(), Mat4.multiply(camera.getViewMatrix(), model));
-    
+  public void render(GL3 gl) {
+    float time = (float) System.currentTimeMillis() / 1000.0f; // Dynamic time-based rotation
+    float angle = time * 50.0f; // Rotation speed (degrees per second)
+
+    // Light model matrix
+    Mat4 lightModel = new Mat4(1);
+    lightModel = Mat4.multiply(Mat4Transform.scale(0.3f, 0.3f, 0.3f), lightModel);
+    lightModel = Mat4.multiply(Mat4Transform.translate(position), lightModel);
+    Mat4 mvpMatrix = Mat4.multiply(camera.getPerspectiveMatrix(), Mat4.multiply(camera.getViewMatrix(), lightModel));
+
+    // Render light sphere
     shader.use(gl);
     shader.setFloatArray(gl, "mvpMatrix", mvpMatrix.toFloatArrayForGLSL());
     shader.setVec3(gl, "light.ambient", material.getAmbient());
     shader.setVec3(gl, "light.diffuse", material.getDiffuse());
     shader.setVec3(gl, "light.specular", material.getSpecular());
 
-  
     gl.glBindVertexArray(vertexArrayId[0]);
     gl.glDrawElements(GL.GL_TRIANGLES, indices.length, GL.GL_UNSIGNED_INT, 0);
     gl.glBindVertexArray(0);
 
     // Render casing
-    // Render casing with a different shader
+    renderCasing(gl, angle);
+  }
+
+  private void renderCasing(GL3 gl, float angle) {
     Shader casingShader = new Shader(gl, "assets/shaders/vs_standard.txt", "assets/shaders/fs_standard_2t.txt");
-    casingShader.use(gl); // Switch to the casing shader
+    casingShader.use(gl);
+    double elapsedTime = getSeconds() - startTime;
+
+    // Calculate casing rotation to align with spotlight direction
+    float angleY = (float) Math.atan2(direction.z, direction.x);
+    float angleX = (float) Math.asin(direction.y);
+
     Mat4 casingModel = new Mat4(1);
-    // casingModel = Mat4.multiply(Mat4Transform.translate(position),casingModel);
-    // casingModel = Mat4.multiply(Mat4Transform.translate(0.0f, 0.0f, -0.5f), casingModel);
-    // casingModel = Mat4.multiply(casingModel, Mat4Transform.translate(0.5f,0.0f,0.0f));
-    // casingModel = Mat4.multiply(Mat4Transform.rotateAroundY(angle), casingModel);
-    // casingModel = Mat4.multiply(casingModel, Mat4Transform.translate(0.5f,0.0f,0.5f));
-    casingModel = Mat4.multiply(Mat4Transform.scale(0.3f, 0.3f, 0.3f), casingModel);
-    casingModel = Mat4.multiply(Mat4Transform.translate(0.1f,0.0f,0.1f), casingModel);
-    casingModel = Mat4.multiply(Mat4Transform.rotateAroundY(angle), casingModel);
-    casingModel = Mat4.multiply(Mat4Transform.translate(position),casingModel);
+    // Calculate circular motion for the casing
+    double theta = Math.toRadians(elapsedTime * 50f);  // Adjust rotation speed
+    double radius = 0.1; // Distance of casing from spotlight's position
+    float translateX = (float) (radius * Math.cos(theta)); // Circular X-position
+    float translateZ = (float) (radius * Math.sin(theta)); // Circular Z-position
+
+    // Apply translations to position casing around the light
+    casingModel = Mat4.multiply(casingModel, Mat4Transform.translate(position.x + translateX, position.y, position.z + translateZ));
+    casingModel = Mat4.multiply(casingModel, Mat4Transform.rotateAroundY((float) Math.toDegrees(theta))); // Rotate casing around Y-axis
+    casingModel = Mat4.multiply(casingModel, Mat4Transform.scale(0.2f, 0.2f, 0.2f)); // Scale casing
+
     Mat4 casingMvpMatrix = Mat4.multiply(camera.getPerspectiveMatrix(), Mat4.multiply(camera.getViewMatrix(), casingModel));
     casingShader.setFloatArray(gl, "mvpMatrix", casingMvpMatrix.toFloatArrayForGLSL());
 
     gl.glBindVertexArray(casingVertexArrayId[0]);
     gl.glDrawElements(GL.GL_TRIANGLES, casingIndices.length, GL.GL_UNSIGNED_INT, 0);
-
+    gl.glBindVertexArray(0);
   }
+
+
 
   private void fillLightBuffers(GL3 gl) {
     // Light geometry buffers (existing logic)
@@ -317,5 +332,11 @@ public class Light {
     gl.glBufferData(GL.GL_ELEMENT_ARRAY_BUFFER, Integer.BYTES * indices.length, ib, GL.GL_STATIC_DRAW);
     //gl.glBindVertexArray(0);
   } 
+
+  private double startTime;
+  
+  private double getSeconds() {
+    return System.currentTimeMillis()/1000.0;
+  }
 
 }
