@@ -430,11 +430,34 @@ public class L04_GLEventListener implements GLEventListener {
     lights[0].render(gl);
     lights[0].setType(0);
     // lights[0].setIntensity(1.5f);
+    double elapsedTime = getSeconds() - startTime;
+    double rotationSpeed = 5.0f; // Degrees per second
 
     //Spotlight
+    // // float rotationSpeed = 2.0f;
+    // double angle = elapsedTime * rotationSpeed; // Rotation angle increases over time
+    // float directionX = (float) (5 + 5 * Math.sin(Math.toRadians(angle))); // Scale to range 0 to 10
+    // float directionZ = (float) (5 + 5 * Math.cos(Math.toRadians(angle))); // Scale to range 0 to 10
+    // Vec3 spotlightDirection = new Vec3(directionX, 2.0f, directionZ);
+    // Calculate angles for spherical coordinates
+    double theta = Math.toRadians(elapsedTime * rotationSpeed);    // Rotation around Z-axis
+    double phi = Math.toRadians(45.0 + (Math.sin(elapsedTime) * 15.0)); // Oscillate polar angle for variation
+
+    // Convert spherical coordinates to Cartesian
+    float directionX = (float) (Math.sin(phi) * Math.cos(theta));
+    float directionY = (float) (Math.sin(phi) * Math.sin(theta));
+    float directionZ = (float) Math.cos(phi);
+
+    // Update spotlight direction
+    Vec3 spotlightDirection = new Vec3(directionX, directionY, directionZ);
+    // lights[1].setDirection(spotlightDirection);
+
+    // Print the new direction for debugging
+    System.out.printf("Spotlight Direction: X=%.2f, Y=%.2f, Z=%.2f%n", directionX, directionY, directionZ);
     lights[1].render(gl);
     lights[1].setPosition(robotPos);
     lights[1].setType(1);
+    lights[1].setDirection(spotlightDirection);
     
     if (robot.isNearRobot1()) {
       updateBranches();  // Only update branches during these steps
@@ -464,8 +487,8 @@ public class L04_GLEventListener implements GLEventListener {
     // tt5.render(gl);
     // tt6.setModelMatrix(getMforTT7(elapsedTime));       // change transform
     // tt6.render(gl);
-    double elapsedTime = getSeconds() - startTime;
-    float rotationSpeed = 5.0f; // Degrees per second
+    // double elapsedTime = getSeconds() - startTime;
+    // float rotationSpeed = 5.0f; // Degrees per second
     rotationAngle += rotationSpeed ;// Continuous rotation
     rotationAngle = rotationAngle % 360; 
 
