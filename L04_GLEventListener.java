@@ -175,11 +175,11 @@ public class L04_GLEventListener implements GLEventListener {
     
     String name = "flat plane";
     Mesh mesh = new Mesh(gl, TwoTriangles.vertices.clone(), TwoTriangles.indices.clone());
-    Shader shader = new Shader(gl, "assets/shaders/vs_standard.txt", "assets/shaders/fs_standard_m_0t.txt");
+    Shader shader = new Shader(gl, "assets/shaders/vs_standard.txt", "assets/shaders/fs_standard_m_2t.txt");
     Material material = new Material(new Vec3(0.1f, 0.5f, 0.91f), new Vec3(0.1f, 0.5f, 0.91f), new Vec3(0.3f, 0.3f, 0.3f), 4.0f);
     // Material material = new Material(basecolor, basecolor, new Vec3(0.3f, 0.3f, 0.3f), 4.0f);
     // no textures for this model
-    tt1 = new ModelMultipleLights(name, mesh, new Mat4(1), shader, material, lights, camera );
+    tt1 = new ModelMultipleLights(name, mesh, new Mat4(1), shader, material, lights, camera,textures.get("floor_texture") );
 
     name = "back wall";
     mesh = new Mesh(gl, TwoTriangles.vertices.clone(), TwoTriangles.indices.clone());
@@ -418,14 +418,7 @@ public class L04_GLEventListener implements GLEventListener {
     Vec3 robotPos = robot.getPosition();
     float offset = 5f;
     System.out.println("Robot Position: X=" + robotPos.x + ", Y=" + robotPos.y + ", Z=" + robotPos.z);
-    // light.setPosition(robotPos);  // changing light position each frame
-    // // light.setPosition(getLightPosition());
-    // light.render(gl);
-    // updateBranches();
 
-    //IF XPOSITION IS A CERTAIN DISTANCE, STOP DANCING
-
-    // lights[0].setPosition(getLight0Position());  // changing light position each frame
     //General Light
     lights[0].render(gl);
     lights[0].setType(0);
@@ -434,12 +427,6 @@ public class L04_GLEventListener implements GLEventListener {
     double rotationSpeed = 5.0f; // Degrees per second
 
     //Spotlight
-    // // float rotationSpeed = 2.0f;
-    // double angle = elapsedTime * rotationSpeed; // Rotation angle increases over time
-    // float directionX = (float) (5 + 5 * Math.sin(Math.toRadians(angle))); // Scale to range 0 to 10
-    // float directionZ = (float) (5 + 5 * Math.cos(Math.toRadians(angle))); // Scale to range 0 to 10
-    // Vec3 spotlightDirection = new Vec3(directionX, 2.0f, directionZ);
-    // Calculate angles for spherical coordinates
     double theta = Math.toRadians(elapsedTime * 50f);    // Rotation around Z-axis
     double phi = Math.toRadians(45.0 + (Math.sin(elapsedTime) * 15.0)); // Oscillate polar angle for variation
 
