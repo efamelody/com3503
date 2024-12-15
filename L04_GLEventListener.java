@@ -110,7 +110,7 @@ public class L04_GLEventListener implements GLEventListener {
 
   // private Model cube, tt1, tt2, tt3, tt4, tt5, tt6, globe;
   private Mat4 perspective;
-  private ModelMultipleLights cube, tt1, tt2, tt3, tt4, tt5, tt6, globe, sphere, sphereBase, sphereBody, sphereArm, sphereHead;
+  private ModelMultipleLights cube, tt1, tt2, tt3, tt4, tt5, tt6, globe,pole, sphere, sphereBase, sphereBody, sphereArm, sphereHead;
   private Light light;
   private Robot robot;
   private Mat4[] roomTransforms;
@@ -222,8 +222,18 @@ public class L04_GLEventListener implements GLEventListener {
     material = new Material(new Vec3(1.0f, 0.5f, 0.31f), new Vec3(1.0f, 0.5f, 0.31f), new Vec3(0.5f, 0.5f, 0.5f), 32.0f);
     cube = new ModelMultipleLights(name, mesh, new Mat4(1), shader, material, lights, camera, textures.get("pedestal"), textures.get("pedestal"));
 
-   float cubeHeight =1.0F;
-   float globeRadius = 3.0f;
+    // Define the pole dimensions and model
+    float poleHeight = 3.5f; // Height of the pole
+    float poleRadius = 0.2f; // Radius (or thickness) of the pole
+    name = "pole";
+    mesh = new Mesh(gl, Cube.vertices.clone(), Cube.indices.clone()); // Use the cube mesh
+    shader = new Shader(gl, "assets/shaders/vs_standard.txt", "assets/shaders/fs_standard_m_2t.txt");
+    material = new Material(new Vec3(1.0f, 1.0f, 1.0f), new Vec3(1.0f, 1.0f, 1.0f), new Vec3(0.5f, 0.5f, 0.5f), 32.0f); // White pole
+    pole = new ModelMultipleLights(name, mesh, new Mat4(1), shader, material, lights, camera, textures.get("pole"), textures.get("pole"));
+
+
+    float cubeHeight =1.0F;
+    float globeRadius = 3.0f;
     name = "globe";
     mesh = new Mesh(gl, Sphere.vertices.clone(), Sphere.indices.clone());
     shader = new Shader(gl, "assets/shaders/vs_standard.txt", "assets/shaders/fs_standard_m_2t.txt");
@@ -412,6 +422,7 @@ public class L04_GLEventListener implements GLEventListener {
 
     // Print the new direction for debugging
     System.out.printf("Spotlight Direction: X=%.2f, Y=%.2f, Z=%.2f%n", directionX, robotPos.y, directionZ);
+    
     lights[1].render(gl);
     lights[1].setPosition(robotPos);
     lights[1].setType(1);
@@ -435,12 +446,6 @@ public class L04_GLEventListener implements GLEventListener {
     tt3.render(gl);
     tt4.setModelMatrix(getMforTT4());       // change transform
     tt4.render(gl);
-    // tt5.setModelMatrix(getMforTT6());       // change transform
-    // tt5.render(gl);
-    // tt6.setModelMatrix(getMforTT7(elapsedTime));       // change transform
-    // tt6.render(gl);
-    // double elapsedTime = getSeconds() - startTime;
-    // float rotationSpeed = 5.0f; // Degrees per second
     rotationAngle += rotationSpeed ;// Continuous rotation
     rotationAngle = rotationAngle % 360; 
 
@@ -450,6 +455,10 @@ public class L04_GLEventListener implements GLEventListener {
     // Update and render the globe
     globe.setModelMatrix(modelMatrix);
     globe.render(gl);
+
+    // Render the pole
+    pole.setModelMatrix(getMforPole());
+    pole.render(gl);
     // double elapsedTime = getSeconds(); // Or however you retrieve the elapsed time
     float deltaTime = (float) (elapsedTime - previousTime); // Calculate deltaTime (time difference between frames)
     System.out.println("Elapsed Time: " + elapsedTime);
@@ -519,7 +528,19 @@ public class L04_GLEventListener implements GLEventListener {
     modelMatrix = Mat4.multiply(Mat4Transform.translate(6.0f, cubeHeight / 2 + globeRadius + 0.5f, 4.0f), modelMatrix);
 
     return modelMatrix;
-}
+  }
+
+  private Mat4 getMforPole() {
+    float pedestalHeight = 4.0f; // Height of the pedestal
+    float poleHeight = 6.0f;     // Height of the pole
+    float poleRadius = 0.2f; // Radius (or thickness) of the pole
+
+    Mat4 modelMatrix = new Mat4(1);  // Start with the identity matrix
+    modelMatrix = Mat4.multiply(Mat4Transform.scale(poleRadius, poleHeight, poleRadius), modelMatrix); // Scale to create a thin cuboid
+    modelMatrix = Mat4.multiply(Mat4Transform.translate(6.0f, pedestalHeight / 2 + poleHeight / 2, 4.0f), modelMatrix); // Position pole
+
+    return modelMatrix;
+  }
   
   private Mat4[] setupRoomTransforms() {
     Mat4[] t = new Mat4[5];

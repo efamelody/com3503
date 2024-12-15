@@ -68,14 +68,16 @@ public class Robot {
     float legLength = 3.5f;
     float legScale = 0.67f;
     float robotHeight = bodyHeight + headScale + legLength;
+    float antennaHeight = 1.0f; // Adjust based on your robot's design
+    float antennaThickness = 0.2f; // Thin antenna
     // Create the light
     NameNode lightNode = new NameNode("light node");
 
     // Create the transform to position the light
     TransformNode lightTransform = new TransformNode(
-        "light transform", 
-        Mat4Transform.translate(0, headScale + 1.0f, 0)
-    );
+      "light transform", 
+      Mat4Transform.translate(0, headScale + antennaHeight + 0.5f, 0) // Offset for light above the antenna
+    ); 
     
 
     
@@ -96,6 +98,7 @@ public class Robot {
     NameNode rightArm = makeRightArm(gl, bodyWidth, bodyHeight, armLength, armScale, cube2);
     NameNode leftLeg = makeLeftLeg(gl, bodyWidth, legLength, legScale, cube);
     NameNode rightLeg = makeRightLeg(gl, bodyWidth, legLength, legScale, cube);
+    NameNode antenna = makeAntenna(gl, bodyHeight, headScale, antennaHeight, antennaThickness, cube);
     // NameNode casing = makeCasing(gl, bodyWidth, bodyHeight, bodyDepth, cube);
     
     //Once all the pieces are created, then the whole robot can be created.
@@ -107,6 +110,7 @@ public class Robot {
     robotScale.addChild(body);                       // Attach body
       body.addChild(head);                               // Attach head
       head.addChild(lightTransform);      // Add the light's transform to the head
+      head.addChild(antenna);
       lightTransform.addChild(lightNode); // Add the light node to the transform    
     robotRoot.update();  // IMPORTANT - don't forget this
 
@@ -160,6 +164,19 @@ public class Robot {
     head.addChild(headTransform);
     headTransform.addChild(headShape);
     return head;
+  }
+
+  private NameNode makeAntenna(GL3 gl, float bodyHeight, float headScale, float antennaHeight, float antennaThickness, ModelMultipleLights cube) {
+    NameNode antenna = new NameNode("antenna");
+    // Position the antenna on top of the head
+    Mat4 antennaTransformMatrix = new Mat4(1);
+    antennaTransformMatrix = Mat4.multiply(antennaTransformMatrix, Mat4Transform.translate(0, headScale + antennaHeight / 2, -0.2f));
+    antennaTransformMatrix = Mat4.multiply(antennaTransformMatrix, Mat4Transform.scale(antennaThickness, antennaHeight, antennaThickness));
+    TransformNode antennaTransform = new TransformNode("antenna transform", antennaTransformMatrix);
+    ModelNode antennaShape = new ModelNode("Cube(antenna)", cube);
+    antenna.addChild(antennaTransform);
+    antennaTransform.addChild(antennaShape);
+    return antenna;
   }
 
   private NameNode makeLeftArm(GL3 gl, float bodyWidth, float bodyHeight, float armLength, float armScale, ModelMultipleLights cube) {
@@ -230,17 +247,6 @@ public class Robot {
     robotRoot.draw(gl);
   }
 
-  // public void incXPosition() {
-  //   xPosition += 0.5f;
-  //   if (xPosition>5f) xPosition = 5f;
-  //   updateMove(); 
-  // }
-   
-  // public void decXPosition() {
-  //   xPosition -= 0.5f;
-  //   if (xPosition<-5f) xPosition = -5f;
-  //   updateMove();
-  // }
  
   private void updateMove(double elapsedTime) {
     float robotHeight =4f;
@@ -249,7 +255,7 @@ public class Robot {
         zPosition += movementZ;  // Update Z position
         robotMoveTranslate.setTransform(Mat4Transform.translate(0, 0, zPosition));
         robotMoveTranslate.update();
-        // light.setPosition(new Vec3(xPosition, robotHeight, zPosition));
+        // lights[1].setPosition(new Vec3(xPosition, robotHeight, zPosition));
         // System.out.println("STRAIGHT: Moving along Z. Current position: Z=" + zPosition);
         distanceTraveled += Math.abs(movementZ);
 
@@ -265,7 +271,7 @@ public class Robot {
 
         float angleIncrement = Math.max(turnSpeed * (float) elapsedTime, 0.001f);
         turnAngle += angleIncrement;
-        // light.setPosition(new Vec3(xPosition, robotHeight, zPosition));
+        // lights[1].setPosition(new Vec3(xPosition, robotHeight, zPosition));
         robotTurn.setTransform(Mat4Transform.rotateAroundY(-turnAngle));
         robotTurn.update();
         
@@ -282,7 +288,7 @@ public class Robot {
         xPosition -= movementX;  // Update X position
         robotMoveTranslate.setTransform(Mat4Transform.translate(xPosition, 0, zPosition));
         robotMoveTranslate.update();
-        // light.setPosition(new Vec3(xPosition, robotHeight, zPosition));
+        // lights[1].setPosition(new Vec3(xPosition, robotHeight, zPosition));
         // System.out.println("SIDE: Moving along X. Current position: X=" + xPosition);
 
         distanceTraveled += Math.abs(movementX);
@@ -300,7 +306,7 @@ public class Robot {
 
       robotTurn.setTransform(Mat4Transform.rotateAroundY(-turnAngle - 90f));
       robotTurn.update();
-      // light.setPosition(new Vec3(xPosition, robotHeight, zPosition));
+      // lights[1].setPosition(new Vec3(xPosition, robotHeight, zPosition));
       // System.out.println("Turning... Current angle: " + turnAngle);
 
       if (turnAngle >= targetTurnAngle) {
@@ -314,7 +320,7 @@ public class Robot {
         zPosition -= movementZ;  // Move back along Z axis
         robotMoveTranslate.setTransform(Mat4Transform.translate(xPosition, 0, zPosition));
         robotMoveTranslate.update();
-        // light.setPosition(new Vec3(xPosition, robotHeight, zPosition));
+        // lights[1].setPosition(new Vec3(xPosition, robotHeight, zPosition));
         // System.out.println("BACKWARD: Moving along Z. Current position: Z=" + zPosition);
 
         distanceTraveled += Math.abs(movementZ);
@@ -335,7 +341,7 @@ public class Robot {
 
       robotTurn.setTransform(Mat4Transform.rotateAroundY(turnAngle));
       robotTurn.update();
-      // light.setPosition(new Vec3(xPosition, robotHeight, zPosition));
+      // lights[1].setPosition(new Vec3(xPosition, robotHeight, zPosition));
       // System.out.println("Turning... Current angle: " + turnAngle);
 
       if (turnAngle >= targetTurnAngle) {
@@ -349,7 +355,7 @@ public class Robot {
       xPosition += movementX;  // Update X position
       robotMoveTranslate.setTransform(Mat4Transform.translate(xPosition, 0, zPosition));
       robotMoveTranslate.update();
-      // light.setPosition(new Vec3(xPosition, robotHeight, zPosition));
+      // lights[1].setPosition(new Vec3(xPosition, robotHeight, zPosition));
       // System.out.println("SIDE: Moving along X. Current position: X=" + xPosition);
 
       distanceTraveled += Math.abs(movementX);
@@ -367,7 +373,7 @@ public class Robot {
   
       robotTurn.setTransform(Mat4Transform.rotateAroundY(0));
       robotTurn.update();
-      // light.setPosition(new Vec3(xPosition, robotHeight, zPosition));
+      // lights[1].setPosition(new Vec3(xPosition, robotHeight, zPosition));
       System.out.println("Turning back... Current angle: " + turnAngle);
   
       if (turnAngle >= targetTurnAngle) {
@@ -387,6 +393,7 @@ public class Robot {
   public Vec3 getPosition() {
     float offset =4f;
     return new Vec3(xPosition + offset, 4f, zPosition- offset);
+    // return new Vec3(xPosition , 4f, zPosition);
   }
 
   public void setButtonClicked(boolean buttonClicked) {
