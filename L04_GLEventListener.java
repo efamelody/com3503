@@ -111,7 +111,6 @@ public class L04_GLEventListener implements GLEventListener {
   // private Model cube, tt1, tt2, tt3, tt4, tt5, tt6, globe;
   private Mat4 perspective;
   private ModelMultipleLights cube, tt1, tt2, tt3, tt4, tt5, tt6, globe, sphere, sphereBase, sphereBody, sphereArm, sphereHead;
-
   private Light light;
   private Robot robot;
   private Mat4[] roomTransforms;
@@ -122,10 +121,8 @@ public class L04_GLEventListener implements GLEventListener {
   private boolean buttonClicked2 = false;
   private boolean paused = false;
   private Shader shader;
-
   private TransformNode translateX, rotateAll, rotateUpper1, rotateUpper2, rotateHead, headBalloon;
   private float xPosition = 0.5f;
-  
   private float rotateAllAngleStart = 25, rotateAllAngle = rotateAllAngleStart;
   private float rotateHeadStart = 30, rotateHeadAngle = rotateHeadStart;
   private float rotateUpper1AngleStart = 120, rotateUpper1Angle = rotateUpper1AngleStart;
@@ -136,10 +133,9 @@ public class L04_GLEventListener implements GLEventListener {
   
 
   public L04_GLEventListener(Robot robot) {
-    this.robot = robot;  // Initialize the robot object through constructor or setter
+    this.robot = robot;  
   }
 
-  
   public void initialise(GL3 gl) {
     textures = new TextureLibrary();
     startTime = System.currentTimeMillis();
@@ -232,16 +228,6 @@ public class L04_GLEventListener implements GLEventListener {
     mesh = new Mesh(gl, Sphere.vertices.clone(), Sphere.indices.clone());
     shader = new Shader(gl, "assets/shaders/vs_standard.txt", "assets/shaders/fs_standard_m_2t.txt");
     material = new Material(new Vec3(1.0f, 0.5f, 0.31f), new Vec3(1.0f, 0.5f, 0.31f), new Vec3(0.5f, 0.5f, 0.5f), 32.0f);
-    // Mat4 modelMatrix = Mat4Transform.translate(0,cubeHeight/2 + globeRadius,0);
-    // Mat4 modelMatrix =  Mat4Transform.scale(3,3,3);
-    // modelMatrix = Mat4.multiply(modelMatrix, Mat4Transform.translate(0,0.0f,0));
-    double elapsedTime = getSeconds()-startTime;
-    float angle = (float)(-115*Math.sin(Math.toRadians(elapsedTime*50)));
-    System.err.println(angle);
-    System.out.println(startTime);
-    System.out.println(elapsedTime);
-    // Mat4 modelMatrix =  Mat4Transform.rotateAroundY(angle);
-    // globe = new Model(name, mesh, modelMatrix, shader, material, light, camera, textures.get("diffuse_jade"), textures.get("specular_jade"));
     globe = new ModelMultipleLights(name, mesh, new Mat4(1), shader, material, lights, camera, textures.get("earth"));
 
     //Robot 2
@@ -253,10 +239,6 @@ public class L04_GLEventListener implements GLEventListener {
     
     
     //ROBOT 1
-
-  
-
-  // CODE EFA BISMILLAH
     sphere = makeSphere(gl, textures.get("diffuse"), textures.get("specular"));
     sphereBase = makeSphere(gl, textures.get("base"), textures.get("specular"));
     sphereBody = makeSphere(gl, textures.get("body"), textures.get("specular"));
@@ -306,9 +288,6 @@ public class L04_GLEventListener implements GLEventListener {
             translateBaseToTop.addChild(rotateHead);
             rotateHead.addChild(headBalloon);
               headBalloon.addChild(head);
-          //   base.addChild(rotateHead);
-              // sceneTranslation.addChild(translateX);
-                // upperBranch2.addChild(sceneTranslation);
     twoBranchRoot.update();  // IMPORTANT – must be done every time any part of the scene graph changes
   }
 
@@ -328,12 +307,6 @@ public class L04_GLEventListener implements GLEventListener {
     return light;
   }
 
-  
-
-
-
-
-  // the following two methods are quite similar and could be replaced with one method with suitable parameterisation
   private SGNode makeLowerBranch(ModelMultipleLights sphere, float sx, float sy, float sz) {
     NameNode lowerBranchName = new NameNode("lower branch");
     Mat4 m = Mat4Transform.scale(sx,sy,sx);
@@ -369,7 +342,6 @@ public class L04_GLEventListener implements GLEventListener {
     return upperBranchName;
   }
 
-  //Creates 3D model returns a model Object, defines what object Looks like
   private ModelMultipleLights makeSphere(GL3 gl, Texture t1, Texture t2) {
     String name= "sphere";
     Mesh mesh = new Mesh(gl, Sphere.vertices.clone(), Sphere.indices.clone());
@@ -407,7 +379,6 @@ public class L04_GLEventListener implements GLEventListener {
   public Light[] getLights() {
     return lights;
   }
-
 
   
   public void render(GL3 gl) {
@@ -456,12 +427,6 @@ public class L04_GLEventListener implements GLEventListener {
     cube.render(gl);
     tt1.setModelMatrix(getMforTT1());       // change transform
     tt1.render(gl);
-    // tt1.setModelMatrix(getMforTT2());       // change transform
-    // tt1.render(gl);
-    // tt1.setModelMatrix(getMforTT3());       // change transform
-    // tt1.render(gl);
-    // tt1.setModelMatrix(getMforTT4());       // change transform
-    // tt1.render(gl);
     tt1.setModelMatrix(getMforTT5());       // change transform
     tt1.render(gl);
     tt2.setModelMatrix(getMforTT2());       // change transform
@@ -541,21 +506,20 @@ public class L04_GLEventListener implements GLEventListener {
   private Mat4 getMforGlobe() {
     float cubeHeight = 4.0f; // Adjust this based on the cube's scale
     float globeRadius = 3.0f;
-    
+
     Mat4 modelMatrix = new Mat4(1);  // Start with the identity matrix
     modelMatrix = Mat4.multiply(Mat4Transform.scale(3, 3, 3), modelMatrix);
 
-    // Apply rotation based on elapsed time
+    // Apply linear rotation based on elapsed time
     double elapsedTime = getSeconds() - startTime;
-    float angle = (float)(-115 * Math.sin(Math.toRadians(elapsedTime * 50)));
+    float rotationSpeed = 50.0f; // Rotation speed in degrees per second
+    float angle = (float)(elapsedTime * rotationSpeed); // Linear rotation
     modelMatrix = Mat4.multiply(Mat4Transform.rotateAroundY(angle), modelMatrix);
-
     // Position the globe 4 units up along the Y-axis
-    modelMatrix = Mat4.multiply(Mat4Transform.translate(6.0f, cubeHeight/2 + globeRadius+ 0.5f, 4.0f), modelMatrix);
+    modelMatrix = Mat4.multiply(Mat4Transform.translate(6.0f, cubeHeight / 2 + globeRadius + 0.5f, 4.0f), modelMatrix);
 
-   
     return modelMatrix;
-  }
+}
   
   private Mat4[] setupRoomTransforms() {
     Mat4[] t = new Mat4[5];
@@ -639,25 +603,6 @@ public class L04_GLEventListener implements GLEventListener {
 
     return modelMatrix;
   }
-  // private Mat4 getMforTT4() {
-  //   float size = 16f; // Wall size, can be adjusted
-  //   float textureRepeatX = 4f; // Increase this to repeat texture more on X axis
-  //   float textureRepeatZ = 3f; // Increase this to repeat texture more on Z axis
-    
-  //   Mat4 modelMatrix = new Mat4(1);
-
-  //   // Scale the wall to the right size, adjusting texture repeat
-  //   modelMatrix = Mat4.multiply(Mat4Transform.scale(size * textureRepeatX, 1f, size * textureRepeatZ), modelMatrix);
-
-  //   // Rotate around the Y-axis and Z-axis to orient the wall correctly
-  //   modelMatrix = Mat4.multiply(Mat4Transform.rotateAroundY(-90), modelMatrix);
-  //   modelMatrix = Mat4.multiply(Mat4Transform.rotateAroundZ(90), modelMatrix);
-
-  //   // Translate it to the right position
-  //   modelMatrix = Mat4.multiply(Mat4Transform.translate(size * 0.5f, size * 0.5f, 0), modelMatrix);
-
-  //   return modelMatrix;
-  // }
 
 
   private Mat4 getMforTT5() {
