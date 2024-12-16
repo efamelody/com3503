@@ -21,8 +21,9 @@ public class Robot {
 
   private Camera camera;
   private Light[] lights; 
+  private Light spotlight;
 
-  private ModelMultipleLights sphere, cube, cube2;
+  private ModelMultipleLights sphere, cube, cube2, lightModel, casing;
   private boolean isMoving = true;
   private boolean isMovingSide = false;
   private boolean isMovingStraight = true;
@@ -40,22 +41,29 @@ public class Robot {
 
   private SGNode robotRoot;
   private float xPosition = 0;
+  private double lastTime = 0;
   private float zPosition = 0;
   private float speed = 0.01f;   // Speed of the robot's movement (can be adjusted)
   private float targetDistance = 9.0f; // Distance the robot should move
   private float distanceTraveled = 0f; // Track how much distance has been traveled
-  private TransformNode robotMoveTranslate, leftArmRotate, rightArmRotate, robotPlaced, robotTurn, rotatingAntenna;
+  private float casingOffsetDistance = 0.3f; // Offset distance behind the light
+  private float casingOrbitRadius = 0.05f;
+  private TransformNode robotMoveTranslate, leftArmRotate, rightArmRotate, robotPlaced, robotTurn, rotatingAntenna, casingTransform;
    
-  public Robot(GL3 gl, Camera cameraIn, Light[] lights, Texture t1, Texture t2, Texture t3, Texture t4, Texture t5, Texture t6) {
+  public Robot(GL3 gl, Camera cameraIn, Light[] lights,Light spotlight, Texture t1, Texture t2, Texture t3, Texture t4, Texture t5, Texture t6) {
 
     this.camera = cameraIn;
     this.lights = lights; // Store the lights array
+    this.spotlight = spotlight;
+    this.startTime = getSeconds();
     // this.light = lights[0]; // Use the first light for individual light-related tasks
 
     sphere = makeSphere(gl, t1,t2);
 
     cube = makeCube(gl, t3,t4);
     cube2 = makeCube(gl, t5,t6);
+    lightModel = makeLightModel(gl, lights, camera);
+    casing = makeSphere(gl, null, null);
 
     // robot
     
@@ -89,10 +97,12 @@ public class Robot {
     robotMoveTranslate = new TransformNode("robot transform",Mat4Transform.translate(0f,0f,0));
     robotPlaced = new TransformNode("robot transform",Mat4Transform.translate(4f,0,-4f));
     robotTurn = new TransformNode("leftarm rotate",Mat4Transform.rotateAroundY(turnAngle));
+    casingTransform = new TransformNode("casing transform",new Mat4(1));
 
     
     TransformNode robotTranslate = new TransformNode("robot transform",Mat4Transform.translate(0,2f,0));
     TransformNode robotScale = new TransformNode("robot scale",Mat4Transform.scale(1f,0.75f,1f));
+    // ModelMultipleLights lightModel = makeLightModel(gl, lights, camera);
     
     // make pieces
     // Add a light node to the scene graph
@@ -106,6 +116,7 @@ public class Robot {
     // NameNode casing = makeCasing(gl, bodyWidth, bodyHeight, bodyDepth, cube);
     NameNode leftEye = makeEye(gl, 0.2f, -0.3f, 0.1f, 0.5f, sphere); // Left eye
     NameNode rightEye = makeEye(gl, 0.2f, 0.3f, 0.1f, 0.5f, sphere); // Right eye
+    NameNode casingNode = makeCasing(gl, casingOffsetDistance, casingOrbitRadius, casing);
     // head.addChild(leftEye);
     // head.addChild(rightEye);
     
@@ -121,7 +132,8 @@ public class Robot {
       head.addChild(antenna);
       head.addChild(leftEye);
       head.addChild(rightEye);
-      lightTransform.addChild(lightNode); // Add the light node to the transform    
+      head.addChild(casingNode);
+      // lightTransform.addChild(lightNode); // Add the light node to the transform    
     robotRoot.update();  // IMPORTANT - don't forget this
 
   }
@@ -135,10 +147,7 @@ public class Robot {
     ModelMultipleLights sphere = new ModelMultipleLights(name, mesh, modelMatrix, shader, material, lights, camera, t1, t2);
     return sphere;
   }
-  
-  // public LightNode(Light light){
-  //   this.light =light;
-  // }
+
 
   private ModelMultipleLights makeCube(GL3 gl, Texture t1, Texture t2) {
     String name= "cube";
@@ -149,8 +158,43 @@ public class Robot {
     ModelMultipleLights cube = new ModelMultipleLights(name, mesh, modelMatrix, shader, material, lights, camera, t1, t2);
     return cube;
   } 
+
+  private ModelMultipleLights makeLightModel(GL3 gl, Light[] lights, Camera camera) {
+    String name = "light_model";
+    Mesh mesh = new Mesh(gl, Sphere.vertices.clone(), Sphere.indices.clone());
+    Shader shader = new Shader(gl, "assets/shaders/vs_light_01.txt", "assets/shaders/fs_light_01.txt");
+    Material material = new Material(new Vec3(1.0f, 1.0f, 1.0f), // Ambient color
+                                     new Vec3(1.0f, 1.0f, 0.8f), // Diffuse color
+                                     new Vec3(1.0f, 1.0f, 1.0f), // Specular color
+                                     32.0f);                    // Shininess
+    Mat4 modelMatrix = Mat4Transform.scale(0.2f, 0.2f, 0.2f); // Small light sphere
+    ModelMultipleLights light_model = new ModelMultipleLights(name, mesh, modelMatrix, shader, material, lights, camera);
+    return light_model;
+  }
   
-  
+  private NameNode makeCasing(GL3 gl, float offsetDistance, float orbitRadius, ModelMultipleLights model) {
+    NameNode casing = new NameNode("casing");
+
+    // Initial translation for the offset
+    Mat4 initialTransform = Mat4Transform.translate(0, offsetDistance, -orbitRadius);
+
+    // Create a transform node to manage dynamic positioning of the casing
+    casingTransform = new TransformNode("casing transform", initialTransform);
+
+    // Scale the casing
+    Mat4 scaleTransform = Mat4Transform.scale(0.2f, 0.2f, 0.2f);
+
+    // Create transform and model nodes for the casing
+    TransformNode scaleNode = new TransformNode("casing scale", scaleTransform);
+    ModelNode casingShape = new ModelNode("Casing", model);
+
+    // Build the hierarchy: casing -> transform -> scale -> model
+    casing.addChild(casingTransform);
+    casingTransform.addChild(scaleNode);
+    scaleNode.addChild(casingShape);
+
+    return casing;
+  }
 
   
 
@@ -191,8 +235,13 @@ public class Robot {
     antennaTransformMatrix = Mat4.multiply(antennaTransformMatrix, Mat4Transform.scale(antennaThickness, antennaHeight, antennaThickness));
     TransformNode antennaTransform = new TransformNode("antenna transform", antennaTransformMatrix);
     ModelNode antennaShape = new ModelNode("Cube(antenna)", cube);
+    TransformNode lightTransform = new TransformNode("spotlight transform", 
+                                          Mat4Transform.translate(0, antennaHeight / 2 + 0.1f, 0)); // Slight offset
+    ModelNode lightNode = new ModelNode("light node", lightModel);
     antenna.addChild(antennaTransform);
     antennaTransform.addChild(antennaShape);
+    antennaTransform.addChild(lightTransform);
+    lightTransform.addChild(lightNode);
     return antenna;
   }
 
@@ -277,6 +326,50 @@ public class Robot {
     robotRoot.draw(gl);
   }
 
+
+  private void updateSpotlightPosition(double currentTime) {
+    // Retrieve robot position
+    double elapsedTime = getSeconds() - startTime;
+    Vec3 robotPos = getPosition(); 
+    
+    // Spotlight spherical motion parameters
+    double theta = Math.toRadians(elapsedTime * 10.0f);  // Rotation around Z-axis
+    double phi = Math.toRadians(45.0 + (Math.sin(elapsedTime) * 15.0)); // Oscillating angle
+
+    // Convert spherical coordinates to Cartesian for direction
+    float directionX = (float) (Math.sin(phi) * Math.cos(theta));
+    float directionY = -0.5f + 0.2f *(float) Math.cos(phi);
+    float directionZ = (float) (Math.sin(phi) * Math.sin(theta));
+
+    // Update lights[1] directly
+    lights[1].setPosition(new Vec3(robotPos.x, robotPos.y + 3.0f, robotPos.z)); // Above the robot's head
+    lights[1].setDirection(new Vec3(directionX, directionY, directionZ));
+    lights[1].setType(1); // Spotlight type
+    // lights[1].setCutoff(15.0f); // Set cutoff for spotlight (in degrees)
+    // Casing dynamic position
+    float offsetX = -directionX * casingOffsetDistance;
+    float offsetY = -directionY * casingOffsetDistance;
+    float offsetZ = -directionZ * casingOffsetDistance;
+
+    // Circular orbit for the casing
+    double orbitTheta = Math.toRadians(elapsedTime * 50.0f); // Orbit speed
+    float circularX = (float) (casingOrbitRadius * Math.cos(orbitTheta));
+    float circularZ = (float) (casingOrbitRadius * Math.sin(orbitTheta));
+
+    // Combine offsets and calculate final position
+    float finalX = robotPos.x + offsetX + circularX;
+    float finalY = robotPos.y + 3.0f + offsetY;
+    float finalZ = robotPos.z + offsetZ + circularZ;
+
+    // Apply transformations to the casing
+    Mat4 casingModel = Mat4Transform.translate(finalX, finalY, finalZ);
+    casingModel = Mat4.multiply(casingModel, Mat4Transform.rotateAroundY((float) Math.toDegrees(theta)));
+    casingModel = Mat4.multiply(casingModel, Mat4Transform.scale(0.2f, 0.2f, 0.2f));
+
+    // Update casing transform node
+    casingTransform.setTransform(casingModel);
+    casingTransform.update();
+  }
  
   private void updateMove(double elapsedTime) {
     float robotHeight =4f;
@@ -480,6 +573,8 @@ public class Robot {
     nearRobot1 = state;
   }
 
+  
+
 
 
 
@@ -500,6 +595,7 @@ public class Robot {
   // }
     // System.out.println("Current Step Counter: " + movementStepCounter);
     updateMove(elapsedTime);
+    updateSpotlightPosition(elapsedTime);
   }
 
 
@@ -522,6 +618,11 @@ public class Robot {
     sphere.dispose(gl);
     cube.dispose(gl);
     cube2.dispose(gl);
+  }
+  private double startTime;
+
+  private double getSeconds() {
+    return System.currentTimeMillis() / 1000.0; // Convert milliseconds to seconds
   }
 
 

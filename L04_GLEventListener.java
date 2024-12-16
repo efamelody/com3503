@@ -241,7 +241,7 @@ public class L04_GLEventListener implements GLEventListener {
     globe = new ModelMultipleLights(name, mesh, new Mat4(1), shader, material, lights, camera, textures.get("earth"));
 
     //Robot 2
-    robot = new Robot(gl, camera, lights, 
+    robot = new Robot(gl, camera, lights, lights[1], 
                       textures.get("face2"), textures.get("cheetah"),
                       textures.get("clown"), textures.get("zebra"),
                       textures.get("base"), textures.get("base")); 
@@ -407,30 +407,30 @@ public class L04_GLEventListener implements GLEventListener {
     double elapsedTime = getSeconds() - startTime;
     double rotationSpeed = 5.0f; // Degrees per second
 
-    //Spotlight
-    double theta = Math.toRadians(elapsedTime * 50f);    // Rotation around Z-axis
-    double phi = Math.toRadians(45.0 + (Math.sin(elapsedTime) * 15.0)); // Oscillate polar angle for variation
+    // //Spotlight
+    // double theta = Math.toRadians(elapsedTime * 50f);    // Rotation around Z-axis
+    // double phi = Math.toRadians(45.0 + (Math.sin(elapsedTime) * 15.0)); // Oscillate polar angle for variation
 
-    // Convert spherical coordinates to Cartesian
-    float directionX = (float) (Math.sin(phi) * Math.cos(theta));
-    float directionZ = (float) (Math.sin(phi) * Math.sin(theta));
-    // float directionY = (float) Math.cos(phi);
+    // // Convert spherical coordinates to Cartesian
+    // float directionX = (float) (Math.sin(phi) * Math.cos(theta));
+    // float directionZ = (float) (Math.sin(phi) * Math.sin(theta));
+    // // float directionY = (float) Math.cos(phi);
 
-    // Update spotlight direction
-    Vec3 spotlightDirection = new Vec3(directionX, 0.5f, directionZ);
-    // lights[1].setDirection(spotlightDirection);
+    // // Update spotlight direction
+    // Vec3 spotlightDirection = new Vec3(directionX, 0.5f, directionZ);
+    // // lights[1].setDirection(spotlightDirection);
 
-    // Print the new direction for debugging
-    System.out.printf("Spotlight Direction: X=%.2f, Y=%.2f, Z=%.2f%n", directionX, robotPos.y, directionZ);
+    // // Print the new direction for debugging
+    // System.out.printf("Spotlight Direction: X=%.2f, Y=%.2f, Z=%.2f%n", directionX, robotPos.y, directionZ);
     
-    lights[1].render(gl);
-    lights[1].setPosition(robotPos);
-    lights[1].setType(1);
-    lights[1].setDirection(spotlightDirection);
+    // lights[1].render(gl);
+    // lights[1].setPosition(robotPos);
+    // lights[1].setType(1);
+    // lights[1].setDirection(spotlightDirection);
     
     if (robot.isNearRobot1()) {
       updateBranches();  // Only update branches during these steps
-   } 
+    } 
    
     robot.nearRobot1();
     twoBranchRoot.draw(gl);
