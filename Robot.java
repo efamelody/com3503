@@ -70,6 +70,10 @@ public class Robot {
     float robotHeight = bodyHeight + headScale + legLength;
     float antennaHeight = 1.0f; // Adjust based on your robot's design
     float antennaThickness = 0.2f; // Thin antenna
+    float eyeScale = 0.3f; // Size of the eyes
+    float eyeOffsetX = 0.6f; // Horizontal offset from the center of the head
+    float eyeOffsetY = 0.5f; // Vertical offset from the center of the head
+    float eyeOffsetZ = 0.9f; // Depth offset to position eyes in front of the head
     // Create the light
     NameNode lightNode = new NameNode("light node");
 
@@ -100,6 +104,10 @@ public class Robot {
     NameNode rightLeg = makeRightLeg(gl, bodyWidth, legLength, legScale, cube);
     NameNode antenna = makeAntenna(gl, bodyHeight, headScale, antennaHeight, antennaThickness, cube);
     // NameNode casing = makeCasing(gl, bodyWidth, bodyHeight, bodyDepth, cube);
+    NameNode leftEye = makeEye(gl, 0.2f, -0.3f, 0.1f, 0.5f, sphere); // Left eye
+    NameNode rightEye = makeEye(gl, 0.2f, 0.3f, 0.1f, 0.5f, sphere); // Right eye
+    // head.addChild(leftEye);
+    // head.addChild(rightEye);
     
     //Once all the pieces are created, then the whole robot can be created.
     robotRoot.addChild(robotPlaced);                     // Root node
@@ -111,6 +119,8 @@ public class Robot {
       body.addChild(head);                               // Attach head
       head.addChild(lightTransform);      // Add the light's transform to the head
       head.addChild(antenna);
+      head.addChild(leftEye);
+      head.addChild(rightEye);
       lightTransform.addChild(lightNode); // Add the light node to the transform    
     robotRoot.update();  // IMPORTANT - don't forget this
 
@@ -139,6 +149,8 @@ public class Robot {
     ModelMultipleLights cube = new ModelMultipleLights(name, mesh, modelMatrix, shader, material, lights, camera, t1, t2);
     return cube;
   } 
+  
+  
 
   
 
@@ -163,6 +175,11 @@ public class Robot {
     ModelNode headShape = new ModelNode("Sphere(head)", sphere);
     head.addChild(headTransform);
     headTransform.addChild(headShape);
+    // Add the eyes
+    // NameNode leftEye = makeEye(gl, 0.2f, -0.3f, 0.1f, 0.5f, sphere); // Left eye
+    // NameNode rightEye = makeEye(gl, 0.2f, 0.3f, 0.1f, 0.5f, sphere); // Right eye
+    // head.addChild(leftEye);
+    // head.addChild(rightEye);
     return head;
   }
 
@@ -178,6 +195,19 @@ public class Robot {
     antennaTransform.addChild(antennaShape);
     return antenna;
   }
+
+  private NameNode makeEye(GL3 gl, float eyeScale, float offsetX, float offsetY, float offsetZ, ModelMultipleLights sphere) {
+    NameNode eye = new NameNode("eye");
+    Mat4 eyeTransformMatrix = new Mat4(1);
+    eyeTransformMatrix = Mat4.multiply(eyeTransformMatrix, Mat4Transform.translate(offsetX, 1f+ offsetY, 1.5f+ offsetZ));
+    eyeTransformMatrix = Mat4.multiply(eyeTransformMatrix, Mat4Transform.scale(eyeScale, 2f, eyeScale));
+    TransformNode eyeTransform = new TransformNode("eye transform", eyeTransformMatrix);
+    ModelNode eyeShape = new ModelNode("Sphere(eye)", sphere);
+    eye.addChild(eyeTransform);
+    eyeTransform.addChild(eyeShape);
+    return eye;
+  }
+
 
   private NameNode makeLeftArm(GL3 gl, float bodyWidth, float bodyHeight, float armLength, float armScale, ModelMultipleLights cube) {
     NameNode leftArm = new NameNode("left arm");
