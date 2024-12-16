@@ -179,7 +179,7 @@ public class Robot {
     casingTransform = new TransformNode("casing transform", new Mat4(1));
 
     // Static scale for the casing
-    TransformNode scaleNode = new TransformNode("casing scale", Mat4Transform.scale(2.2f, 4.2f, 2.2f));
+    TransformNode scaleNode = new TransformNode("casing scale", Mat4Transform.scale(2.2f, 2.2f, 2.2f));
     
     // Model node for the casing
     ModelNode casingShape = new ModelNode("Casing", model);
@@ -237,13 +237,15 @@ public class Robot {
     TransformNode lightTransform = new TransformNode("spotlight transform", 
                                           Mat4Transform.translate(0, antennaHeight / 2 + 0.1f, 0)); // Slight offset
     ModelNode lightNode = new ModelNode("light node", lightModel);
+    TransformNode lightScaleTransform = new TransformNode("light scale", Mat4Transform.scale(0.4f, 0.4f, 0.4f));
     antenna.addChild(antennaTransform);   // Base position
     antennaTransform.addChild(antennaScale); // Apply scale directly to antenna geometry
     antennaScale.addChild(antennaShape);     // Attach antenna geometry
 
     // Add light (independent of scaling)
     antennaTransform.addChild(lightTransform); 
-    lightTransform.addChild(lightNode);
+    lightTransform.addChild(lightScaleTransform);
+    lightScaleTransform.addChild(lightNode);
     return antenna;
   }
 
@@ -354,7 +356,7 @@ public class Robot {
     // lights[1].setDirection(new Vec3(directionX, directionY, directionZ));
     lights[1].setType(1); // Spotlight type
     // Casing position: small offset behind spotlight direction
-    float casingOffset = 0.2f; // Small offset factor
+    float casingOffset = 0.3f; // Small offset factor
     float casingX = 0 - casingOffset * directionX; // Opposite to light direction
     float casingY = lightHeight; // Align with height
     float casingZ = 0 - casingOffset * directionZ; // Opposite to light direction
