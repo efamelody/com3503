@@ -132,7 +132,7 @@ public class Robot {
       head.addChild(antenna);
       head.addChild(leftEye);
       head.addChild(rightEye);
-      head.addChild(casingNode);
+      lightTransform.addChild(casingNode);
       // lightTransform.addChild(lightNode); // Add the light node to the transform    
     robotRoot.update();  // IMPORTANT - don't forget this
 
@@ -175,26 +175,23 @@ public class Robot {
   private NameNode makeCasing(GL3 gl, float offsetDistance, float orbitRadius, ModelMultipleLights model) {
     NameNode casing = new NameNode("casing");
 
-    // Initial translation for the offset
-    Mat4 initialTransform = Mat4Transform.translate(0, offsetDistance, -orbitRadius);
+    // Casing transformation node (dynamic position)
+    casingTransform = new TransformNode("casing transform", new Mat4(1));
 
-    // Create a transform node to manage dynamic positioning of the casing
-    casingTransform = new TransformNode("casing transform", initialTransform);
-
-    // Scale the casing
-    Mat4 scaleTransform = Mat4Transform.scale(0.2f, 0.2f, 0.2f);
-
-    // Create transform and model nodes for the casing
-    TransformNode scaleNode = new TransformNode("casing scale", scaleTransform);
+    // Static scale for the casing
+    TransformNode scaleNode = new TransformNode("casing scale", Mat4Transform.scale(3.2f, 3.2f, 3.2f));
+    
+    // Model node for the casing
     ModelNode casingShape = new ModelNode("Casing", model);
 
-    // Build the hierarchy: casing -> transform -> scale -> model
+    // Hierarchy: casing -> casingTransform -> scale -> model
     casing.addChild(casingTransform);
     casingTransform.addChild(scaleNode);
     scaleNode.addChild(casingShape);
 
     return casing;
   }
+
 
   
 
@@ -333,40 +330,33 @@ public class Robot {
     Vec3 robotPos = getPosition(); 
     
     // Spotlight spherical motion parameters
-    double theta = Math.toRadians(elapsedTime * 10.0f);  // Rotation around Z-axis
-    double phi = Math.toRadians(45.0 + (Math.sin(elapsedTime) * 15.0)); // Oscillating angle
+    double theta = Math.toRadians(elapsedTime * 50f); // Faster rotation around Z-axis
+    double phi = Math.toRadians(45.0 + (Math.sin(elapsedTime) * 15.0)); // Oscillating polar angle
 
     // Convert spherical coordinates to Cartesian for direction
     float directionX = (float) (Math.sin(phi) * Math.cos(theta));
-    float directionY = -0.5f + 0.2f *(float) Math.cos(phi);
+    float directionY = 0.5f; // Slight upward tilt
     float directionZ = (float) (Math.sin(phi) * Math.sin(theta));
 
-    // Update lights[1] directly
-    lights[1].setPosition(new Vec3(robotPos.x, robotPos.y + 3.0f, robotPos.z)); // Above the robot's head
-    lights[1].setDirection(new Vec3(directionX, directionY, directionZ));
+    // Set spotlight direction
+    Vec3 spotlightDirection = new Vec3(directionX, directionY, directionZ);
+    lights[1].setDirection(spotlightDirection);
+    float lightHeight = robotPos.y; // Fixed height
+    Vec3 lightPos = new Vec3(robotPos.x, lightHeight, robotPos.z);
+
+    // Update spotlight position and direction
+    lights[1].setPosition(lightPos);
+    // lights[1].setDirection(new Vec3(directionX, directionY, directionZ));
     lights[1].setType(1); // Spotlight type
-    // lights[1].setCutoff(15.0f); // Set cutoff for spotlight (in degrees)
-    // Casing dynamic position
-    float offsetX = -directionX * casingOffsetDistance;
-    float offsetY = -directionY * casingOffsetDistance;
-    float offsetZ = -directionZ * casingOffsetDistance;
+    // Casing position: small offset behind spotlight direction
+    float casingOffset = 0.2f; // Small offset factor
+    float casingX = 0 - casingOffset * directionX; // Opposite to light direction
+    float casingY = lightHeight; // Align with height
+    float casingZ = 0 - casingOffset * directionZ; // Opposite to light direction
 
-    // Circular orbit for the casing
-    double orbitTheta = Math.toRadians(elapsedTime * 50.0f); // Orbit speed
-    float circularX = (float) (casingOrbitRadius * Math.cos(orbitTheta));
-    float circularZ = (float) (casingOrbitRadius * Math.sin(orbitTheta));
-
-    // Combine offsets and calculate final position
-    float finalX = robotPos.x + offsetX + circularX;
-    float finalY = robotPos.y + 3.0f + offsetY;
-    float finalZ = robotPos.z + offsetZ + circularZ;
-
-    // Apply transformations to the casing
-    Mat4 casingModel = Mat4Transform.translate(finalX, finalY, finalZ);
-    casingModel = Mat4.multiply(casingModel, Mat4Transform.rotateAroundY((float) Math.toDegrees(theta)));
-    casingModel = Mat4.multiply(casingModel, Mat4Transform.scale(0.2f, 0.2f, 0.2f));
-
-    // Update casing transform node
+    // Apply casing transformation
+    Mat4 casingModel = Mat4Transform.translate(casingX, 0, casingZ);
+    casingModel = Mat4.multiply(casingModel, Mat4Transform.scale(0.2f, 0.2f, 0.2f)); // Scale casing
     casingTransform.setTransform(casingModel);
     casingTransform.update();
   }
