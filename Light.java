@@ -181,7 +181,7 @@ public class Light {
 
     // Light model matrix
     Mat4 lightModel = new Mat4(1);
-    lightModel = Mat4.multiply(Mat4Transform.scale(0.3f, 0.3f, 0.3f), lightModel);
+    // lightModel = Mat4.multiply(Mat4Transform.scale(0.3f, 0.3f, 0.3f), lightModel);
     lightModel = Mat4.multiply(Mat4Transform.translate(position), lightModel);
     Mat4 mvpMatrix = Mat4.multiply(camera.getPerspectiveMatrix(), Mat4.multiply(camera.getViewMatrix(), lightModel));
 

@@ -229,15 +229,20 @@ public class Robot {
     // Position the antenna on top of the head
     Mat4 antennaTransformMatrix = new Mat4(1);
     antennaTransformMatrix = Mat4.multiply(antennaTransformMatrix, Mat4Transform.translate(0, headScale + antennaHeight / 2, -0.2f));
-    antennaTransformMatrix = Mat4.multiply(antennaTransformMatrix, Mat4Transform.scale(antennaThickness, antennaHeight, antennaThickness));
     TransformNode antennaTransform = new TransformNode("antenna transform", antennaTransformMatrix);
+    Mat4 antennaScaleMatrix = Mat4Transform.scale(antennaThickness, antennaHeight, antennaThickness);
+    TransformNode antennaScale = new TransformNode("antenna scale", antennaScaleMatrix);
+
     ModelNode antennaShape = new ModelNode("Cube(antenna)", cube);
     TransformNode lightTransform = new TransformNode("spotlight transform", 
                                           Mat4Transform.translate(0, antennaHeight / 2 + 0.1f, 0)); // Slight offset
     ModelNode lightNode = new ModelNode("light node", lightModel);
-    antenna.addChild(antennaTransform);
-    antennaTransform.addChild(antennaShape);
-    antennaTransform.addChild(lightTransform);
+    antenna.addChild(antennaTransform);   // Base position
+    antennaTransform.addChild(antennaScale); // Apply scale directly to antenna geometry
+    antennaScale.addChild(antennaShape);     // Attach antenna geometry
+
+    // Add light (independent of scaling)
+    antennaTransform.addChild(lightTransform); 
     lightTransform.addChild(lightNode);
     return antenna;
   }
