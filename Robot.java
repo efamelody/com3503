@@ -179,7 +179,7 @@ public class Robot {
     casingTransform = new TransformNode("casing transform", new Mat4(1));
 
     // Static scale for the casing
-    TransformNode scaleNode = new TransformNode("casing scale", Mat4Transform.scale(3.2f, 3.2f, 3.2f));
+    TransformNode scaleNode = new TransformNode("casing scale", Mat4Transform.scale(2.2f, 4.2f, 2.2f));
     
     // Model node for the casing
     ModelNode casingShape = new ModelNode("Casing", model);
