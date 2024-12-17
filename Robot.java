@@ -355,18 +355,24 @@ public class Robot {
     lights[1].setPosition(lightPos);
     // lights[1].setDirection(new Vec3(directionX, directionY, directionZ));
     lights[1].setType(1); // Spotlight type
-    // Casing position: small offset behind spotlight direction
-    float casingOffset = 0.3f; // Small offset factor
-    float casingX = 0 - casingOffset * directionX; // Opposite to light direction
-    float casingY = lightHeight; // Align with height
-    float casingZ = 0 - casingOffset * directionZ; // Opposite to light direction
+    // Offset distance for casing relative to the spotlight
+    float casingOffset = 0.3f;  // Slight offset from spotlight position
+    float casingX = casingOffset * directionX;
+    float casingZ = casingOffset * directionZ;
 
-    // Apply casing transformation
-    Mat4 casingModel = Mat4Transform.translate(casingX, 0, casingZ);
-    casingModel = Mat4.multiply(casingModel, Mat4Transform.scale(0.2f, 0.2f, 0.2f)); // Scale casing
+    // Update the casing's transform relative to the spotlight
+    //Make the casing outside the light
+    Mat4 casingModel = Mat4Transform.translate(-0.3f, -0.5f, 0.3f);
+    casingModel = Mat4.multiply(Mat4Transform.translate(directionX, -0.5f, directionZ), casingModel);
+    Mat4 casingScale = Mat4Transform.scale(0.2f, 0.2f, 0.2f); // Scale casing
+    casingModel = Mat4.multiply(casingModel, casingScale);
+
+    // Apply transformation to casing node
     casingTransform.setTransform(casingModel);
     casingTransform.update();
   }
+
+
  
   private void updateMove(double elapsedTime) {
     float robotHeight =4f;
