@@ -10,6 +10,26 @@ import com.jogamp.opengl.util.texture.*;
 import com.jogamp.opengl.util.texture.awt.*;
 import com.jogamp.opengl.util.texture.spi.JPEGImage;
 
+/*
+ * I declare that this code is my own work
+ * Author: Nur Binti Mohd Talib
+ * 
+ * Description:
+ * This class is based on the tutorial L04_GLEventListener. Several changes have been made 
+ * to adapt it to the assignment requirements:
+ * 
+ * 1. The scene graph structure from the tutorial was reused, but the shapes and transformations 
+ *    were modified to create the required scene (e.g., robot, walls, and globe).
+ * 
+ * 2. Additional translations, rotations, and scaling were implemented in the `render` method 
+ *    to position objects dynamically.
+ * 
+ * 3. Animations for robot components and other shapes were added or enhanced.
+ *
+ * 4. New methods were introduced to handle object transformations (e.g., `getMforGlobe()` for 
+ *    positioning and rotating the globe).. 
+ */
+
   
 public class L04_GLEventListener implements GLEventListener {
   
@@ -407,26 +427,6 @@ public class L04_GLEventListener implements GLEventListener {
     double elapsedTime = getSeconds() - startTime;
     double rotationSpeed = 5.0f; // Degrees per second
 
-    // //Spotlight
-    // double theta = Math.toRadians(elapsedTime * 50f);    // Rotation around Z-axis
-    // double phi = Math.toRadians(45.0 + (Math.sin(elapsedTime) * 15.0)); // Oscillate polar angle for variation
-
-    // // Convert spherical coordinates to Cartesian
-    // float directionX = (float) (Math.sin(phi) * Math.cos(theta));
-    // float directionZ = (float) (Math.sin(phi) * Math.sin(theta));
-    // // float directionY = (float) Math.cos(phi);
-
-    // // Update spotlight direction
-    // Vec3 spotlightDirection = new Vec3(directionX, 0.5f, directionZ);
-    // // lights[1].setDirection(spotlightDirection);
-
-    // // Print the new direction for debugging
-    // System.out.printf("Spotlight Direction: X=%.2f, Y=%.2f, Z=%.2f%n", directionX, robotPos.y, directionZ);
-    
-    // lights[1].render(gl);
-    // lights[1].setPosition(robotPos);
-    // lights[1].setType(1);
-    // lights[1].setDirection(spotlightDirection);
     
     if (robot.isNearRobot1()) {
       updateBranches();  // Only update branches during these steps

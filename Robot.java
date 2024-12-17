@@ -10,11 +10,49 @@ import com.jogamp.opengl.util.texture.*;
 import com.jogamp.opengl.util.texture.awt.*;
 import com.jogamp.opengl.util.texture.spi.JPEGImage;
 
- /**
- * This class stores the Robot
+/*
+ * I declare that this code is my own work.
+ * Author: Nur Binti Mohd Talib
  *
- * @author    Dr Steve Maddock
- * @version   1.0 (31/08/2022)
+ * Description:
+ * This class was based on the tutorial `Robot.java`, but I significantly modified and extended its functionality.
+ *
+ * Major Changes and Additions:
+ *
+ * 1. **Spotlight Integration**:
+ *    - Added a spotlight (`Light spotlight`) with dynamic movement, direction updates, and spherical oscillations.
+ *    - Implemented `updateSpotlightPosition()` to adjust the spotlight’s position and direction relative to the robot.
+ *    - Attached a casing (a small sphere) near the spotlight, simulating a rotating part or light casing.
+ *
+ * 2. **Robot Animation**:
+ *    - Created a new movement animation for the robot using a step-based logic with the `updateMove()` method.
+ *      - Steps include moving forward, sideways, backward, and turning at specific intervals.
+ *      - Added step counters (`movementStepCounter`) to orchestrate the sequence of movements.
+ *    - Integrated arm animations (`updateAnimation()`) with a smooth oscillating movement based on sine waves.
+ *
+ * 3. **Custom Robot Design**:
+ *    - Used the scene graph structure from the tutorial but modified the components:
+ *      - **Antenna**: Added a dynamic antenna with an attached casing and light node.
+ *      - **Eyes**: Added spherical eyes on the robot’s head with precise positioning.
+ *      - **Body and Limbs**: Defined custom transformations for body, arms, and legs.
+ *    - Introduced modular methods (`makeBody`, `makeAntenna`, `makeEye`, etc.) for clean and reusable component creation.
+ *
+ * 4. **State Management**:
+ *    - Added state variables for controlling robot movement and behavior:
+ *      - `isMoving`, `isTurning`, `nearRobot1`, `buttonClicked`, `stopButtonClicked`, etc.
+ *    - Implemented logic to start, stop, and reset the robot’s behavior dynamically.
+ *
+ * 5. **Dynamic Light Position and Animation**:
+ *    - Spotlight position and casing movement are updated in real time with `updateSpotlightPosition()`.
+ *    - The spotlight smoothly follows spherical motion, enhancing realism.
+ *
+ * 6. **Event Handling**:
+ *    - Added methods for robot interaction:
+ *      - `setButtonClicked()`, `nearRobot1()`, and `updateMove()` allow the robot to react to button presses and reset states.
+ *
+ * Summary:
+ * The robot now features dynamic movement animations, spotlight integration, interactive behaviors, and a modular design.
+ * The scene graph remains from the tutorial but has been extensively customized to suit the assignment requirements.
  */
 
 public class Robot {

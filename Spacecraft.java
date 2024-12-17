@@ -5,7 +5,33 @@ import com.jogamp.opengl.*;
 import com.jogamp.opengl.awt.GLCanvas;
 import com.jogamp.opengl.util.FPSAnimator;
 
-public class L04 extends JFrame {
+/*
+ * I declare that this code is my own work
+ * Author Nur Binti Mohd Talib 
+* Description:
+ * This class is based on the tutorial `L04.java`. I have made the following changes:
+ *
+ * 1. **Added GUI controls**: 
+ *    - Buttons to control the robot (Dance, Stop Dancing, and Pause/Resume Robot 2).
+ *    - Sliders to control:
+ *      - Spotlight intensity.
+ *      - General light intensity.
+ *      - Spotlight cone size (inner and outer cutoff angles).
+ *
+ * 2. **Event handling**: 
+ *    - Implemented action listeners for buttons to interact with the robot.
+ *    - Added `ChangeListener` to sliders to dynamically adjust light properties.
+ *
+ * 3. **Custom functions**:
+ *    - `calculateInnerCutoff` and `calculateOuterCutoff` were introduced to map slider values
+ *      to smooth spotlight cutoff angles.
+ *
+ * 4. **Integration**:
+ *    - Integrated GUI components into the OpenGL scene rendered by `L04_GLEventListener`.
+ *    - Added proper layout using `JPanel` and `BoxLayout` for clean and organized UI.
+ */
+
+public class Spacecraft extends JFrame {
 
   private static final int WIDTH = 1024;
   private static final int HEIGHT = 768;
@@ -17,14 +43,14 @@ public class L04 extends JFrame {
   private final FPSAnimator animator;
 
   public static void main(String[] args) {
-      L04 b1 = new L04("L04");
+      Spacecraft b1 = new Spacecraft("L04");
       b1.getContentPane().setPreferredSize(dimension);
       b1.pack();
       b1.setVisible(true);
       b1.canvas.requestFocusInWindow();
   }
 
-  public L04(String textForTitleBar) {
+  public Spacecraft(String textForTitleBar) {
       super(textForTitleBar);
       GLCapabilities glcapabilities = new GLCapabilities(GLProfile.get(GLProfile.GL3));
       canvas = new GLCanvas(glcapabilities);

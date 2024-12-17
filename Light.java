@@ -2,6 +2,27 @@ import gmaths.*;
 import java.nio.*;
 import com.jogamp.common.nio.*;
 import com.jogamp.opengl.*;
+
+/*
+ * I declare that this code is my own work.
+ * Author: Nur Binti Mohd Talib
+ *
+ * Description:
+ * This class is based on the tutorial `Light.java`. However, I made the following modifications:
+ * 
+ * 1. **Spotlight Functionality**:
+ *    - Added new variables for spotlight properties: `direction`, `cutOff`, `outerCutOff`, and attenuation factors 
+ *      (`constant`, `linear`, `quadratic`).
+ *    - Implemented getters and setters to control these properties dynamically.
+ * 
+ * 2. **Light Representation**:
+ *    - Rendered the light source as a **sphere** to visualize its position in the scene.
+ *    - Added an animated **casing** (around the spotlight) to visually enhance the spotlight effect.
+ *    - Implemented the method `renderCasing()` to render the casing with circular motion around the spotlight.
+ * 
+ * Overall, the light class now supports both general lights and spotlights with added visualization
+ * and enhanced functionality.
+ */
   
 public class Light {
   

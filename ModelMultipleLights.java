@@ -5,6 +5,33 @@ import com.jogamp.opengl.*;
 import com.jogamp.opengl.util.texture.*;
 import com.jogamp.opengl.util.texture.awt.*;
 import com.jogamp.opengl.util.texture.spi.JPEGImage;
+/*
+ * I declare that this code is my own work.
+ * Author: Nur Binti Mohd Talib
+ *
+ * Description:
+ * This class is based on the tutorial `ModelMultipleLights.java`. However, I made the following changes:
+ * 
+ * 1. **Support for Spotlights**:
+ *    - Added support for spotlight-specific shaders and properties:
+ *      - `direction`, `cutOff`, `outerCutOff` for spotlight behavior.
+ *      - Spotlight attenuation factors: `constant`, `linear`, `quadratic`.
+ *    - Updated the `render()` method to pass these spotlight parameters to the shader program.
+ *    - Modified the shader calls (`setFloat` and `setVec3`) to include spotlight attributes dynamically.
+ *
+ * 2. **Light Type Handling**:
+ *    - Added `type` handling (`lights[i].getType()`) to differentiate between general lights and spotlights.
+ *    - Passed the light `type` to the shader using the line:
+ *      ```java
+ *      shader.setInt(gl, "lights[" + i + "].type", lights[i].getType());
+ *      ```
+ *
+ * 3. **Shader Compatibility**:
+ *    - Ensured proper binding for the diffuse and specular textures.
+ *
+ * The class now supports rendering models with multiple lights, including spotlights with customizable
+ * cutoff angles, intensity, and attenuation.
+ */
 
 public class ModelMultipleLights {
 

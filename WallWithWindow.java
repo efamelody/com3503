@@ -1,3 +1,17 @@
+/*
+ * I declare that this code is my own work.
+ * Author: Nur Binti Mohd Talib
+ * Email: <insert your email here>
+ *
+ * Description:
+ * This class defines a **Wall with a Window (hole)** geometry. 
+ * 
+* Summary:
+ * This class provides a simple and efficient wall model with a centered window/hole.
+ * The geometry calculations, including vertex positions and triangle indices, were entirely done by me.
+ */
+
+
 public class WallWithWindow {
     // Define vertices for the wall with a hole (window)
     public static final float[] vertices = {
