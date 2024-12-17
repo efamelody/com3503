@@ -163,7 +163,7 @@ public class L04_GLEventListener implements GLEventListener {
     textures.add(gl, "specular", "assets/textures/container2_specular.jpg", GL3.GL_CLAMP_TO_EDGE, GL3.GL_CLAMP_TO_EDGE);
     textures.add(gl, "diffuse_nur", "assets/textures/diffuse_nur.jpg", GL3.GL_CLAMP_TO_EDGE, GL3.GL_CLAMP_TO_EDGE);
     textures.add(gl, "specular_nur", "assets/textures/specular_nur.jpg", GL3.GL_CLAMP_TO_EDGE, GL3.GL_CLAMP_TO_EDGE);
-    textures.add(gl, "floor_texture", "assets/textures/chequerboard.jpg", GL3.GL_CLAMP_TO_EDGE, GL3.GL_CLAMP_TO_EDGE);
+    textures.add(gl, "floor_texture", "assets/textures/chequerboard.png", GL3.GL_CLAMP_TO_EDGE, GL3.GL_CLAMP_TO_EDGE);
     textures.add(gl, "ceiling_texture", "assets/textures/cloud.jpg", GL3.GL_CLAMP_TO_EDGE, GL3.GL_CLAMP_TO_EDGE);
     textures.add(gl, "wall_texture", "assets/textures/wattBook.jpg", GL3.GL_CLAMP_TO_EDGE, GL3.GL_CLAMP_TO_EDGE);
     textures.add(gl, "cloud", "assets/textures/cloud.jpg", GL3.GL_LINEAR, GL3.GL_LINEAR);
@@ -371,6 +371,8 @@ public class L04_GLEventListener implements GLEventListener {
       upperBranch.addChild(sphereNode);
     return upperBranchName;
   }
+
+  
 
   private ModelMultipleLights makeSphere(GL3 gl, Texture t1, Texture t2) {
     String name= "sphere";
