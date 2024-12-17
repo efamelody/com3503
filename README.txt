@@ -78,7 +78,17 @@ The following sections describe:
 - I generated these textures to align with the scene and robot's design requirements.  
 
 -----------------------------  
-4. What I Kept from the Tutorial:  
+4. Custom Shader Work:  
+-----------------------------  
+**Fragment Shader (`fs_standard_m_2t.txt`)**:  
+- I wrote the fragment shader for spotlight and point light calculations using Phong lighting.  
+- This shader includes:  
+    - **Attenuation**: Based on distance (constant, linear, quadratic).  
+    - **Spotlight Cutoff**: Smooth light intensity based on inner and outer angles.  
+    - **Texture Mapping**: Diffuse and specular textures applied dynamically. 
+
+-----------------------------  
+5. What I Kept from the Tutorial:  
 -----------------------------  
 - Scene Graph Structure:  
     - I kept the hierarchical scene graph from the tutorial but customized the transformations and structure for my robot.  
