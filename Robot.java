@@ -80,6 +80,7 @@ public class Robot {
   private SGNode robotRoot;
   private float xPosition = 0;
   private double lastTime = 0;
+  private double stepStartTime = 0.0;
   private float zPosition = 0;
   private float speed = 0.01f;   // Speed of the robot's movement (can be adjusted)
   private float targetDistance = 9.0f; // Distance the robot should move
@@ -424,8 +425,9 @@ public class Robot {
  
   private void updateMove(double elapsedTime) {
     float robotHeight =4f;
+    double stepElapsedTime = elapsedTime - stepStartTime; 
     if (movementStepCounter == 0) {  // Step 1: Move Straight
-        float movementZ = (float) (elapsedTime * speed);
+        float movementZ = (float) (stepElapsedTime * speed);
         zPosition += movementZ;  // Update Z position
         robotMoveTranslate.setTransform(Mat4Transform.translate(0, 0, zPosition));
         robotMoveTranslate.update();
@@ -443,7 +445,7 @@ public class Robot {
             // System.out.println("Turning started. Target angle: " + targetTurnAngle);
         }
 
-        float angleIncrement = Math.max(turnSpeed * (float) elapsedTime, 0.001f);
+        float angleIncrement = Math.max(turnSpeed * (float) stepElapsedTime, 0.001f);
         turnAngle += angleIncrement;
         // lights[1].setPosition(new Vec3(xPosition, robotHeight, zPosition));
         robotTurn.setTransform(Mat4Transform.rotateAroundY(-turnAngle));
@@ -458,7 +460,7 @@ public class Robot {
             // System.out.println("Turn complete. Advancing to step: " + movementStepCounter);
         }
     } else if (movementStepCounter == 2) {  // Step 3: Move Side
-        float movementX = (float) (elapsedTime * speed);
+        float movementX = (float) (stepElapsedTime * speed);
         xPosition -= movementX;  // Update X position
         robotMoveTranslate.setTransform(Mat4Transform.translate(xPosition, 0, zPosition));
         robotMoveTranslate.update();
@@ -475,7 +477,7 @@ public class Robot {
           // System.out.println("Turning started. Target angle: " + targetTurnAngle);
       }
 
-      float angleIncrement = Math.max(turnSpeed * (float) elapsedTime, 0.1f);
+      float angleIncrement = Math.max(turnSpeed * (float) stepElapsedTime, 0.1f);
       turnAngle += angleIncrement;
 
       robotTurn.setTransform(Mat4Transform.rotateAroundY(-turnAngle - 90f));
@@ -490,7 +492,7 @@ public class Robot {
           // System.out.println("Turn complete. Advancing to step: " + movementStepCounter);
       } 
     }else if (movementStepCounter == 4) {  // Step 5: Move Backward
-        float movementZ = (float) (elapsedTime * speed);
+        float movementZ = (float) (stepElapsedTime * speed);
         zPosition -= movementZ;  // Move back along Z axis
         robotMoveTranslate.setTransform(Mat4Transform.translate(xPosition, 0, zPosition));
         robotMoveTranslate.update();
@@ -510,7 +512,7 @@ public class Robot {
           // System.out.println("Turning started. Target angle: " + targetTurnAngle);
       }
 
-      float angleIncrement = Math.max(turnSpeed * (float) elapsedTime, 0.1f);
+      float angleIncrement = Math.max(turnSpeed * (float) stepElapsedTime, 0.1f);
       turnAngle += angleIncrement;
 
       robotTurn.setTransform(Mat4Transform.rotateAroundY(turnAngle));
@@ -525,7 +527,7 @@ public class Robot {
           // System.out.println("Turn complete. Advancing to step: " + movementStepCounter);
       }
     }else if (movementStepCounter == 6) {  // Step 3: Move Side
-      float movementX = (float) (elapsedTime * speed);
+      float movementX = (float) (stepElapsedTime * speed);
       xPosition += movementX;  // Update X position
       robotMoveTranslate.setTransform(Mat4Transform.translate(xPosition, 0, zPosition));
       robotMoveTranslate.update();
@@ -542,7 +544,7 @@ public class Robot {
           // System.out.println("Turning back to initial orientation. Target angle: " + targetTurnAngle);
       }
   
-      float angleIncrement = turnSpeed * (float) elapsedTime;
+      float angleIncrement = turnSpeed * (float) stepElapsedTime;
       turnAngle += angleIncrement;
   
       robotTurn.setTransform(Mat4Transform.rotateAroundY(0));
