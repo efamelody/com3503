@@ -176,22 +176,20 @@ public class Robot {
   private NameNode makeCasing(GL3 gl, float offsetDistance, float orbitRadius, ModelMultipleLights model) {
     NameNode casing = new NameNode("casing");
 
-    // Casing transformation node (dynamic position)
-    casingTransform = new TransformNode("casing transform", new Mat4(1));
-
-    // Static scale for the casing
+    // Do NOT reinitialize casingTransform here!
+    // Use the existing casingTransform instead
     TransformNode scaleNode = new TransformNode("casing scale", Mat4Transform.scale(2.2f, 2.2f, 2.2f));
     
     // Model node for the casing
     ModelNode casingShape = new ModelNode("Casing", model);
 
     // Hierarchy: casing -> casingTransform -> scale -> model
-    casing.addChild(casingTransform);
+    casing.addChild(casingTransform); // Use the existing casingTransform
     casingTransform.addChild(scaleNode);
     scaleNode.addChild(casingShape);
 
     return casing;
-  }
+}
 
 
   
@@ -241,8 +239,8 @@ public class Robot {
     ModelNode lightNode = new ModelNode("light node", lightModel);
 
     // Attach casing near the light
-    casingTransform = new TransformNode("casing transform", Mat4Transform.translate(0.1f, 0, 0.1f)); // Initial position near light
-    TransformNode casingScale = new TransformNode("casing scale", Mat4Transform.scale(0.3f, 0.3f, 0.3f));
+    casingTransform.setTransform(Mat4Transform.translate(0.1f, 0, 0.1f)); // Initial position near light
+    TransformNode casingScale = new TransformNode("casing scale", Mat4Transform.scale(0.3f, 0.3f, 0.f));
     ModelNode casingShape = new ModelNode("casing node", casing);
 
     // Build the hierarchy
@@ -259,7 +257,7 @@ public class Robot {
     casingScale.addChild(casingShape);
 
     return antenna;
-}
+  }
 
   private NameNode makeEye(GL3 gl, float eyeScale, float offsetX, float offsetY, float offsetZ, ModelMultipleLights sphere) {
     NameNode eye = new NameNode("eye");
@@ -374,7 +372,7 @@ public class Robot {
 
     // Update the casing's transform relative to the spotlight
     //Make the casing outside the light
-    Mat4 casingModel = Mat4Transform.translate(1.5f, -0.5f, -1.5f);
+    Mat4 casingModel = Mat4Transform.translate(0f, 3f, -0);
     casingModel = Mat4.multiply(Mat4Transform.translate(directionX, -0.5f, directionZ), casingModel);
     Mat4 casingScale = Mat4Transform.scale(0.2f, 0.2f, 0.2f); // Scale casing
     casingModel = Mat4.multiply(casingModel, casingScale);
