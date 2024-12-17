@@ -130,7 +130,7 @@ public class L04_GLEventListener implements GLEventListener {
 
   // private Model cube, tt1, tt2, tt3, tt4, tt5, tt6, globe;
   private Mat4 perspective;
-  private ModelMultipleLights cube, tt1, tt2, tt3, tt4, tt5, tt6, globe,pole, sphere, sphereBase, sphereBody, sphereArm, sphereHead;
+  private ModelMultipleLights cube, tt1, tt2, tt3, tt4, tt5, tt6, globe,pole, sphere,sphereHat,  sphereBase, sphereBody, sphereArm, sphereHead;
   private Light light;
   private Robot robot;
   private Mat4[] roomTransforms;
@@ -182,6 +182,7 @@ public class L04_GLEventListener implements GLEventListener {
     textures.add(gl, "wall", "assets/textures/wall.png", GL3.GL_REPEAT, GL3.GL_REPEAT); 
     textures.add(gl, "pedestal", "assets/textures/pedestal.png", GL3.GL_CLAMP_TO_EDGE, GL3.GL_CLAMP_TO_EDGE);
     textures.add(gl, "circus", "assets/textures/circus.png", GL3.GL_CLAMP_TO_EDGE, GL3.GL_CLAMP_TO_EDGE);
+    textures.add(gl, "dots", "assets/textures/dots.png", GL3.GL_CLAMP_TO_EDGE, GL3.GL_CLAMP_TO_EDGE);
     lights[0] = new Light(gl);
     lights[0].setCamera(camera);
     lights[1] = new Light(gl);
@@ -274,6 +275,7 @@ public class L04_GLEventListener implements GLEventListener {
     sphereBody = makeSphere(gl, textures.get("body"), textures.get("specular"));
     sphereArm = makeSphere(gl, textures.get("arm"), textures.get("specular"));
     sphereHead = makeSphere(gl, textures.get("face"), textures.get("specular"));
+    sphereHat = makeSphere(gl, textures.get("dots"), textures.get("specular"));
       
     twoBranchRoot = new NameNode("two-branch structure");
 
@@ -285,7 +287,7 @@ public class L04_GLEventListener implements GLEventListener {
     SGNode upperBranch1 = makeUpperBranch(sphereArm, 0.5f,3.1f,1.0f);
     SGNode upperBranch2 = makeUpperBranch(sphereArm, 0.5f,3.1f,1.0f);
     SGNode head = makeUpperBranch(sphereHead, 2.0f,2.0f,2.0f);
-    SGNode hat = makeHat(sphere, 1.0f, 4.3f, 0.3f);
+    SGNode hat = makeHat(sphereHat, 1.0f, 4.3f, 0.3f);
 
     TransformNode translateToTop1 = new TransformNode("translate(0,"+lowerBranchHeight+",0)",Mat4Transform.translate(0,lowerBranchHeight,0));
     TransformNode translateToTop2 = new TransformNode("translate(0,"+lowerBranchHeight+",0)",Mat4Transform.translate(0,lowerBranchHeight,0));
