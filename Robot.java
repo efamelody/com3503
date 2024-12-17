@@ -128,11 +128,12 @@ public class Robot {
     robotTranslate.addChild(robotScale);
     robotScale.addChild(body);                       // Attach body
       body.addChild(head);                               // Attach head
-      head.addChild(lightTransform);      // Add the light's transform to the head
+      // head.addChild(lightTransform);      // Add the light's transform to the head
       head.addChild(antenna);
       head.addChild(leftEye);
       head.addChild(rightEye);
-      lightTransform.addChild(casingNode);
+      antenna.addChild(casingTransform);
+      // lightTransform.addChild(casingNode);
       // lightTransform.addChild(lightNode); // Add the light node to the transform    
     robotRoot.update();  // IMPORTANT - don't forget this
 
@@ -226,28 +227,39 @@ public class Robot {
 
   private NameNode makeAntenna(GL3 gl, float bodyHeight, float headScale, float antennaHeight, float antennaThickness, ModelMultipleLights cube) {
     NameNode antenna = new NameNode("antenna");
-    // Position the antenna on top of the head
-    Mat4 antennaTransformMatrix = new Mat4(1);
-    antennaTransformMatrix = Mat4.multiply(antennaTransformMatrix, Mat4Transform.translate(0, headScale + antennaHeight / 2, -0.2f));
+
+    // Antenna transform
+    Mat4 antennaTransformMatrix = Mat4Transform.translate(0, headScale + antennaHeight / 2, -0.2f);
     TransformNode antennaTransform = new TransformNode("antenna transform", antennaTransformMatrix);
     Mat4 antennaScaleMatrix = Mat4Transform.scale(antennaThickness, antennaHeight, antennaThickness);
     TransformNode antennaScale = new TransformNode("antenna scale", antennaScaleMatrix);
-
     ModelNode antennaShape = new ModelNode("Cube(antenna)", cube);
-    TransformNode lightTransform = new TransformNode("spotlight transform", 
-                                          Mat4Transform.translate(0, antennaHeight / 2 + 0.1f, 0)); // Slight offset
-    ModelNode lightNode = new ModelNode("light node", lightModel);
-    TransformNode lightScaleTransform = new TransformNode("light scale", Mat4Transform.scale(0.4f, 0.4f, 0.4f));
-    antenna.addChild(antennaTransform);   // Base position
-    antennaTransform.addChild(antennaScale); // Apply scale directly to antenna geometry
-    antennaScale.addChild(antennaShape);     // Attach antenna geometry
 
-    // Add light (independent of scaling)
-    antennaTransform.addChild(lightTransform); 
+    // Spotlight and its transform
+    TransformNode lightTransform = new TransformNode("spotlight transform", Mat4Transform.translate(0, antennaHeight / 2 + 0.1f, 0));
+    TransformNode lightScaleTransform = new TransformNode("light scale", Mat4Transform.scale(0.4f, 0.4f, 0.4f));
+    ModelNode lightNode = new ModelNode("light node", lightModel);
+
+    // Attach casing near the light
+    casingTransform = new TransformNode("casing transform", Mat4Transform.translate(0.1f, 0, 0.1f)); // Initial position near light
+    TransformNode casingScale = new TransformNode("casing scale", Mat4Transform.scale(0.3f, 0.3f, 0.3f));
+    ModelNode casingShape = new ModelNode("casing node", casing);
+
+    // Build the hierarchy
+    antenna.addChild(antennaTransform);
+    antennaTransform.addChild(antennaScale);
+    antennaScale.addChild(antennaShape);
+
+    antennaTransform.addChild(lightTransform);
     lightTransform.addChild(lightScaleTransform);
     lightScaleTransform.addChild(lightNode);
+
+    lightTransform.addChild(casingTransform); // Attach casing near light
+    casingTransform.addChild(casingScale);
+    casingScale.addChild(casingShape);
+
     return antenna;
-  }
+}
 
   private NameNode makeEye(GL3 gl, float eyeScale, float offsetX, float offsetY, float offsetZ, ModelMultipleLights sphere) {
     NameNode eye = new NameNode("eye");
@@ -362,7 +374,7 @@ public class Robot {
 
     // Update the casing's transform relative to the spotlight
     //Make the casing outside the light
-    Mat4 casingModel = Mat4Transform.translate(-0.3f, -0.5f, 0.3f);
+    Mat4 casingModel = Mat4Transform.translate(1.5f, -0.5f, -1.5f);
     casingModel = Mat4.multiply(Mat4Transform.translate(directionX, -0.5f, directionZ), casingModel);
     Mat4 casingScale = Mat4Transform.scale(0.2f, 0.2f, 0.2f); // Scale casing
     casingModel = Mat4.multiply(casingModel, casingScale);
