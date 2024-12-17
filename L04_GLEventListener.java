@@ -285,6 +285,7 @@ public class L04_GLEventListener implements GLEventListener {
     SGNode upperBranch1 = makeUpperBranch(sphereArm, 0.5f,3.1f,1.0f);
     SGNode upperBranch2 = makeUpperBranch(sphereArm, 0.5f,3.1f,1.0f);
     SGNode head = makeUpperBranch(sphereHead, 2.0f,2.0f,2.0f);
+    SGNode hat = makeHat(sphere, 1.0f, 4.3f, 0.3f);
 
     TransformNode translateToTop1 = new TransformNode("translate(0,"+lowerBranchHeight+",0)",Mat4Transform.translate(0,lowerBranchHeight,0));
     TransformNode translateToTop2 = new TransformNode("translate(0,"+lowerBranchHeight+",0)",Mat4Transform.translate(0,lowerBranchHeight,0));
@@ -318,6 +319,7 @@ public class L04_GLEventListener implements GLEventListener {
             translateBaseToTop.addChild(rotateHead);
             rotateHead.addChild(headBalloon);
               headBalloon.addChild(head);
+              head.addChild(hat);
     twoBranchRoot.update();  // IMPORTANT – must be done every time any part of the scene graph changes
   }
 
@@ -370,6 +372,17 @@ public class L04_GLEventListener implements GLEventListener {
     upperBranchName.addChild(upperBranch);
       upperBranch.addChild(sphereNode);
     return upperBranchName;
+  }
+
+  private SGNode makeHat(ModelMultipleLights sphere, float sx, float sy, float sz) {
+    NameNode hatNode = new NameNode("hat");
+    Mat4 m = Mat4Transform.translate(0, 2.2f, 0); // Position on top of the head
+    m = Mat4.multiply(m, Mat4Transform.scale(sx, sy, sz));
+    TransformNode hatTransform = new TransformNode("hat transform", m);
+    ModelNode hatShape = new ModelNode("Hat", sphere); // Use the existing sphere model
+    hatNode.addChild(hatTransform);
+    hatTransform.addChild(hatShape);
+    return hatNode;
   }
 
   
