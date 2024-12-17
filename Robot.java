@@ -235,11 +235,11 @@ public class Robot {
 
     // Spotlight and its transform
     TransformNode lightTransform = new TransformNode("spotlight transform", Mat4Transform.translate(0, antennaHeight / 2 + 0.1f, 0));
-    TransformNode lightScaleTransform = new TransformNode("light scale", Mat4Transform.scale(0.4f, 0.4f, 0.4f));
+    TransformNode lightScaleTransform = new TransformNode("light scale", Mat4Transform.scale(0.5f, 0.5f, 0.5f));
     ModelNode lightNode = new ModelNode("light node", lightModel);
 
     // Attach casing near the light
-    casingTransform.setTransform(Mat4Transform.translate(0.1f, 0, 0.1f)); // Initial position near light
+    casingTransform.setTransform(Mat4Transform.translate(0f, 0, 0f)); // Initial position near light
     TransformNode casingScale = new TransformNode("casing scale", Mat4Transform.scale(0.3f, 0.3f, 0.f));
     ModelNode casingShape = new ModelNode("casing node", casing);
 
@@ -373,7 +373,7 @@ public class Robot {
     // Update the casing's transform relative to the spotlight
     //Make the casing outside the light
     Mat4 casingModel = Mat4Transform.translate(0f, 3f, -0);
-    casingModel = Mat4.multiply(Mat4Transform.translate(directionX, -0.5f, directionZ), casingModel);
+    casingModel = Mat4.multiply(Mat4Transform.translate(-casingX, -0.5f, -casingZ), casingModel);
     Mat4 casingScale = Mat4Transform.scale(0.2f, 0.2f, 0.2f); // Scale casing
     casingModel = Mat4.multiply(casingModel, casingScale);
 
