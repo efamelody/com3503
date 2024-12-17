@@ -109,7 +109,7 @@ public class L04 extends JFrame {
 
       // General light slider
       JLabel generalLightIntensityLabel = new JLabel("General Light Intensity: 70%");
-      JSlider generalLightIntensitySlider = new JSlider(JSlider.HORIZONTAL, 0, 100, 70);
+      JSlider generalLightIntensitySlider = new JSlider(JSlider.HORIZONTAL, 0, 100, 50);
       generalLightIntensitySlider.setMajorTickSpacing(20);
       generalLightIntensitySlider.setMinorTickSpacing(5);
       generalLightIntensitySlider.setPaintTicks(true);
@@ -137,7 +137,7 @@ public class L04 extends JFrame {
       // Spotlight Cone Size Panel
       JPanel spotlightControlPanel = new JPanel();
       spotlightControlPanel.setLayout(new GridLayout(1, 2));
-      int initialSliderValue = 3;
+      int initialSliderValue = 2;
 
       JLabel spotlightLabel = new JLabel("Spotlight Cone Size: 0");
       JSlider spotlightSlider = new JSlider(JSlider.HORIZONTAL, 0, 5, initialSliderValue); // Range 0-5
